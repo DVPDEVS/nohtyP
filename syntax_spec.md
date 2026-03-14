@@ -50,6 +50,32 @@ int ? print()         -> print(<class 'int'>)
 
 Lexers MAY issue warnings when a bareword string appears in ambiguous positions (e.g., where an expression, not a literal, is expected).
 
+## REAL-WORLD COMPRESSION  
+
+Example function: 
+
+```py
+class Genes:
+    stats = [
+        "agr"   ,   # Aggression
+        "str"   ,   # Strength
+        "mut"   ,   # Mutation
+        "val"   ,   # Value
+        "sth"   ]   # Stealth
+    @staticmethod
+    def _make_stats_dict(*, values: list[float,] = None):
+        ret = {}
+        for i in Genes.stats: # maps values and Genes.stats one-to-one
+            ret += {Genes.stats[i]: 0.0 if values is None else float(abs(values[i])) if len(values) >= i-1 else 0.0,}
+        return ret
+```
+
+Equivalent in nohtyP:  
+
+```yp
+{ agr str mut val sth :list #? stats ; { ret :dict[str, float] ; Genes.stats ? ~ { Genes.stats[@] values == None ~ 0.0 *~ values ? len() >= @-1 values[@] ? abs() ? float() *~ 0.0 :dict[str, float] += ret } ; ret ? return } <- (* None ? values :list[float,] ) ? _make_stats_dict <- def <- @staticmethod } <- Genes <- class
+```
+
 ## OPERATORS (left-to-right precedence)
 
 1. () - function calls, grouping
@@ -115,18 +141,122 @@ Python: if True == 1: print("yes") else: print("no")
 nohtyP: True == 1 ~ yes ? print() *~ no ? print()
 ```
 
+COMPREHENSIONS (? ~ { ? })
+
+```yp
+Python: list = [x*2 for x in range(10) if x % 2]
+nohtyP: 10 ? range() ? ~ { @ % 2 ~ @ * 2 ?} -> list
+```
+
 MATCH:
 
 ```yp
 Python: test = ""; match test: case "": ... case _: ...
 nohtyP: "" = test; test ? match { "" ~ ... *~ _ ~ ... }
+
+nohtyP: test ? match { 1, "s", *rest ~ ... }
 ```
 
 ### FUNCTIONS (reversed declaration)
 
+Functions use the same directional logic as classes.  
+The function **body** appears first within a block, `{}`, followed by parameters (with optional defaults and type annotations), then the function name, optionally a return type, ending with `<- def`.
+
 ```yp
-Python: def check(number1:int = 0) -> bool: return bool(number1)
-nohtyP: { number1 ? bool() ? return } <- 0 ? number1:int ? check -> bool <- def
+Python: 
+def check(number1:int = 0) -> bool:
+    return bool(number1)
+
+nohtyP:
+{ number1 ? bool() ? return } <- 0 ? number1:int ? check -> bool <- def
+```
+
+#### Rules for functions  
+
+- `{ ... }` always encloses the full function body.  
+- Parameters appear after `<-` and follow standard Python typing semantics  
+- Default values appear before the parameter they belong to, piped with `?`.  
+- The function name follows the parameter list.  
+- Return type annotations use `->` exactly as in Python.  
+- Function types follow `def` declaration (async, etc.)
+- Decorators follow last in line as `<- <decorator>`  
+- You may omit parameters entirely for zero‑argument functions:
+
+```yp
+{ "hello" ? print() } <- greet <- def <- @staticmethod
+```
+
+- The body is fully composable — any valid nohtyP or Python statements work inside.  
+- Within a function body, reversed definitions, assignments, and flow operators behave identically to top‑level code.
+
+Example:
+
+```yp
+{ a b ? add() ? return } <- a:int b:int ? sum -> int <- def
+```
+
+Equivalent Python:
+
+```py
+def sum(a: int, b: int) -> int:
+    return add(a, b)
+```
+
+Lambda functions have the following equivalent syntax:  
+
+```yp
+Python: lambda x: *2
+nohtyP: { @ * 2 } <- x ? lambda
+```
+
+### CLASSES (reversed declaration)
+
+Classes use the same directional logic as functions.  
+The class **body** appears first within a block, `{}`, followed by optional base classes or mixins, then the name, ending with `<- class`.
+
+```yp
+Python: 
+class MyThing(Base1, Base2):
+    def hi(self): print("hi")
+
+nohtyP: 
+{ { "hi" ? print() ? return } <- self ? hi <- def } <- Base1, Base2 ? MyThing <- class
+```
+
+#### Rules for classes  
+
+- `{ ... }` always encloses the full class body (methods, attributes, inner definitions).  
+- Base classes follow `<-` just like default arguments or type hints in function form.  
+- You may omit base list for single inheritance or object subclassing:  
+
+  ```yp
+  { pass } <- MyPlain <- class
+  ```
+
+- The body is fully composable — any valid nohtyP or Python statements work inside.  
+- Within a class body, reversed function or attribute assignments behave identically to top‑level definitions.
+- Decorators follow last in line as `<- <decorator>`  
+
+#### Example  
+
+```yp
+{ "init" ? print(); { name ? print() ? return } <- self, name:str ? greet <- def } <- Friendly <- class
+```
+
+Equivalent Python:
+
+```py
+class Friendly:
+    print("init")
+    def greet(self, name: str):
+        print(name)
+        return
+```
+
+Dataclasses:
+
+```yp
+x :int y :int ? Point <- class <- @dataclass
 ```
 
 ### ERROR HANDLING (* family) - Frame-local
@@ -199,12 +329,17 @@ for i in x: print(i)
 try: risky() except: pass
 ```
 
-## COMPRESSION EXAMPLE
+## COMPRESSION EXAMPLES
+
+nohtyP (68 chars):
+
+```yp
+unsafe() *$e *? $e ? print() *? "couldnt print exception!" ? print()
+```
+
+Python (262 chars): 3 nested try/except blocks w/ value handling + feedback
 
 ```py
-nohtyP (68 chars): unsafe() *$e *? $e ? print() *? "couldnt print exception!" ? print()
-Python (262 chars): 3 nested try/except blocks w/ value handling + feedback 
-
 __value = None
 __exit = None
 try:
@@ -218,6 +353,30 @@ try:
         print(__exit)
 except Exception:
     print("couldnt print exception!")
+```
+
+Example function 2:
+
+```py
+class Genes:
+    stats = [
+        "agr"   ,   # Aggression
+        "str"   ,   # Strength
+        "mut"   ,   # Mutation
+        "val"   ,   # Value
+        "sth"   ]   # Stealth
+    @staticmethod
+    def _make_stats_dict(*, values: list[float,] = None):
+        ret = {}
+        for i in Genes.stats: # maps values and Genes.stats one-to-one
+            ret += {Genes.stats[i]: 0.0 if values is None else float(abs(values[i])) if len(values) >= i-1 else 0.0,}
+        return ret
+```
+
+Equivalent in nohtyP:
+
+```yp
+{ agr str mut val sth :list #? stats ; { ret :dict[str, float] ; Genes.stats ? ~ { Genes.stats[@] values == None ~ 0.0 *~ values ? len() >= @-1 values[@] ? abs() ? float() *~ 0.0 :dict[str, float] += ret } ; ret ? return } <- (* None ? values :list[float,] ) ? _make_stats_dict <- def <- @staticmethod } <- Genes <- class
 ```
 
 ## WHITESPACE EXAMPLE (identical parsing)

@@ -1,0 +1,19 @@
+# Example function grabbed from https://github.com/DVP-F/genelooper/blob/main/creatures.py
+
+# noinspection PyTypeChecker
+class Genes:
+	stats = [
+		"agr"	,	# Aggression
+		"str"	,	# Strength
+		"mut"	,   # Mutation
+		"val"	,	# Value
+		"sth"	]	# Stealth
+    def _make_stats_dict(*, values: list[float,] = None):
+        ret = {}
+        for i in Genes.stats: # maps values and Genes.stats one-to-one
+            ret += {Genes.stats[i]: 0.0 if values is None else float(abs(values[i])) if len(values) >= i-1 else 0.0,}
+        return ret
+
+# Function equivalent in nohtyP:
+
+{ agr str mut val sth :list #? stats ; { {} -> ret ; Genes.stats ? ~ { Genes.stats[@] values == None ~ 0.0 *~ values ? len() >= @-1 values[@] ? abs() ? float() *~ 0.0 :dict[str, float] += ret } ; ret ? return } <- (* None ? values :list[float,] ) ? _make_stats_dict <- def <- @staticmethod } <- Genes <- class
