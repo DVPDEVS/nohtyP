@@ -3,6 +3,11 @@
 File Extension: .yp
 *nohtyP* source code files. FULLY INTERCOMPATIBLE with standard Python 3.10+
 
+## Undecided syntax  
+
+- Walrus operator
+- With/open
+
 ## CORE PRINCIPLES
 
 1. Whitespace is lexically irrelevant - newlines, tabs, spaces are cosmetic only
@@ -159,7 +164,6 @@ nohtyP: test ? match { 1, "s", *rest ~ ... }
 
 ### FUNCTIONS (reversed declaration)
 
-Functions use the same directional logic as classes.  
 The function **body** appears first within a block, `{}`, followed by parameters (with optional defaults and type annotations), then the function name, optionally a return type, ending with `<- def`.
 
 ```yp
@@ -207,6 +211,16 @@ Lambda functions have the following equivalent syntax:
 ```yp
 Python: lambda x: *2
 nohtyP: { @ * 2 } <- x ? lambda
+```
+
+Async operates similarly, too:  
+
+```yp
+Python: async def func() {
+    await something()
+}
+
+nohtyP: {something() ? await} <- func <- def async
 ```
 
 ### CLASSES (reversed declaration)
@@ -261,7 +275,11 @@ x :int y :int ? Point <- class <- @dataclass
 
 ### ERROR HANDLING (* family) - Frame-local
 
-Frame scope = all operations left of *? up to the nearest semicolon (;). Each semicolon boundary creates a new exception frame. Exception state does not cross semicolon delimiters unless explicitly passed via variable.
+Frame scope = all operations left of *? up to the nearest semicolon (;) which is not within a block contained inside the current frame or block. Each semicolon boundary creates a new exception frame. Exception state does not cross semicolon delimiters unless explicitly passed via variable.
+
+Examples of scope:  
+`'e' -> ltr ; { ... } ; smn() *$e *? $e ? print()` - Scope includes `smn()`  
+`{ { 0 -> truth ; truth ? print() } *? woag ? print() }` - Scope includes the entire inner block `{}` including the assignment `0 -> truth` and not the `print` call  
 
 STORE EXCEPTION:
 
