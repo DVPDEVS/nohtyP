@@ -6,3 +6,11 @@ And yet it's fully interoperable with py3.10+ syntax in its midst - but let's be
 ## Core ideas  
 
 ...
+
+## Quick function examples
+
+```yp
+'Hello, world!' ? print()
+
+0 80 5 ? range() ? ~ { @ % 2 ~ True ? print() *~ False ? print() }
+```
