@@ -153,8 +153,8 @@ nohtyP: ls:dict #? "type":"dict""val":8
 Python: ls:dict = {"type": "dict", "val": 8}
 
 nohtyP: "type":"dict" "val":8 #? ls:dict
-nohtyP: string1 string2 :list ? print()
-nohtyP: value1 30 val2 hi :dict[str[int], str[str]] ? print()
+nohtyP: string1 string2 :list #? print()
+nohtyP: value1 30 val2 hi :dict[str[int], str[str]] #? print()
 ```
 
 ### CONTROL FLOW
