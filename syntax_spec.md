@@ -55,6 +55,34 @@ int ? print()         -> print(<class 'int'>)
 
 Lexers MAY issue warnings when a bareword string appears in ambiguous positions (e.g., where an expression, not a literal, is expected).
 
+## Precendence layering and priority
+
+| Layer | Operators                | Scope                   | Example → Desugaring                                     |
+| ----- | ------------------------ | ----------------------- | -------------------------------------------------------- |
+| 1     | () [] . \*\*             | Python atoms/access     | lst\[0]                                                  |
+| 2     | \* / // % + - << >> etc. | All Python binary/unary | 2 \*\* 3 \* 4 // 2 → ((2 \*\* 3) \* 4) // 2              |
+| 3     | Comparisons == in and or | Python logic            | x > 5 and y == 3                                         |
+| 4     | {} blocks                | nohtyP execution        | {x?print()}                                              |
+| 5     | ? =? ~ \*~ \*$ \*? #?    | nohtyP flow             | x \* 2 ? print() \*~ y → if print(x \* 2) else y         |
+| 6     | ;                        | Statement boundary      | a?b; c?d                                                 |
+
+### {} Semantics  
+
+- Executes all statements LTR until ;
+- If the block ends with a `?` flow operator, pipes the last value value out
+- Otherwise returns None (like Python bare block)
+- REQUIRES terminal flow op for chainable results
+
+Example: 
+
+```yp
+{ x > 0 ~ "pos" *~ "neg" ? } ? print()      # ✓ block yields value → print
+{ x > 0 ~ "pos" *~ "neg" } ? print()        # ✗ block yields None → print(None)
+
+{ x == 32 ~ True *~ False ?} -> val         # `val` is assigned a bool through a ternary
+{ risky() *? "fallback" ? } ? process()     # exception-safe value → process
+```
+
 ## REAL-WORLD COMPRESSION  
 
 Example function: 
