@@ -102,6 +102,12 @@ Python: print("Hello"); input("nem > ")
 nohtyP: "Hello" ? print(); "nem > " ? input()
 ```
 
+Additionally pipes the result of a block out of the block  
+
+```yp
+; { 1 5 ? range() ?} ? print() ;
+```
+
 ### ASSIGNMENT & TYPES
 
 ```yp
