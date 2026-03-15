@@ -216,8 +216,10 @@ Lambda functions have the following equivalent syntax:
 
 ```yp
 Python: lambda x: *2
-nohtyP: { @ * 2 } <- x ? lambda
+nohtyP: { @ * 2 } <- x <- lambda
 ```
+
+Where once again, `@` holds the passed value.  
 
 Async operates similarly, too:  
 
