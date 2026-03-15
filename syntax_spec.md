@@ -69,7 +69,7 @@ Lexers MAY issue warnings when a bareword string appears in ambiguous positions 
 ### {} Semantics  
 
 - Executes all statements LTR until ;
-- If the block ends with a `?` flow operator, pipes the last value value out
+- If the block ends with a `?` flow operator, pipes the last value out
 - Otherwise returns None (like Python bare block)
 - REQUIRES terminal flow op for chainable results
 
