@@ -315,7 +315,7 @@ Frame scope = all operations left of *? up to the nearest semicolon (;) which is
 
 Examples of scope:  
 `'e' -> ltr ; { ... } ; smn() *$e *? $e ? print()` - Scope includes `smn()`  
-`{ { 0 -> truth ; truth ? print() } *? woag ? print() }` - Scope includes the entire inner block `{}` including the assignment `0 -> truth` and not the `print` call  
+`{ { 0 -> truth ; truth ? print() } *? woag ? print() }` - Scope includes the entire inner block `{}` including the assignment `0 -> truth` and not the rightwards `print` call  
 
 STORE EXCEPTION:
 
@@ -341,6 +341,21 @@ FULL NESTED (3 try/excepts, 68 chars):
 
 ```yp
 nohtyP: unsafe() *$e *? $e ? print() *? "couldnt print exception!" ? print()
+
+Python: 
+__value = None
+__exit = None
+try:
+    try:
+        try:
+            __value = unsafe()
+        except Exception as e:
+            __exit = e
+        safe(__value)
+    except Exception:
+        print(__exit)
+except Exception:
+    print("couldnt print exception!")
 ```
 
 RULES:
