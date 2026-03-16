@@ -1,35 +1,37 @@
 import os
+class PathLike(str, os.PathLike, os.path):
+	... # Holder class for path types, not used except for type hints
 
 class file:
 	@staticmethod
-	def get_current_dir() -> os.path:
+	def get_current_dir() -> PathLike:
 		return os.path.dirname(os.path.realpath(__file__))
 
 	@staticmethod
-	def get_file_from_cwd(filename :os.path.__path__|str) -> os.path:
+	def get_file_from_cwd(filename :PathLike) -> PathLike:
 		return os.path.join(file.get_current_dir(), filename)
 
 	@staticmethod
-	def read_file_cwd(filename :os.path.__path__|str) -> str:
+	def read_file_cwd(filename :PathLike) -> str:
 		with open(file.get_file_from_cwd(filename), 'r') as f:
 			return f.read()
 
 	@staticmethod
-	def write_file_cwd(filename :os.path.__path__|str, content :str) -> None:
+	def write_file_cwd(filename :PathLike, content :str) -> None:
 		with open(file.get_file_from_cwd(filename), 'w') as f:
 			f.write(content)
 
 	@staticmethod
-	def get_file(filename :os.path.__path__|str) -> os.path:
+	def get_file(filename :PathLike) -> PathLike:
 		return os.path(filename)
 
 	@staticmethod
-	def read_file(filename :os.path.__path__|str) -> str:
+	def read_file(filename :PathLike) -> str:
 		with open(file.get_file(filename), 'r') as f:
 			return f.read()
 
 	@staticmethod
-	def write_file(filename :os.path.__path__|str, content :str) -> None:
+	def write_file(filename :PathLike, content :str) -> None:
 		with open(file.get_file(filename), 'w') as f:
 			f.write(content)
 
@@ -51,9 +53,10 @@ class spec:
 
 	# replacement blocks for nohtyP syntax
 	replacements:dict[str, str] = {
-
 	}
 
 	# whitespace eligible characters
-	whitespace:list[str] = [ ' ', '\n', '\t',  ]
+	whitespace_ls:list[str] = [ ' ', '\n', '\t',  ]
+	whitespace_str:str = ''.join(whitespace_ls)
 
+range()

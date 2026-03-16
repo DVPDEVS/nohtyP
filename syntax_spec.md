@@ -133,7 +133,7 @@ nohtyP: "Hello" ? print(); "nem > " ? input()
 Additionally pipes the result of a block out of the block  
 
 ```yp
-; { 1 5 ? range() ?} ? print() ;
+; { 1 5 :*list ? range() ?} ? print() ;
 ```
 
 ### ASSIGNMENT & TYPES
@@ -157,6 +157,26 @@ nohtyP: string1 string2 :list #? print()
 nohtyP: value1 30 val2 hi :dict[str[int], str[str]] #? print()
 ```
 
+As a complication, lists and tuples passed into functions like range() need to be unpacked:
+
+```py
+range(*[1,2,1])
+```
+
+This has to be marked as the type declaration as such:
+
+```yp
+1 2 1 :* ? range()
+
+2 45 3 :list #? var1 ; var1 :* ? range() 
+```
+
+Lest `range()` throws an exception. That's the price to pay for not passing arguments normally :)  
+If it's declared to be unpacked, the translator will mark the passed object for unpacking.  
+Else it's passed wholesale and *will* break.  
+
+On the upside, this forces type declaring in some capacity and is just good practice  
+
 ### CONTROL FLOW
 
 WHILE:
@@ -170,7 +190,7 @@ ITERATION (? ~ {}) (@ = current item):
 
 ```yp
 Python: for i in range(1, 20, 3): print(i)
-nohtyP: 1, 20, 3 ? range() ? ~ { @ ? print() }
+nohtyP: 1, 20, 3 :*list ? range() ? ~ { @ ? print() }
 ```
 
 CONDITIONALS (~ *~) (NO if/elif/else):
@@ -230,7 +250,7 @@ nohtyP:
 Example:
 
 ```yp
-{ a b ? add() ? return } <- a:int b:int ? sum -> int <- def
+{ a b :* ? add() ? return } <- a:int b:int ? sum -> int <- def
 ```
 
 Equivalent Python:
@@ -315,7 +335,7 @@ Frame scope = all operations left of *? up to the nearest semicolon (;) which is
 
 Examples of scope:  
 `'e' -> ltr ; { ... } ; smn() *$e *? $e ? print()` - Scope includes `smn()`  
-`{ { 0 -> truth ; truth ? print() } *? woag ? print() }` - Scope includes the entire inner block `{}` including the assignment `0 -> truth` and not the rightwards `print` call  
+`{ { 0 -> truth ; truth ? print() } *? woag ? print() }` - Scope includes the entire inner block `{}` including the assignment `0 -> truth` and not the rightwards `woag ? print()` call  
 
 STORE EXCEPTION:
 

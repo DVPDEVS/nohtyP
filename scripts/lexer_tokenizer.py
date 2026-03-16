@@ -1,54 +1,58 @@
 import re
-from lex import Lexer
+from lex import Lexer # dependencies.sh 
+import utils
+# from __future__ import 
 
 class NohtyPLex(Lexer):
-    # Define regular expressions for tokens
-    whitespace = r'\s+'
-    comment = r'#.*$'  # End of line comments
-    string_quote = r"'|\""
-    identifier = r'[a-zA-Z_][a-zA-Z0-9_]*'
-    keyword = r'print|try|except'  # Initial set of keywords
+	# Define regular expressions for tokens
+	whitespace 		= f'[{utils.spec.whitespace_ls}]+' 	# Any postitive non-zero amount of whitespace chars defined in utils.spec
+	comment 		= r'#.*$' 							# End of line comments
+	string_quote 	= r"'|\"|`|´"
+	identifier 		= r'[a-zA-Z_][a-zA-Z0-9_]*'
+	keyword 		= r'print|try|except' 				# Initial set of keywords
 
-    def __init__(self):
-        super().__init__()
-        self.add_pattern(self.whitespace, whitespace_token)
-        self.add_pattern(self.comment, comment_token)
-        self.add_pattern(self.string_quote, string_token)
-        self.add_pattern(self.identifier, identifier_token)
-        self.add_pattern(self.keyword, keyword_token)
+	def __init__(self):
+		super().__init__()
+		self.add_pattern(self.whitespace, whitespace_token)
+		self.add_pattern(self.comment, comment_token)
+		self.add_pattern(self.string_quote, string_token)
+		self.add_pattern(self.identifier, identifier_token)
+		self.add_pattern(self.keyword, keyword_token)
 
-    # Token functions
-    def whitespace_token(self):
-        return 'WS'
+	# Token functions
+	def whitespace_token(self):
+		return 'WS'
 
-    def comment_token(self):
-        return 'COMMENT'
+	def comment_token(self):
+		return 'COMMENT'
 
-    def string_token(self):
-        return 'STRING'
+	def string_token(self):
+		return 'STRING'
 
-    def identifier_token(self):
-        return 'IDENTIFIER'
+	def identifier_token(self):
+		return 'IDENTIFIER'
 
-    def keyword_token(self):
-        return 'KEYWORD'
+	def keyword_token(self):
+		return 'KEYWORD'
 
 # Define token actions
 def WS(token):
-    pass  # Ignore whitespace
+	pass  # Ignore whitespace
 
 def COMMENT(token):
-    pass  # Ignore comments
+	pass  # Ignore comments
 
 def STRING(token):
-    print(f"Found string: {token.value}")
+	print(f"Found string: {token.value}")
 
 def IDENTIFIER(token):
-    print(f"Found identifier: {token.value}")
+	print(f"Found identifier: {token.value}")
 
 def KEYWORD(token):
-    print(f"Found keyword: {token.value}")
+	print(f"Found keyword: {token.value}")
 
-# Create the lexer and start scanning
-lexer = NohtyPLex()
-lexer.scan("hello *? \"world\" ? print() # comment")
+if __name__ == "__main__":
+	# Create the lexer and start scanning
+	lexer = NohtyPLex()
+	lexer.scan("hello \"world\" ? print() # comment")
+
