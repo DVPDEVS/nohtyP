@@ -1,37 +1,38 @@
 import os
+from __future__ import *
 class PathLike(str, os.PathLike, os.path):
 	... # Holder class for path types, not used except for type hints
 
 class file:
 	@staticmethod
-	def get_current_dir() -> PathLike:
+	def get_cwd() -> PathLike:
 		return os.path.dirname(os.path.realpath(__file__))
 
 	@staticmethod
-	def get_file_from_cwd(filename :PathLike) -> PathLike:
+	def get_cwd(filename :PathLike) -> PathLike:
 		return os.path.join(file.get_current_dir(), filename)
 
 	@staticmethod
-	def read_file_cwd(filename :PathLike) -> str:
+	def read_cwd(filename :PathLike) -> str:
 		with open(file.get_file_from_cwd(filename), 'r') as f:
 			return f.read()
 
 	@staticmethod
-	def write_file_cwd(filename :PathLike, content :str) -> None:
+	def write_cwd(filename :PathLike, content :str) -> None:
 		with open(file.get_file_from_cwd(filename), 'w') as f:
 			f.write(content)
 
 	@staticmethod
-	def get_file(filename :PathLike) -> PathLike:
+	def get(filename :PathLike) -> PathLike:
 		return os.path(filename)
 
 	@staticmethod
-	def read_file(filename :PathLike) -> str:
+	def read(filename :PathLike) -> str:
 		with open(file.get_file(filename), 'r') as f:
 			return f.read()
 
 	@staticmethod
-	def write_file(filename :PathLike, content :str) -> None:
+	def write(filename :PathLike, content :str) -> None:
 		with open(file.get_file(filename), 'w') as f:
 			f.write(content)
 
@@ -59,4 +60,11 @@ class spec:
 	whitespace_ls:list[str] = [ ' ', '\n', '\t',  ]
 	whitespace_str:str = ''.join(whitespace_ls)
 
-range()
+	# String quote characters
+	string_quotes_ls:list[str] = [ "'", '"', '´', '`', ]
+
+class regex_patterns:
+	whitespace 		= r'[' + spec.whitespace_ls + r']+' # Any postitive non-zero amount of whitespace chars defined in utils.spec
+	comment 		= r'#.*$' 							# End of line comments
+	string_quote 	= r'|'.join(spec.string_quotes_ls)	# Eligible quotes
+
