@@ -206,5 +206,12 @@ class NohtyPLex:
 if __name__ == "__main__":
 	# Create the lexer and start scanning
 	lexer = NohtyPLex()
-	lexer.scan("hello \"world\" ? print() # comment")
+	# lexer.scan("hello \"world\" ? print() # comment")
+
+# TODO: Implement the following
+# I did not yet implement bareword-as-string resolution; that’s a later phase where the translator rewrites IDs to STR based on scope. The lexer just gives you IDs and STRs separately, which matches your “translator performs bareword resolution and whitespace normalization before AST translation” statement.
+
+# The nohtyP operators (*set, #?, ?, ?=, ~, *~, *$, *?, {}, (), ;) should be recognized in next_token() by looking for multi-character sequences using spec.tokens. You can add a small “longest match from spec.tokens.values()`” function there.
+
+# The utils.regex_patterns are currently unused in this version; if you want, next step is to replace skip_whitespace and skip_comment with a single regex-based scanner chunk using regex_patterns.whitespace and regex_patterns.comment.
 
