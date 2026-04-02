@@ -5,15 +5,69 @@ from utils import spec, regex_patterns
 
 
 class TT:
-	INT       = "INT"
-	ID        = "ID"
-	STR       = "STR"
-	KEYWORD   = "KEYWORD"
-	OP        = "OP"
-	PUNCT     = "PUNCT"
-	EOF       = "EOF"
-	COMMA     = "COMMA"      # only when it acts as a separator
-	UNKNOWN   = "UNKNOWN"
+	INT       = "INT"		# Native int                    -> 123, 0, -42, 0b1010, 0o77, 0xFF
+	FLOAT     = "FLOAT"		# Native float                  -> 1.23, .5, 10., 1e10, -3.4e-2
+	STR       = "STR"		# Native str                    -> "text", 'text', """text""", r"raw", f"format"
+	ID        = "ID"		# Known identifiers             -> variable_name, _private, ClassName
+	KEYWORD   = "KEYWORD"	# Python keywords               -> if, else, while, def, class, return, import
+	OP        = "OP"		# Operators                     -> +, -, *, /, //, %, **, =, ==, !=, <, >, <=, >=, and, or, not, is, in
+	PUNCT     = "PUNCT"		# General punctuation           -> :, ;, ., @, = (contextual), ->
+	EOF       = "EOF"		# End of file/input             -> <EOF>
+	COMMA     = "COMMA"     # only when it acts as a separator -> ,
+	UNKNOWN   = "UNKNOWN"	# Copied wholesale for compatibility with libraries. should be registered for parsing with native python install
+
+	BOOL      = "BOOL"		# Native bool                   -> True, False
+	NONE      = "NONE"		# NoneType                      -> None
+	BYTES     = "BYTES"		# Native bytes                  -> b"bytes", br"raw"
+	BYTEARRAY = "BYTEARRAY"	# Native bytearray              -> bytearray(b"bytes")
+
+	LIST      = "LIST"		# Native list literal           -> [1, 2, 3]
+	TUPLE     = "TUPLE"		# Native tuple literal          -> (1, 2), ()
+	SET       = "SET"		# Native set literal            -> {1, 2, 3}
+	DICT      = "DICT"		# Native dict literal           -> {"a": 1, "b": 2}
+	ELLIPSIS  = "ELLIPSIS"	# Ellipsis object               -> ...
+	SLICE     = "SLICE"		# Slice syntax                  -> a:b, a:b:c
+
+	LPAREN    = "LPAREN"		# Left parenthesis              -> (
+	RPAREN    = "RPAREN"		# Right parenthesis             -> )
+	LBRACE    = "LBRACE"		# Left brace                    -> {
+	RBRACE    = "RBRACE"		# Right brace                   -> }
+	LBRACKET  = "LBRACKET"	# Left bracket                  -> [
+	RBRACKET  = "RBRACKET"	# Right bracket                 -> ]
+
+	DOT       = "DOT"		# Attribute access              -> .
+	COLON     = "COLON"		# Colon                         -> :
+	SEMICOLON = "SEMICOLON"	# Statement separator           -> ;
+	ARROW     = "ARROW"		# Function return annotation    -> ->
+	AT        = "AT"		# Decorator/operator            -> @
+
+	ASSIGN    = "ASSIGN"		# Assignment                    -> =
+	AUGASSIGN = "AUGASSIGN"	# Augmented assignment          -> +=, -=, *=, /=, //=, %=, **=, &=, |=, ^=, <<=, >>=
+
+	BITOP     = "BITOP"		# Bitwise operators             -> &, |, ^, ~, <<, >>
+	COMPARE   = "COMPARE"	# Comparison operators          -> ==, !=, <, >, <=, >=, is, is not, in, not in
+	LOGIC     = "LOGIC"		# Logical operators             -> and, or, not
+
+	NEWLINE   = "NEWLINE"	# Line break                    -> \n
+	INDENT    = "INDENT"		# Indentation increase          -> (whitespace block start)
+	DEDENT    = "DEDENT"		# Indentation decrease          -> (whitespace block end)
+
+	COMMENT   = "COMMENT"	# Comment                       -> # comment text
+	FSTRING   = "FSTRING"	# Formatted string              -> f"{x}", f"text {expr}"
+	FORMAT    = "FORMAT"		# Format specifier (inside fstr)-> {value:.2f}
+
+	GENEXP    = "GENEXP"		# Generator expression          -> (x for x in y)
+	LISTCOMP  = "LISTCOMP"	# List comprehension            -> [x for x in y]
+	SETCOMP   = "SETCOMP"	# Set comprehension             -> {x for x in y}
+	DICTCOMP  = "DICTCOMP"	# Dict comprehension            -> {k: v for k, v in y}
+
+	LAMBDA    = "LAMBDA"		# Lambda expression             -> lambda x: x + 1
+	YIELD     = "YIELD"		# Yield expression              -> yield x, yield from x
+	AWAIT     = "AWAIT"		# Await expression              -> await coro()
+	ASYNC     = "ASYNC"		# Async keyword                 -> async def, async for
+
+	DECORATOR = "DECORATOR"	# Decorator usage               -> @decorator
+	TYPEHINT  = "TYPEHINT"	# Type annotations              -> x: int, -> str
 
 KEYWORDS = {"if", "else", "while"}  # temporary core; you will extend with nohtyP keywords
 
@@ -27,24 +81,6 @@ class Token:
 
 	def __repr__(self):
 		return f"Token({self.type}, {self.value!r}, {self.line}:{self.col})"
-
-
-class helpers:
-	@staticmethod
-	def is_whitespace(ch: str) -> bool:
-		return ch in spec.whitespace_ls
-
-	@staticmethod
-	def is_digit(ch: str) -> bool:
-		return "0" <= ch <= "9"
-
-	@staticmethod
-	def is_alpha(ch: str) -> bool:
-		return ("a" <= ch <= "z") or ("A" <= ch <= "Z") or ch == "_"
-
-	@staticmethod
-	def is_alnum(ch: str) -> bool:
-		return helpers.is_alpha(ch) or helpers.is_digit(ch)
 
 
 class NohtyPLex:
@@ -82,7 +118,7 @@ class NohtyPLex:
 	# ------------- skipping -------------
 
 	def skip_whitespace(self):
-		while self.current_char is not None and helpers.is_whitespace(self.current_char):
+		while self.current_char is not None and utils.lex_helpers.is_whitespace(self.current_char):
 			self.advance()
 
 	def skip_comment(self):
@@ -95,7 +131,7 @@ class NohtyPLex:
 	def number(self):
 		start_line, start_col = self.line, self.col
 		result = ""
-		while self.current_char is not None and helpers.is_digit(self.current_char):
+		while self.current_char is not None and utils.lex_helpers.is_digit(self.current_char):
 			result += self.current_char
 			self.advance()
 		self.tokens.append(Token(TT.INT, result, start_line, start_col))
@@ -103,7 +139,7 @@ class NohtyPLex:
 	def identifier_or_keyword(self):
 		start_line, start_col = self.line, self.col
 		result = ""
-		while self.current_char is not None and helpers.is_alnum(self.current_char):
+		while self.current_char is not None and utils.lex_helpers.is_alnum(self.current_char):
 			result += self.current_char
 			self.advance()
 		tok_type = TT.KEYWORD if result in KEYWORDS else TT.ID
@@ -147,8 +183,8 @@ class NohtyPLex:
 			prev_ch = self.peek(-1) if self.pos > 0 else None
 			next_ch = self.peek(1)
 
-			prev_ws = prev_ch is not None and helpers.is_whitespace(prev_ch)
-			next_ws = next_ch is not None and helpers.is_whitespace(next_ch)
+			prev_ws = prev_ch is not None and utils.lex_helpers.is_whitespace(prev_ch)
+			next_ws = next_ch is not None and utils.lex_helpers.is_whitespace(next_ch)
 
 			if prev_ws or next_ws:
 				# acts as separator: emit COMMA then advance
@@ -171,7 +207,7 @@ class NohtyPLex:
 	def next_token(self):
 		while self.current_char is not None:
 			# skip whitespace
-			if helpers.is_whitespace(self.current_char):
+			if utils.lex_helpers.is_whitespace(self.current_char):
 				self.skip_whitespace()
 				continue
 
@@ -186,12 +222,12 @@ class NohtyPLex:
 				return self.tokens[-1]
 
 			# numbers
-			if helpers.is_digit(self.current_char):
+			if utils.lex_helpers.is_digit(self.current_char):
 				self.number()
 				return self.tokens[-1]
 
 			# identifiers / keywords
-			if helpers.is_alpha(self.current_char):
+			if utils.lex_helpers.is_alpha(self.current_char):
 				self.identifier_or_keyword()
 				return self.tokens[-1]
 
