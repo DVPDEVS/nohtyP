@@ -1,10 +1,11 @@
-# Just holds the TT class of lex objects
+# Just holds the TT class of lex objects and its support
 
 class helpers:
 	@classmethod
 	@staticmethod
-	def get_all_token_names(*classes):
-		all_names = set()
+	def get_all_token_names(*classes:object) -> set[str]:
+		"""Gets all inherent uppercase `str` attributes of the given `classes` not starting with '_'"""
+		all_names:set[str] = set()
 		for cls in classes:
 			names = {
 				n for n in vars(cls)
@@ -14,9 +15,10 @@ class helpers:
 		return all_names
 	@classmethod
 	@staticmethod
-	def make_tt_diff(*classes):
+	def make_tt_diff(*classes:object) -> dict[object, dict[str, str | None]]:
+		"""Packs the relevant attributes of `classes` together nicely"""
 		all_names = helpers.get_all_token_names(*classes)
-		result = {}
+		result:dict[object, dict[str, str | None]] = {}
 		for cls in classes:
 			per_cls = {}
 			for name in all_names:
@@ -106,10 +108,10 @@ class TT(TT_PYTHON, TT_NOHTYP):
 
 	PY:object = TT_PYTHON
 	YP:object = TT_NOHTYP
-	__CTX:set[object] = { PY, YP }	# validation
+	__CTX:set[object] = { PY, YP }	# Validation
 	CTX:object = TT_CTX				# Calls
 	global __CURRENT_CTX			# Global context var
-	__CURRENT_CTX: object = None	# (unset)
+	__CURRENT_CTX: object = None	# (default value is not any context)
 	__DIFF: dict[object, dict[str, str | None]] = helpers.make_tt_diff(TT_PYTHON, TT_NOHTYP)
 
 	@classmethod
@@ -121,13 +123,13 @@ class TT(TT_PYTHON, TT_NOHTYP):
 		if context==None:
 			if __CURRENT_CTX not in TT.__CTX or __CURRENT_CTX == None:
 				# check both contexts
-				_ctx_py = TT.__DIFF.get(TT.PY, {}).get(name, None)
+				_ctx_py = TT.__DIFF.get(TT.PY, {}).get(name, None) # Safe gets due to double defaults to {} and None
 				_ctx_yp = TT.__DIFF.get(TT.YP, {}).get(name, None)
 				if _ctx_py != None and _ctx_yp == None: return _ctx_py  # Context inferred by exclusion
 				if _ctx_py == None and _ctx_yp != None: return _ctx_yp  # Context inferred by exclusion
 				if _ctx_py != None and _ctx_yp != None:
-					raise NameError("Both contexts support a value for `name`. Please supply a context.")
-				raise NameError(f"{name} (`name`) was not found in any context.")
+					raise NameError(f"Both contexts support a value for `name` {name}. Please supply a context.")
+				raise NameError(f"`name` {name} was not found in any context.")
 			return TT.__DIFF.get(__CURRENT_CTX, {}).get(name, None)		# Global context
 		return TT.__DIFF.get(context, {}).get(name, None)				# Supplied context
 
