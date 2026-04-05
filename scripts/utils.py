@@ -1,52 +1,52 @@
 import os, re, subprocess
 from __future__ import *
-from re import Match
 
 class PathLike(str, os.PathLike, os.path):
-	"""Holder class for path types, used for type hints"""
+	"""Holder class for path types, used for type hints.  \n
+	Semantic hint to any type usable by `os.path`"""
 	...
 
 
 class types(): 
 	"""Contains references to other types used in `utils`"""
-	PathLike:type = PathLike
+	PathLike = PathLike
 
 
 class file:
 	@staticmethod
-	def get_cwd() -> PathLike:
+	def get_cwd() -> types.PathLike:
 		return os.path.dirname(os.path.realpath(__file__))
 
 	@staticmethod
-	def get_from_cwd(filename :PathLike) -> PathLike:
+	def get_from_cwd(filename :types.PathLike) -> types.PathLike:
 		return os.path.join(file.get_cwd(), filename)
 
 	@staticmethod
-	def read_cwd(filename :PathLike) -> str:
+	def read_cwd(filename :types.PathLike) -> str:
 		with open(file.get_from_cwd(filename), 'r') as f:
 			return f.read()
 
 	@staticmethod
-	def write_cwd(filename :PathLike, content :str) -> None:
+	def write_cwd(filename :types.PathLike, content :str) -> None:
 		with open(file.get_from_cwd(filename), 'w') as f:
 			f.write(content)
 
 	@staticmethod
-	def get(filename :PathLike) -> PathLike:
+	def get(filename :types.PathLike) -> types.PathLike:
 		return os.path(filename)
 
 	@staticmethod
-	def read(filename :PathLike, readtype:str = 'r') -> str:
+	def read(filename :types.PathLike, readtype:str = 'r') -> str:
 		with open(file.get(filename), readtype) as f:
 			return f.read()
 
 	@staticmethod
-	def write(filename :PathLike, content :str, writetype:str = 'w') -> None:
+	def write(filename :types.PathLike, content :str, writetype:str = 'w') -> None:
 		with open(file.get(filename), writetype) as f:
 			f.write(content)
 
 	@staticmethod
-	def delete(filename :PathLike) -> bool|str:
+	def delete(filename :types.PathLike) -> bool|str:
 		if os.path.exists(filename):
 			try:
 				if os.name.lower()=='nt':
@@ -100,7 +100,7 @@ class regex_patterns:
 	# This matches all valid format tags, content, and any number of tacked-on method calls with a backref for dynamic quote matching.
 	# Does also allow newlines in non-triple quotes but eh
 	@classmethod
-	def check_for_valid_newline(match_obj:Match) -> bool:
+	def check_for_valid_newline(match_obj: re.Match) -> bool:
 		""" Verify whether the quote type is valid for the content.  \n
 		Checks for newlines in single-quoted strings.  \n
 		Returns `False` if invalid, `True` if valid.  \n

@@ -102,26 +102,36 @@ class TT_CTX:
 	PY:object = TT_PYTHON
 	YP:object = TT_NOHTYP
 
+# TODO: Make this instancable with a local context
 class TT(TT_PYTHON, TT_NOHTYP):
 	"""Holds lex objects for Python and nohtyP in `TT.PY` and `TT.YP`  \n
 	Includes a context object and methods for diffing between objects by context."""
 
+	# Class-level vars
 	PY:object = TT_PYTHON
 	YP:object = TT_NOHTYP
 	__CTX:set[object] = { PY, YP }	# Validation
 	CTX:object = TT_CTX				# Calls
-	global __CURRENT_CTX			# Global context var
-	__CURRENT_CTX: object = None	# (default value is not any context)
+	# Generate the diff object @ runtime # Use the same object for instances as its only read from; Save some memory
 	__DIFF: dict[object, dict[str, str | None]] = helpers.make_tt_diff(TT_PYTHON, TT_NOHTYP)
 
+	# Singleton-level vars
+	__CURRENT_CTX: object = None	# (default value is not any context)
+
+	# Instance-level vars
+	def __init__(self):
+		self.__INSTANCE_CURRENT_CTX:object = None
+
 	@classmethod
-	def diff(name:str|type, context:object = None) -> str|None:
+	def diff(name:str, context:object = None) -> str|None:
 		"""Returns the object of the context which matches `name`  \n
 		`name` should be a string referred to from `TT.PY` or `TT.YP`  \n
-		`context` should be either option from `TT.CTX`"""
+		`context` should be either option from `TT.CTX`  \n
+		Defaults to context from `__CURRENT_CTX` (the global context) or  \n
+		infers the correct context from presence. (which may fail.)"""
 		if context not in TT.__CTX: raise ValueError(f"Invalid context: {context}")
 		if context==None:
-			if __CURRENT_CTX not in TT.__CTX or __CURRENT_CTX == None:
+			if TT.__CURRENT_CTX not in TT.__CTX or TT.__CURRENT_CTX == None:
 				# check both contexts
 				_ctx_py = TT.__DIFF.get(TT.PY, {}).get(name, None) # Safe gets due to double defaults to {} and None
 				_ctx_yp = TT.__DIFF.get(TT.YP, {}).get(name, None)
@@ -130,12 +140,12 @@ class TT(TT_PYTHON, TT_NOHTYP):
 				if _ctx_py != None and _ctx_yp != None:
 					raise NameError(f"Both contexts support a value for `name` {name}. Please supply a context.")
 				raise NameError(f"`name` {name} was not found in any context.")
-			return TT.__DIFF.get(__CURRENT_CTX, {}).get(name, None)		# Global context
+			return TT.__DIFF.get(TT.__CURRENT_CTX, {}).get(name, None)		# Global context
 		return TT.__DIFF.get(context, {}).get(name, None)				# Supplied context
 
 	@classmethod
 	def set_global_mode(mode:object):
 		if mode not in TT.__CTX:
 			raise ValueError(f"Invalid mode: {mode}")
-		__CURRENT_CTX = mode
+		TT.__CURRENT_CTX = mode
 
