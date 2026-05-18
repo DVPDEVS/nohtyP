@@ -2,7 +2,7 @@
 # Might use matplotlib or pygame later but ill start with shell scripts, numpy, and pympler.asizeof
 from pympler.asizeof import asizeof
 import numpy as np
-from lex_tt import TT
+from scripts.lexer.lex_tt import TT
 
 class memoryUsage():
     # Objects to check first

@@ -95,12 +95,39 @@ class TT_PYTHON:
 
 class TT_NOHTYP:
 	# nohtyP lex types and objects
-	COMMA     = "COMMA"     # only when it acts as a separator -> ,
-	UNKNOWN   = "UNKNOWN"	# Copied wholesale for compatibility with libraries. should be registered for parsing with native python install
+	COMMA                          = "COMMA"     # only when it acts as a separator -> ,
+	SET_OPERATOR                   = "SET_OPERATOR"
+	GROUP_OR_CALL                  = "GROUP_OR_CALL"
+	BLOCK                          = "BLOCK"
+	COMPUND_ERROR_VALUE_ASSINGMENT = "COMPUND_ERROR_VALUE_ASSINGMENT"
+	COMPOUND_ERROR_PIPE            = "COMPOUND_ERROR_PIPE"
+	COMPOUND_COMPLEX_ASSIGNMENT    = "COMPOUND_COMPLEX_ASSIGNMENT"
+	UNARY_FLOW                     = "UNARY_FLOW"
+	UNARY_CONTINUOUS_FLOW          = "UNARY_CONTINUOUS_FLOW"
+	CONDITIONAL                    = "CONDITIONAL"
+	CONDITIONAL_FAIL               = "CONDITIONAL_FAIL"
+	BOUNDARY                       = "BOUNDARY"
+	UNKNOWN                        = "UNKNOWN"	# Copied wholesale for compatibility with libraries. should be registered for parsing with native python install
 
 class TT_CTX:
 	PY:object = TT_PYTHON
 	YP:object = TT_NOHTYP
+
+class REGEX_TT:
+	class NOHTYP:
+		COMMA                          = r","
+		SET_OPERATOR                   = rf"\*({super.PYTHON.ID}|{super.PYTHON.SET}|{super.PYTHON.LIST}|{super.PYTHON.TUPLE})"
+		GROUP_OR_CALL                  = r"\(.*\)"
+		BLOCK                          = r""
+		COMPUND_ERROR_VALUE_ASSINGMENT = r""
+		COMPOUND_ERROR_PIPE            = r""
+		COMPOUND_COMPLEX_ASSIGNMENT    = r""
+		UNARY_FLOW                     = r""
+		UNARY_CONTINUOUS_FLOW          = r""
+		CONDITIONAL                    = r""
+		CONDITIONAL_FAIL               = r""
+		BOUNDARY                       = r""
+		UNKNOWN                        = r".+"
 
 # TODO: Make this instancable with a local context
 class TT(TT_PYTHON, TT_NOHTYP):

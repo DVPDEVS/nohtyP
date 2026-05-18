@@ -1,8 +1,8 @@
 import re
 from dataclasses import dataclass
-import utils
-from utils import spec, regex_patterns
-from lex_tt import TT
+import scripts.lexer.utils as utils
+from scripts.lexer.utils import spec, regex_patterns
+from scripts.lexer.lex_tt import TT
 
 KEYWORDS = {"if", "else", "while"}  # temporary core; you will extend with nohtyP keywords
 
