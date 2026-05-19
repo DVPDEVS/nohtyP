@@ -1,10 +1,10 @@
-# Licensing, Copyright, and Attribution
+# Licensing, Copyright, and Attribution  
 
 At present, this project is licensed under the GNU AGPL v3.0 only  
-for the duration of active development.
+for the duration of active development.  
 
 The licensing structure may change in later releases or after beta.  
-The current intended structure is roughly as follows:
+The current intended structure is roughly as follows:  
 
 | Part                               | License                            |
 | ---------------------------------- | ---------------------------------- |
@@ -15,55 +15,55 @@ The current intended structure is roughly as follows:
 | Generated ordinary code            | Exempt                             |
 | Generated code embedding internals | Not exempt                         |
 
-## Generated Code
+## Generated Code  
 
-Generated code is generally considered exempt from the AGPLv3.
+Generated code is generally considered exempt from the AGPLv3.  
 
-However, this exemption does **not** apply where generated code:
+However, this exemption does **not** apply where generated code:  
 
-- embeds compiler internals,
-- ships substantial implementation components,
-- uses internal AST/compiler APIs,
-- integrates deeply with transpiler internals,
-- redistributes portions of the implementation.
+- embeds compiler internals,  
+- ships substantial implementation components,  
+- uses internal AST/compiler APIs,  
+- integrates deeply with transpiler internals,  
+- redistributes portions of the implementation.  
 
 Use of documented public APIs alone does not, by itself,  
-create a derivative work.
+create a derivative work.  
 
-## API Boundaries
+## API Boundaries  
 
-All APIs, modules, and implementation components are  
-classified as either public or internal. These classifications  
-are documented in the codebase and are intended to guide  
+All APIs, modules, and implementation components are intended to  
+be classified as either public or internal. These classifications  
+will be documented in the codebase and are intended to guide  
 correct usage and licensing boundaries. They should be treated  
-as authoritative within the context of this project.
+as authoritative within the context of this project.  
 
-## Intent and Design
+## Intent and Design  
 
 This structure is designed to protect the implementation and  
 tooling ecosystem while still allowing community and  
-commercial development using the language itself.
+commercial development using the language itself.  
 
-## Attribution
+## Attribution  
 
 Attributions may change over time and currently include, but  
-are not limited to, the following:
+are not limited to, the following:  
 
-- [DVP-F/Carnx00](https://github.com/DVP-F)
-- [nohtyP](https://github.com/DVPDEVS/nohtyP)
+- [DVP-F/Carnx00](https://github.com/DVP-F)  
+- [nohtyP](https://github.com/DVPDEVS/nohtyP)  
 
-## License Files
+## License Files  
 
-All applicable licenses are located under: [../LICENSES/](../LICENSES)
+All applicable licenses are located under: [../LICENSES/](../LICENSES)  
 
-## Component Licensing
+## Component Licensing  
 
 Each source file, module, API surface, and implementation component  
 is intended to include an appropriate copyright and licensing notice,  
-or a reference to the applicable license where appropriate.
+or a reference to the applicable license where appropriate.  
 
-## SPDX Identifiers
+## SPDX Identifiers  
 
 This project intends to use [SPDX license identifiers](https://spdx.org/) to  
 clearly indicate licensing within source files and other  
-relevant components.
+relevant components.  
