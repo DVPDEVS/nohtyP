@@ -17,7 +17,7 @@ The current intended structure is roughly as follows:
 
 ## Generated Code
 
-Generated code is generally considered exempt from the licenses.
+Generated code is generally considered exempt from the AGPLv3.
 
 However, this exemption does **not** apply where generated code:
 
