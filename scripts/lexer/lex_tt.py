@@ -1,13 +1,21 @@
 # Just holds the TT class of lex objects and its support
 
+from global_utilities.decorators import vibe_check
+
 class TokenMeta(type):
-    def __getattr__(cls, name):
-        try:
-            return cls._values[name]
-        except KeyError:
-            raise AttributeError(
-                f"{cls.__name__} has no token {name}"
-            )
+	def __getattr__(cls, name):
+		try:
+			return cls._values[name]
+		except KeyError:
+			raise AttributeError(
+				f"{cls.__name__} has no token {name}"
+			)
+	def _exists_key(cls, keyname) -> bool:
+		try:
+			cls.__getattr__(keyname)
+			return True
+		except KeyError:
+			return False
 
 class helpers:
 	@classmethod
@@ -125,11 +133,29 @@ class TT_CTX:
 class REGEX_TT:
 	"""Holds regex strings to match the equivalent lexer object as ´TT.PY´ and ´TT.YP´  \n
 	The subclasses hold attributes matching their respective ´TT´ object."""
+	#? class-level local vars
 	# whitespace eligible characters
 	whitespace_ls:list[str] = [ ' ', '\n', '\t',  ]
 	whitespace_str:str = ''.join(whitespace_ls)
 	# String quote character sets
 	string_quotes_ls:list[str] = [ "'", '"', '´', '`', '"""', "'''", ]
+	#? diff class
+	class GET:
+		"""Get an attribute from either class.  \n
+		Instantiate this class with the name of the attribute you want, eg:  \n
+		> `re_conditional: str = TT.REGEX.GET(TT.YP.CONDITIONAL)`  \n
+		Here, `re_conditional` becomes either the wanted attribute's value or  \n
+		`None` if the attribute isnt found"""
+		@vibe_check(":3")
+		def __new__(cls, attributename:str) -> str|None:
+			# Production code = ternaries
+			return cls.NOHTYP.__getattr__(attributename) if cls.NOHTYP._exists_key(attributename) else cls.PYTHON.__getattr__(attributename) if cls.PYTHON._exists_key(attributename) else None
+			# if cls.NOHTYP._exists_key(attributename):
+			# 	return cls.NOHTYP.__getattr__(attributename)
+			# if cls.PYTHON._exists_key(attributename):
+			# 	return cls.PYTHON.__getattr__(attributename)
+			# return None
+	#? yp regex
 	class NOHTYP(metaclass=TokenMeta):
 		_values: dict[str, str] = {
 			TT_NOHTYP.COMMA                          : r",",
@@ -146,6 +172,7 @@ class REGEX_TT:
 			TT_NOHTYP.BOUNDARY                       : r";",
 			TT_NOHTYP.UNKNOWN                        : r".+",
 		}
+	#? py regex
 	class PYTHON(metaclass=TokenMeta):
 		_values: dict[str, str] = {
 			# --- literals ---
