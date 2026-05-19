@@ -12,9 +12,13 @@ And yet it's fully interoperable with py3.10+ syntax in its midst - but let's be
 - Flow and declaration change only
 - Barewords are implicitly strings and separated values are implicitly tuples
 
+## Licensing  
+
+See [./LICENSE](./LICENSE)
+
 ## Syntax
 
-See [syntax_spec.md](syntax_spec.md)  
+See [syntax_spec.md](./docs/syntax_spec.md)  
 
 ## Quick function examples
 
