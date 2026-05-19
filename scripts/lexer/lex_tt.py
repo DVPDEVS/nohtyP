@@ -1,5 +1,14 @@
 # Just holds the TT class of lex objects and its support
 
+class TokenMeta(type):
+    def __getattr__(cls, name):
+        try:
+            return cls._values[name]
+        except KeyError:
+            raise AttributeError(
+                f"{cls.__name__} has no token {name}"
+            )
+
 class helpers:
 	@classmethod
 	@staticmethod
@@ -114,29 +123,105 @@ class TT_CTX:
 	YP:object = TT_NOHTYP
 
 class REGEX_TT:
-	class NOHTYP:
-		COMMA                          = r","
-		SET_OPERATOR                   = rf"\*({super.PYTHON.ID}|{super.PYTHON.SET}|{super.PYTHON.LIST}|{super.PYTHON.TUPLE})"
-		GROUP_OR_CALL                  = r"\(.*\)"
-		BLOCK                          = r""
-		COMPUND_ERROR_VALUE_ASSINGMENT = r""
-		COMPOUND_ERROR_PIPE            = r""
-		COMPOUND_COMPLEX_ASSIGNMENT    = r""
-		UNARY_FLOW                     = r""
-		UNARY_CONTINUOUS_FLOW          = r""
-		CONDITIONAL                    = r""
-		CONDITIONAL_FAIL               = r""
-		BOUNDARY                       = r""
-		UNKNOWN                        = r".+"
+	"""Holds regex strings to match the equivalent lexer object as ´TT.PY´ and ´TT.YP´  \n
+	The subclasses hold attributes matching their respective ´TT´ object."""
+	# whitespace eligible characters
+	whitespace_ls:list[str] = [ ' ', '\n', '\t',  ]
+	whitespace_str:str = ''.join(whitespace_ls)
+	# String quote character sets
+	string_quotes_ls:list[str] = [ "'", '"', '´', '`', '"""', "'''", ]
+	class NOHTYP(metaclass=TokenMeta):
+		_values: dict[str, str] = {
+			TT_NOHTYP.COMMA                          : r",",
+			# TT_NOHTYP.SET_OPERATOR                   : rf"\*({super.PYTHON.ID}|{super.PYTHON.SET}|{super.PYTHON.LIST}|{super.PYTHON.TUPLE})",
+			TT_NOHTYP.GROUP_OR_CALL                  : r"\(.*\)",
+			TT_NOHTYP.BLOCK                          : r"\{.*\}",
+			TT_NOHTYP.COMPUND_ERROR_VALUE_ASSINGMENT : r"\*\$",
+			TT_NOHTYP.COMPOUND_ERROR_PIPE            : r"\*\?",
+			TT_NOHTYP.COMPOUND_COMPLEX_ASSIGNMENT    : r"#\?",
+			TT_NOHTYP.UNARY_FLOW                     : r"\?",
+			TT_NOHTYP.UNARY_CONTINUOUS_FLOW          : r"\?=",
+			TT_NOHTYP.CONDITIONAL                    : r"~",
+			TT_NOHTYP.CONDITIONAL_FAIL               : r"\*~",
+			TT_NOHTYP.BOUNDARY                       : r";",
+			TT_NOHTYP.UNKNOWN                        : r".+",
+		}
+	class PYTHON(metaclass=TokenMeta):
+		_values: dict[str, str] = {
+			# --- literals ---
+			TT_PYTHON.INT: r"[+-]?(?:0b[01_]+|0o[0-7_]+|0x[\da-fA-F_]+|\d[\d_]*)(?![\w.])",
+			TT_PYTHON.FLOAT: r"[+-]?(?:\d[\d_]*\.\d[\d_]*|\.\d[\d_]*|\d[\d_]*\.)(?:[eE][+-]?\d+)?",
+			TT_PYTHON.BOOL: r"\b(?:True|False)\b",
+			TT_PYTHON.NONE: r"\bNone\b",
+			TT_PYTHON.BYTES: r"(?i)\b(?:b|br)\"(?:\\.|[^\"\\])*\"|\b(?:b|br)'(?:\\.|[^'\\])*'",
+			TT_PYTHON.BYTEARRAY: r"bytearray\s*\(\s*b?(?:\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')\s*\)",
+			TT_PYTHON.STR: rf'((rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b)?({super.string_quote})([.\n]*)\5(\..+\(\)*',
+			# --- identifiers / keywords ---
+			TT_PYTHON.ID: r"\b[a-zA-Z_][a-zA-Z0-9_]*\b",
+			TT_PYTHON.KEYWORD: r"\b(?:if|else|elif|while|for|def|class|return|import|from|as|pass|break|continue|try|except|finally|raise|with|yield|lambda|async|await|global|nonlocal|assert|del|match|case)\b",
+			# --- operators ---
+			TT_PYTHON.OP: r"(?:\*\*|//|==|!=|<=|>=|<|>|\+|-|\*|/|%|=)",
+			TT_PYTHON.ASSIGN: r"=",
+			TT_PYTHON.AUGASSIGN: r"(?:\+=|-=|\*=|/=|//=|%=|\*\*=|&=|\|=|\^=|<<=|>>=)",
+			TT_PYTHON.BITOP: r"(?:&|\||\^|~|<<|>>)",
+			TT_PYTHON.COMPARE: r"(?:==|!=|<=|>=|<|>|is(?:\s+not)?|in|not\s+in)",
+			TT_PYTHON.LOGIC: r"\b(?:and|or|not)\b",
+			# --- punctuation ---
+			TT_PYTHON.PUNCT: r"(?:->|:|;|@|\.|,)",
+			TT_PYTHON.DOT: r"\.",
+			TT_PYTHON.COLON: r":",
+			TT_PYTHON.SEMICOLON: r";",
+			TT_PYTHON.ARROW: r"->",
+			TT_PYTHON.AT: r"@",
+			# --- grouping ---
+			TT_PYTHON.LPAREN: r"\(",
+			TT_PYTHON.RPAREN: r"\)",
+			TT_PYTHON.LBRACE: r"\{",
+			TT_PYTHON.RBRACE: r"\}",
+			TT_PYTHON.LBRACKET: r"\[",
+			TT_PYTHON.RBRACKET: r"\]",
+			# --- structures (heuristic, not syntax-perfect) ---
+			TT_PYTHON.LIST: r"\[[^\[\]]*\]",
+			TT_PYTHON.TUPLE: r"\([^()]*\)",
+			TT_PYTHON.SET: r"\{(?![^:]*:)[^{}]*\}",
+			TT_PYTHON.DICT: r"\{[^{}]*:[^{}]*\}",
+			TT_PYTHON.SLICE: r"[a-zA-Z_][\w]*\s*:\s*[a-zA-Z_0-9]*\s*(?::\s*[a-zA-Z_0-9]*)?",
+			TT_PYTHON.ELLIPSIS: r"\.\.\.",
+			# --- functions / async / decorators ---
+			TT_PYTHON.LAMBDA: r"\blambda\b",
+			TT_PYTHON.YIELD: r"\byield(?:\s+from)?\b",
+			TT_PYTHON.AWAIT: r"\bawait\b",
+			TT_PYTHON.ASYNC: r"\basync\b",
+			TT_PYTHON.DECORATOR: r"@[a-zA-Z_][a-zA-Z0-9_\.]*",
+			# --- type hints ---
+			TT_PYTHON.TYPEHINT: r"(?:->\s*[a-zA-Z_][\w\.\[\], ]*|:\s*[a-zA-Z_][\w\.\[\], ]*)",
+			# --- strings / f-strings ---
+			TT_PYTHON.FSTRING: r"""(?x)
+				f(?:\"\"\".*?\"\"\"|''' .*? '''|\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')
+			""",
+			TT_PYTHON.FORMAT: r"\{[^{}]+\}",
+			# --- comprehensions / generators (heuristic) ---
+			TT_PYTHON.LISTCOMP: r"\[[^\]]+for[^\]]+\]",
+			TT_PYTHON.SETCOMP: r"\{[^}]+for[^}]+\}",
+			TT_PYTHON.DICTCOMP: r"\{[^}]+:[^}]+for[^}]+\}",
+			TT_PYTHON.GENEXP: r"\([^)]+for[^)]+\)",
+			# --- misc ---
+			TT_PYTHON.COMMENT: r"#.*",
+			TT_PYTHON.NEWLINE: r"\n",
+			TT_PYTHON.INDENT:   "(\t|\\ +|\n)",
+			TT_PYTHON.DEDENT:  r"",
+		}
 
 # TODO: Make this instancable with a local context
 class TT(TT_PYTHON, TT_NOHTYP):
 	"""Holds lex objects for Python and nohtyP in `TT.PY` and `TT.YP`  \n
-	Includes a context object and methods for diffing between objects by context."""
+	Includes a context object and methods for diffing between objects by context.  \n
+	Holds regex strings for the equivalent lex objects in ´TT.REGEX´"""
 
 	# Class-level vars
 	PY:object = TT_PYTHON
 	YP:object = TT_NOHTYP
+	REGEX:object = REGEX_TT
 	__CTX:set[object] = { PY, YP }	# Validation
 	CTX:object = TT_CTX				# Calls
 	# Generate the diff object @ runtime # Use the same object for instances as its only read from; Save some memory
