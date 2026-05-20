@@ -159,7 +159,7 @@ class REGEX_TT:
 	class NOHTYP(metaclass=TokenMeta):
 		_values: dict[str, str] = {
 			TT_NOHTYP.COMMA                          : r",",
-			# TT_NOHTYP.SET_OPERATOR                   : rf"\*({super.PYTHON.ID}|{super.PYTHON.SET}|{super.PYTHON.LIST}|{super.PYTHON.TUPLE})",
+			TT_NOHTYP.SET_OPERATOR                   : rf"\*set",
 			TT_NOHTYP.GROUP_OR_CALL                  : r"\(.*\)",
 			TT_NOHTYP.BLOCK                          : r"\{.*\}",
 			TT_NOHTYP.COMPUND_ERROR_VALUE_ASSINGMENT : r"\*\$",
