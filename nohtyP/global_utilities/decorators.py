@@ -26,15 +26,15 @@ def stub(fn):
 	return wrapper
 
 def api_level(level: int):
-	"""Decorator to mark a function as internal or public  \n
+	"""Decorator to mark as internal or public  \n
 	`level == 0`: internal  \n
 	`level == 1`: public"""
 	if level == 0: value = "INTERNAL"
 	elif level == 1: value = "PUBLIC"
-	else: raise ValueError(f"unsupported api level: {level}")
-	def wrapper(fn):
-		fn.__setattr__("__NOHTYP_API_LEVEL", value)
-		return fn
+	else: raise ValueError(f"Unsupported api level: {level}")
+	def wrapper(_obj):
+		_obj.__setattr__("__NOHTYP_API_LEVEL", value)
+		return _obj
 	return wrapper
 
 
