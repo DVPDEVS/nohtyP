@@ -31,4 +31,4 @@ for k in vars(TT_NOHTYP):
 for k in vars(TT_PYTHON):
 	if k.startswith("_"): continue # internal attribute
 	if k.upper() != k:    continue # not uppercase
-	globals()[k] = LexerType._subclass(k, lang=lexer_langs.NOHTYP, name=k) # Assign new subclass name to global space
+	globals()[k] = LexerType._subclass(k, lang=lexer_langs.PYTHON, name=k) # Assign new subclass name to global space
