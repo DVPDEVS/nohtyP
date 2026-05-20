@@ -14,7 +14,6 @@ class LexerType():
 		self.value = value
 	def __repr__(self):
 		return f"{self.name}({self.value!r}), lang={self.lang}"
-	@api_level(0)
 	@classmethod
 	def _subclass(cls, name:str, **attrs):
 		return type(name, (cls,), attrs)
