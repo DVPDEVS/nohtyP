@@ -23,16 +23,11 @@ def stub(fn):
 		except: return None
 	return wrapper
 
-class YP_API_LEVEL:
-	"""`int` based enum"""
-	INTERNAL = 0
-	PUBLIC = 1
-
-def api_level(level: YP_API_LEVEL|int):
+def api_level(level: int):
 	"""Decorator to mark as internal or public  \n
-	`level == decorators.YP_API_LEVEL.INTERNAL == 0`: internal  \n
-	`level == decorators.YP_API_LEVEL.PUBLIC == 1`: public  \n
-	This is visible during runtime as a `<OBJ>.__NOHTYP_API_LEVEL` attribute"""
+	`level == 0`: internal  \n
+	`level == 1`: public  \n
+	This is visible during runtime as a `<OBJ>.__NOHTYP_API_LEVEL` attribute."""
 	if level == 0: value = "INTERNAL"
 	elif level == 1: value = "PUBLIC"
 	else: raise ValueError(f"Unsupported api level: {level}")
@@ -40,6 +35,9 @@ def api_level(level: YP_API_LEVEL|int):
 		_obj.__setattr__("__NOHTYP_API_LEVEL", value)
 		return _obj
 	return wrapper
+
+def SPDX_license_mark():
+	...
 
 #? attributes
 def fragile(_obj):
