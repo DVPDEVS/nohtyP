@@ -1,6 +1,4 @@
-def regex(fn):
-	"""Regex adjacent function decorator"""
-	return fn
+"""Various decorators for fun, actual use, or warnings :3"""
 
 def vibe_check(vibe: str):
 	"""Vibe checking decorator"""
@@ -16,7 +14,7 @@ def stub(fn):
 	@stub
 	def a_func() -> T: ...
 	```  \n
-	Ovverwrites any function to return an empty instance of its return type `T`"""
+	Overwrites any function to return an empty instance of its return type `T`"""
 	from typing import get_type_hints, get_origin
 	t = get_type_hints(fn).get("return")
 	ot = get_origin(t) or t
@@ -25,10 +23,16 @@ def stub(fn):
 		except: return None
 	return wrapper
 
-def api_level(level: int):
+class YP_API_LEVEL:
+	"""`int` based enum"""
+	INTERNAL = 0
+	PUBLIC = 1
+
+def api_level(level: YP_API_LEVEL|int):
 	"""Decorator to mark as internal or public  \n
-	`level == 0`: internal  \n
-	`level == 1`: public"""
+	`level == decorators.YP_API_LEVEL.INTERNAL == 0`: internal  \n
+	`level == decorators.YP_API_LEVEL.PUBLIC == 1`: public  \n
+	This is visible during runtime as a `<OBJ>.__NOHTYP_API_LEVEL` attribute"""
 	if level == 0: value = "INTERNAL"
 	elif level == 1: value = "PUBLIC"
 	else: raise ValueError(f"Unsupported api level: {level}")
@@ -37,4 +41,20 @@ def api_level(level: int):
 		return _obj
 	return wrapper
 
-
+#? attributes
+def fragile(_obj):
+	"""Decorator to mark as fragile."""
+	_obj.__setattr__("__fragile__",True)
+	return _obj
+def unstable(_obj):
+	"""Decorator to mark as unstable."""
+	_obj.__setattr__("__unstable__",True)
+	return _obj
+def regex(_obj):
+	"""Decorator to mark use of regex."""
+	_obj.__setattr__("__regex__", True)
+	return _obj
+def experimental(_obj):
+	"""Decorator to mark as being experimental, in beta, etc."""
+	_obj.__setattr__("__experimental__", True)
+	return _obj

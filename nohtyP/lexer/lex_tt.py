@@ -1,6 +1,6 @@
 # Just holds the TT class of lex objects and its support
 
-from global_utilities.decorators import vibe_check
+from global_utilities import decorators
 
 class TokenMeta(type):
 	def __getattr__(cls, name):
@@ -16,9 +16,6 @@ class TokenMeta(type):
 			return True
 		except KeyError:
 			return False
-	def __get_outer_attr__(cls:object, name):
-		try:
-			return cls.
 
 class helpers:
 	@classmethod
@@ -133,6 +130,7 @@ class TT_CTX:
 	PY:object = TT_PYTHON
 	YP:object = TT_NOHTYP
 
+@decorators.regex
 class REGEX_TT:
 	"""Holds regex strings to match the equivalent lexer object as ´TT.PY´ and ´TT.YP´  \n
 	The subclasses hold attributes matching their respective ´TT´ object."""
@@ -149,7 +147,7 @@ class REGEX_TT:
 		> `re_conditional: str = TT.REGEX.GET(TT.YP.CONDITIONAL)`  \n
 		Here, `re_conditional` becomes either the wanted attribute's value or  \n
 		`None` if the attribute isnt found"""
-		@vibe_check(":3")
+		@decorators.vibe_check(":3")
 		def __new__(cls, attributename:str) -> str|None:
 			# Production code = ternaries
 			return cls.NOHTYP.__getattr__(attributename) if cls.NOHTYP._exists_key(attributename) else cls.PYTHON.__getattr__(attributename) if cls.PYTHON._exists_key(attributename) else None

@@ -1,4 +1,4 @@
-from ..global_utilities.decorators import api_level
+from ..global_utilities.decorators import *
 # This is gonna hold lexer output types
 
 @api_level(0)
@@ -6,7 +6,8 @@ class lexer_langs:
 	NOHTYP = 1
 	PYTHON = 2
 
-@api_level(1)
+@experimental
+@api_level(0)
 class LexerType():
 	lang:lexer_langs = None
 	name: str = None
