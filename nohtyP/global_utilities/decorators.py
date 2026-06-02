@@ -36,8 +36,14 @@ def api_level(level: int):
 		return _obj
 	return wrapper
 
-def SPDX_license_mark():
-	...
+from .types import SPDX_License_Identifers
+def license(license: SPDX_License_Identifers):
+	"""Decorator to register an SDPX license ID.  \n
+	`<OBJ>.SPDX_LICENSE_IDENTIFIER == "<identifier>"`"""
+	def wrapper(_obj):
+		_obj.__setattr__("SPDX_LICENSE_IDENTIFIER", license)
+		return _obj
+	return wrapper
 
 #? attributes
 def fragile(_obj):
