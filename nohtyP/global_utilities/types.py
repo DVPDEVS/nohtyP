@@ -6,3 +6,6 @@ class SPDX_License_Identifers: # https://spdx.org/licenses/
 	LGPL3_l = "LGPL-3.0-or-later"
 	CCA4I   = "CC-BY-4.0"
 	MPL2    = "MPL-2.0"
+#* Comment style
+#* Single-line comment in any style, eg. `# ` followed by the text `SPDX-License-Identifier`, a colon and whitespace,`: ` then the unquoted ID.
+#? Should avoid false positive parsing.
