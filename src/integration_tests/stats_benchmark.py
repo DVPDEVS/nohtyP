@@ -3,7 +3,9 @@
 from pympler.asizeof import asizeof
 import numpy as np
 from src.lexer.lex_tt import TT
+from src.global_utilities.decorators import *
 
+@test
 class memoryUsage():
     # Objects to check first
     __TEMPLATE__ = {'obj':object, 'val':np.uint64, 'name':str } # As { getattr(parent/class, '_parent/classOBJECT').copy(), ram_usage, "variable name"}

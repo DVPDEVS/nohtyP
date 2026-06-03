@@ -36,6 +36,14 @@ def api_level(level: int):
 		return _obj
 	return wrapper
 
+def test(_obj):
+	"""Test objects are excluded from apilevel markers and SPDX License identifiers in attributes.  \n
+	Instead they're to be considered as internal regardless.  \n
+	The apilevel and license decorators and their associated attribute marks are for testing only.  \n
+	This decorator writes a `<OBJ>._TEST_OBJECT == True` attribute for runtime detection."""
+	setattr(_obj, "_TEST_OBJECT",True)
+	return _obj
+
 from .types import SPDX_License_Identifers
 def license(license: SPDX_License_Identifers):
 	"""Decorator to register an SDPX license ID.  \n
