@@ -1,6 +1,6 @@
 # Just holds the TT class of lex objects and its support
 
-from global_utilities import decorators
+from nohtyP.global_utilities import decorators
 
 class TokenMeta(type):
 	def __getattr__(cls, name):
@@ -183,7 +183,7 @@ class REGEX_TT:
 			TT_PYTHON.NONE: r"\bNone\b",
 			TT_PYTHON.BYTES: r"(?i)\b(?:b|br)\"(?:\\.|[^\"\\])*\"|\b(?:b|br)'(?:\\.|[^'\\])*'",
 			TT_PYTHON.BYTEARRAY: r"bytearray\s*\(\s*b?(?:\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')\s*\)",
-			TT_PYTHON.STR: rf'((rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b)?({'|'.join(REGEX_TT.string_quotes_ls)})([.\n]*)\5(\..+\(\)*',
+			# TT_PYTHON.STR: rf'((rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b)?({'|'.join(REGEX_TT.string_quotes_ls)})([.\n]*)\5(\..+\(\)*',
 			# --- identifiers / keywords ---
 			TT_PYTHON.ID: r"\b[a-zA-Z_][a-zA-Z0-9_]*\b",
 			TT_PYTHON.KEYWORD: r"\b(?:if|else|elif|while|for|def|class|return|import|from|as|pass|break|continue|try|except|finally|raise|with|yield|lambda|async|await|global|nonlocal|assert|del|match|case)\b",

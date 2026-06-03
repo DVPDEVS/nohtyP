@@ -32,7 +32,7 @@ def api_level(level: int):
 	elif level == 1: value = "PUBLIC"
 	else: raise ValueError(f"Unsupported api level: {level}")
 	def wrapper(_obj):
-		_obj.__setattr__("__NOHTYP_API_LEVEL", value)
+		setattr(_obj, "__NOHTYP_API_LEVEL", value)
 		return _obj
 	return wrapper
 
@@ -41,24 +41,24 @@ def license(license: SPDX_License_Identifers):
 	"""Decorator to register an SDPX license ID.  \n
 	`<OBJ>.SPDX_LICENSE_IDENTIFIER == "<identifier>"`"""
 	def wrapper(_obj):
-		_obj.__setattr__("SPDX_LICENSE_IDENTIFIER", license)
+		setattr(_obj, "SPDX_LICENSE_IDENTIFIER", license)
 		return _obj
 	return wrapper
 
 #? attributes
 def fragile(_obj):
 	"""Decorator to mark as fragile."""
-	_obj.__setattr__("__fragile__",True)
+	setattr(_obj, "__fragile__",True)
 	return _obj
 def unstable(_obj):
 	"""Decorator to mark as unstable."""
-	_obj.__setattr__("__unstable__",True)
+	setattr(_obj, "__unstable__",True)
 	return _obj
 def regex(_obj):
 	"""Decorator to mark use of regex."""
-	_obj.__setattr__("__regex__", True)
+	setattr(_obj, "__regex__", True)
 	return _obj
 def experimental(_obj):
 	"""Decorator to mark as being experimental, in beta, etc."""
-	_obj.__setattr__("__experimental__", True)
+	setattr(_obj, "__experimental__", True)
 	return _obj
