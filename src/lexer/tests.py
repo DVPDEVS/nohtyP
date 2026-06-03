@@ -1,6 +1,6 @@
 import unittest
 from .lex_tt import TT
-from ..global_utilities.decorators import api_level
+from src.global_utilities.decorators import api_level
 
 class TestLexerVars(unittest.TestCase):
     lexobj = TT().REGEX

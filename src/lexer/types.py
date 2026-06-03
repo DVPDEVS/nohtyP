@@ -1,4 +1,4 @@
-from ..global_utilities.decorators import *
+from src.global_utilities.decorators import *
 # This is gonna hold lexer output types
 
 @api_level(0)
