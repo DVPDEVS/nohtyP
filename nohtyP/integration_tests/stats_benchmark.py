@@ -8,10 +8,10 @@ class memoryUsage():
     # Objects to check first
     __TEMPLATE__ = {'obj':object, 'val':np.uint64, 'name':str } # As { getattr(parent/class, '_parent/classOBJECT').copy(), ram_usage, "variable name"}
     def __init__(self):
-        self._OBJECTS: list[dict[object, np.uint64]] = [
+        self._OBJECTS: list[dict[str, object|np.uint64|str]] = [
         # I suspect this object would be the worst tbh.
             { 
-                'obj': getattr(TT, '_TT__DIFF').copy(), # Actaully refers to `TT.__DIFF` but safely (name mangling)
+                'obj': getattr(TT, '_TT__DIFF').copy(), # Actaully refers to `TT.__DIFF` but safely, through name mangling
                 'val': np.uint64, 
                 'name': "TT.__DIFF" },
         ]
