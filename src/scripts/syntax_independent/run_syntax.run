@@ -1,0 +1,2 @@
+python -m src.integration_tests.stats_benchmark
+# Run from the parent directory.
