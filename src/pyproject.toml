@@ -1,0 +1,61 @@
+# package definition
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nohtyP"
+version = "0.0.1"
+description = "nohtyP language parser and transpiler"
+requires-python = ">=3.10"
+dependencies = [
+    "pympler",
+    "numpy",
+    "re",
+    "dataclasses",
+    "os",
+    "subprocess",
+]
+authors = [
+    {name = "DVP-F/Carnx", email = "dvpf@duck.com"},
+]
+# Main license only
+license = "AGPL-3.0-only"
+license-files = [
+    "",
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    # "1 - Planning" // "2 - Pre-Alpha" // "3 - Alpha" // "4 - Beta" // "5 - Production/Stable" // "6 - Mature" // "7 - Inactive"
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Interpreters",
+    "Topic :: Software Development :: Language Development",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Text Processing :: Linguistic",
+]
+
+[project.optional-dependencies]
+dev = [
+    "unittest",
+]
+
+[project.urls]
+Repository = "https://github.com/DVPDEVS/nohtyP"
+
+[tool.setuptools]
+include-package-data = true
+
+# [tool.setuptools.packages.find]
+# include = ["acme_tool*"]
+# exclude = ["tests*"]
