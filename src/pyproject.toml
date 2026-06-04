@@ -10,26 +10,18 @@ version = "0.0.1"
 description = "nohtyP language parser and transpiler"
 requires-python = ">=3.10"
 dependencies = [
-    "pympler",
-    "numpy",
-    "re",
-    "dataclasses",
-    "os",
-    "subprocess",
 ]
 authors = [
     {name = "DVP-F/Carnx", email = "dvpf@duck.com"},
 ]
 # Main license only
 license = "AGPL-3.0-only"
-license-files = [
-    "",
-]
+license-files = ["LICENSES/*"]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     # "1 - Planning" // "2 - Pre-Alpha" // "3 - Alpha" // "4 - Beta" // "5 - Production/Stable" // "6 - Mature" // "7 - Inactive"
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
@@ -44,18 +36,41 @@ classifiers = [
     "Topic :: Software Development :: Code Generators",
     "Topic :: Text Processing :: Linguistic",
 ]
+readme = "README.md"
+keywords = [
+    "parser",
+    "transpiler",
+    "compiler",
+    "language",
+    "ast",
+]
 
 [project.optional-dependencies]
 dev = [
-    "unittest",
+    "pytest",
+    "pympler",
+    "numpy",
 ]
 
 [project.urls]
 Repository = "https://github.com/DVPDEVS/nohtyP"
+Issues = "https://github.com/DVPDEVS/nohtyP/issues"
 
 [tool.setuptools]
 include-package-data = true
 
-# [tool.setuptools.packages.find]
-# include = ["acme_tool*"]
-# exclude = ["tests*"]
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["nohtyP*"]
+exclude = [
+    "nohtyP.integration_tests*",
+    "nohtyP.scripts*",
+]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.package-data]
+nohtyP = ["py.typed"]
+
+
