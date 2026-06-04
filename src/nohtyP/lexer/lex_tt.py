@@ -3,14 +3,14 @@
 from nohtyP.global_utilities import decorators
 
 class TokenMeta(type):
-	def __getattr__(cls, name):
+	def __getattr__(cls, name: str) -> any:
 		try:
 			return cls._values[name]
 		except KeyError:
 			raise AttributeError(
 				f"{cls.__name__} has no token {name}"
 			)
-	def _exists_key(cls, keyname) -> bool:
+	def _exists_key(cls, keyname: str) -> bool:
 		try:
 			cls.__getattr__(keyname)
 			return True
@@ -127,8 +127,8 @@ class TT_NOHTYP:
 	UNKNOWN                        = "UNKNOWN"	# Copied wholesale for compatibility with libraries. should be registered for parsing with native python install
 
 class TT_CTX:
-	PY:object = TT_PYTHON
-	YP:object = TT_NOHTYP
+	PY:type[TT_PYTHON] = TT_PYTHON
+	YP:type[TT_NOHTYP] = TT_NOHTYP
 
 @decorators.regex
 class REGEX_TT:
@@ -247,11 +247,11 @@ class TT(TT_PYTHON, TT_NOHTYP):
 	Holds regex strings for the equivalent lex objects in ´TT.REGEX´"""
 
 	# Class-level vars
-	PY:object = TT_PYTHON
-	YP:object = TT_NOHTYP
+	PY:type[TT_PYTHON] = TT_PYTHON
+	YP:type[TT_NOHTYP] = TT_NOHTYP
 	REGEX:object = REGEX_TT
 	__CTX:set[object] = { PY, YP }	# Validation
-	CTX:object = TT_CTX				# Calls
+	CTX:type[TT_CTX] = TT_CTX				# Calls
 	# Generate the diff object @ runtime # Use the same object for instances as its only read from; Save some memory
 	__DIFF: dict[object, dict[str, str | None]] = helpers.make_tt_diff(TT_PYTHON, TT_NOHTYP)
 
@@ -284,7 +284,7 @@ class TT(TT_PYTHON, TT_NOHTYP):
 		return TT.__DIFF.get(context, {}).get(name, None)				# Supplied context
 
 	@classmethod
-	def set_global_mode(mode:object):
+	def set_global_mode(mode:object) -> None:
 		if mode not in TT.__CTX:
 			raise ValueError(f"Invalid mode: {mode}")
 		TT.__CURRENT_CTX = mode

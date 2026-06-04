@@ -14,12 +14,12 @@ class Token:
 	line: int
 	col: int
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		return f"Token({self.type}, {self.value!r}, {self.line}:{self.col})"
 
 
 class NohtyPLex:
-	def __init__(self, text: str):
+	def __init__(self, text: str) -> None:
 		self.text = text
 		self.pos = 0
 		self.line = 1
@@ -29,7 +29,7 @@ class NohtyPLex:
 
 	# ------------- basic cursor ops -------------
 
-	def advance(self, n: int = 1):
+	def advance(self, n: int = 1) -> None:
 		for _ in range(n):
 			if self.current_char == "\n":
 				self.line += 1
@@ -44,7 +44,7 @@ class NohtyPLex:
 			else:
 				self.current_char = self.text[self.pos]
 
-	def peek(self, offset: int = 1):
+	def peek(self, offset: int = 1) -> str|None:
 		idx = self.pos + offset
 		if idx >= len(self.text):
 			return None
@@ -52,18 +52,18 @@ class NohtyPLex:
 
 	# ------------- skipping -------------
 
-	def skip_whitespace(self):
+	def skip_whitespace(self) -> None:
 		while self.current_char is not None and utils.lex_helpers.is_whitespace(self.current_char):
 			self.advance()
 
-	def skip_comment(self):
+	def skip_comment(self) -> None:
 		# '#' to end of line
 		while self.current_char is not None and self.current_char != "\n":
 			self.advance()
 
 	# ------------- token builders -------------
 
-	def number(self):
+	def number(self) -> None:
 		start_line, start_col = self.line, self.col
 		result = ""
 		while self.current_char is not None and utils.lex_helpers.is_digit(self.current_char):
@@ -71,7 +71,7 @@ class NohtyPLex:
 			self.advance()
 		self.tokens.append(Token(TT.INT, result, start_line, start_col))
 
-	def identifier_or_keyword(self):
+	def identifier_or_keyword(self) -> None:
 		start_line, start_col = self.line, self.col
 		result = ""
 		while self.current_char is not None and utils.lex_helpers.is_alnum(self.current_char):
@@ -80,7 +80,7 @@ class NohtyPLex:
 		tok_type = TT.KEYWORD if result in KEYWORDS else TT.ID
 		self.tokens.append(Token(tok_type, result, start_line, start_col))
 
-	def string(self):
+	def string(self) -> None:
 		# supports all quotes in utils.spec.string_quotes_ls
 		start_quote = self.current_char
 		start_line, start_col = self.line, self.col
@@ -101,7 +101,7 @@ class NohtyPLex:
 
 	# ------------- comma rule -------------
 
-	def handle_comma_or_char(self):
+	def handle_comma_or_char(self) -> None:
 		"""
 		Comma separates ONLY if surrounded by whitespace on at least one side.
 
@@ -139,7 +139,7 @@ class NohtyPLex:
 
 	# ------------- public API -------------
 
-	def next_token(self):
+	def next_token(self) -> Token|None:
 		while self.current_char is not None:
 			# skip whitespace
 			if utils.lex_helpers.is_whitespace(self.current_char):
