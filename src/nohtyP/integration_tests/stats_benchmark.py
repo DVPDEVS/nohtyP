@@ -2,8 +2,8 @@
 # Might use matplotlib or pygame later but ill start with shell scripts, numpy, and pympler.asizeof
 from pympler.asizeof import asizeof
 import numpy as np
-from src.lexer.lex_tt import TT
-from src.global_utilities.decorators import *
+from nohtyP.lexer.lex_tt import TT
+from nohtyP.global_utilities.decorators import *
 
 @test
 class memoryUsage():

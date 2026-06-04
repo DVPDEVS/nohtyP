@@ -1,4 +1,4 @@
-from src.global_utilities.decorators import *
+from nohtyP.global_utilities.decorators import *
 # This is gonna hold lexer output types
 
 @api_level(0)

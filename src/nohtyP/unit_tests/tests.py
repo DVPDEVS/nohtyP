@@ -1,6 +1,6 @@
 import unittest
-from .lex_tt import TT
-from src.global_utilities.decorators import *
+from nohtyP.lexer.lex_tt import TT
+from nohtyP.global_utilities.decorators import *
 
 @test
 class TestLexerVars(unittest.TestCase):

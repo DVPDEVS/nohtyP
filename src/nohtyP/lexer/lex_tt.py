@@ -1,6 +1,6 @@
 # Just holds the TT class of lex objects and its support
 
-from src.global_utilities import decorators
+from nohtyP.global_utilities import decorators
 
 class TokenMeta(type):
 	def __getattr__(cls, name):
