@@ -6,7 +6,10 @@ from nohtyP.global_utilities.decorators import api_level, license, SPDX_License_
 class internal:
     """Internal APIs"""
     #? this class is imported in __init__.py at root level
-    ...
     class lexer:
         class objects:
-            from nohtyP.lexer.lex_tt import TT, TT_CTX, TT_NOHTYP, TT_PYTHON, REGEX_TT
+            class TT:
+                from nohtyP.lexer.lex_tt import TT, TT_CTX, TT_NOHTYP, TT_PYTHON, REGEX_TT
+            class types:
+                from nohtyP.lexer.types import lexer_langs, LexerType
+            from nohtyP.lexer.utils import file, regex_patterns, lex_helpers

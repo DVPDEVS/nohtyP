@@ -1,6 +1,8 @@
 import os, re, subprocess
 from __future__ import *
+from nohtyP.global_utilities.decorators import *
 
+@api_level(1)
 class PathLike(str, os.PathLike, os.path):
 	"""Holder class for path types, used for type hints.  \n
 	Semantic hint to any type usable by `os.path`"""
@@ -12,6 +14,7 @@ class types():
 	PathLike = PathLike
 
 
+@api_level(0)
 class file:
 	@staticmethod
 	def get_cwd() -> types.PathLike:
@@ -91,6 +94,7 @@ class spec:
 	string_quotes_ls:list[str] = [ "'", '"', '´', '`', '"""', "'''", ]
 
 
+@api_level(0)
 class regex_patterns:
 	whitespace 		= r'[' + spec.whitespace_str + r']+' 	# Any postitive non-zero amount of whitespace chars defined in utils.spec
 	comment 		= r'#(?!\?)[^\n]*$'						# End of line comments not matching compund assignments (https://regex101.com/r/b9wdL5/2)
@@ -111,6 +115,7 @@ class regex_patterns:
 		return True
 
 
+@api_level(0)
 class lex_helpers:
 	@staticmethod
 	def is_whitespace(ch: str) -> bool:
