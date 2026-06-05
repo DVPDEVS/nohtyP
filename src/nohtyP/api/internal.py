@@ -11,5 +11,5 @@ class internal:
             class TT:
                 from nohtyP.lexer.lex_tt import TT, TT_CTX, TT_NOHTYP, TT_PYTHON, REGEX_TT
             class types:
-                from nohtyP.lexer.types import lexer_langs, LexerType
+                from nohtyP.lexer.types import lexer_langs, LexerObject
             from nohtyP.lexer.utils import file, regex_patterns, lex_helpers

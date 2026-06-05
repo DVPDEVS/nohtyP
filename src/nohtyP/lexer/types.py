@@ -1,6 +1,15 @@
-from __future__ import *
+from __future__ import annotations
+from collections.abc import Iterable
+from typing import Never
 from nohtyP.global_utilities.decorators import *
-# This is gonna hold lexer output types
+# Lexer output types
+
+__all__ = [
+	"lexer_langs",
+	"LexerObject",
+	"LexerSeries",
+	"TokenSeries",
+]
 
 @api_level(0)
 class lexer_langs:
@@ -8,7 +17,7 @@ class lexer_langs:
 	PYTHON = "PYTHON"
 
 @api_level(0)
-class LexerType(type):
+class LexerObject(type):
 	def __init__(self, name :str, lang :lexer_langs = None):
 		self.__name__ = name
 		self.__lang__ = lang
@@ -20,10 +29,28 @@ class LexerType(type):
 @api_level(0)
 class LexerSeries(type):
 	def __init__(self):
-		self.objectlist :list[LexerType] = []
+		self.objectlist :list[LexerObject] = []
 		pass
-	def append(self, obj :LexerType):
+	def append(self, obj :LexerObject) -> None:
 		self.objectlist.append(obj)
+
+class TokenSeries(list[str]):
+	"""Series of tokens  \n
+	Subclasses `list`  \n
+	Requires a `list[str]`"""
+	def __init__(self, iterable=()) -> None:
+		if not all(isinstance(x, str) for x in iterable):
+			raise TypeError("TokenSeries only accepts strings")
+		super().__init__(iterable)
+	def append(self, item: str) -> None:
+		if not isinstance(item, str):
+			raise TypeError("TokenSeries only accepts strings")
+		super().append(item)
+	# Block all other ways to add to the list
+	def extend     (self, iterable: Iterable[str]                  ) -> Never: raise NotImplementedError
+	def insert     (self, index: int, item: str                    ) -> Never: raise NotImplementedError
+	def __setitem__(self, key: int|slice, value: str|Iterable[str] ) -> Never: raise NotImplementedError
+	def __iadd__   (self, other: Iterable[str]                     ) -> Never: raise NotImplementedError
 
 #* Cool but not needed anymore
 #// class _example(LexerType):
