@@ -46,12 +46,6 @@ goto :eof
         echo LICENSES directory failed creation >&2
         exit /b 1
     )
-    :: set "_DIRL=0"
-    :: for /f "delims=" %%i in ('dir /B LICENSES') do set /a _DIRL+=1
-    :: if /i !_DIRL! LEQ 1 (
-    ::     echo Failed to copy licenses! >&2
-    ::     exit /b 1
-    :: )
     for /f %%i in ('dir /b LICENSES 2^>nul') do goto :found
     echo Failed to copy licenses >&2
     exit /b 1
@@ -66,45 +60,62 @@ goto :eof
 goto :eof
 
 :create_venv
-(
-
-)
+set "TEMP_VENV=%TEMP%\venv_%RANDOM%"
+python -m venv "%TEMP_VENV%"
+call "%TEMP_VENV%\Scripts\activate.bat"
 goto :eof
 
 :build
 (
+    python -m pip install --upgrade pip
     python -m pip install build
     python -m build
 )
 goto :eof
 
 :inspect
+call :find
 (
-    call :find
-    :: powershell unzip files
-)
+    :: unzip files
+    tar.exe -tf "!latest_whl!"
+    tar.exe -tf "!latest_tar!"
+) || rem no
 goto :eof
 
 :find
-:: 
+set "latest_whl="
+set "latest_tar="
+for %%F in (dist\nohtyP*.whl) do if not defined latest_whl set "latest_whl=%%F"
+for %%F in (dist\nohtyP*.tar.gz) do if not defined latest_tar set "latest_tar=%%F"
+if not defined latest_whl (
+    echo Build failed: wheel not found >&2
+    exit /b 1
+)
+if not defined latest_tar (
+    echo Build failed: tarball not found >&2
+    exit /b 1
+)
 goto :eof
 
 :test_installs
 (
     call :test_install_normal
     call :test_install_dev
-)
+) || rem no
 goto :eof
 
 :test_install_normal
 (
-
+    python -m pip install --no-cache-dir "!latest_whl!"
+    python -c "import nohtyP"
 )
 goto :eof
 
 :test_install_dev
 (
-
+    python -m pip uninstall -y nohtyP
+    python -m pip install --no-cache-dir "!latest_whl![dev]"
+    python -c "import nohtyP"
 )
 goto :eof
 
@@ -118,6 +129,7 @@ goto :eof
 
 :rm_venv
 (
-
+    if defined VIRTUAL_ENV call deactivate
+    rmdir /s /q "!TEMP_VENV!"
 )
 goto :eof
