@@ -6,8 +6,9 @@ from nohtyP.global_utilities.decorators import *
 
 __all__ = [
 	"lexer_langs",
-	"LexerObject",
-	"LexerSeries",
+	"LexType",
+	"LexObject",
+	"LexObjectSeries",
 	"TokenSeries",
 ]
 
@@ -17,7 +18,7 @@ class lexer_langs:
 	PYTHON = "PYTHON"
 
 @api_level(0)
-class LexerObject(type):
+class LexType:
 	def __init__(self, name :str, lang :lexer_langs = None):
 		self.__name__ = name
 		self.__lang__ = lang
@@ -27,11 +28,21 @@ class LexerObject(type):
 		return f"{self.__lang__}[{self.__name__}]"
 
 @api_level(0)
-class LexerSeries(type):
+class LexObject:
+	def __init__(self, value :str, ltype :LexType):
+		self.__type__ = ltype
+		self.__value__ = value
+	def __repr__(self):
+		return f"LexObject ({self.__value__}), type={self.type}"
+	def __str__(self):
+		return f"{self.__type__}[{self.__value__}]"
+
+@api_level(0)
+class LexObjectSeries:
 	def __init__(self):
-		self.objectlist :list[LexerObject] = []
+		self.objectlist :list[LexObject] = []
 		pass
-	def append(self, obj :LexerObject) -> None:
+	def append(self, obj :LexObject) -> None:
 		self.objectlist.append(obj)
 
 class TokenSeries(list[str]):

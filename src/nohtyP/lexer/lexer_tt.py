@@ -1,6 +1,7 @@
 from __future__ import annotations
 from nohtyP.global_utilities import decorators
 from nohtyP.lexer.types import *
+import re
 # Identify objects
 
 class TT_PYTHON:
@@ -69,37 +70,13 @@ class TT_PYTHON:
 
 class TT_NOHTYP:
 	# nohtyP lex types and objects
-	COMMA                          = "COMMA"     # only when it acts as a separator -> ,
-	SET_OPERATOR                   = "SET_OPERATOR"
-	GROUP_OR_CALL                  = "GROUP_OR_CALL"
-	BLOCK                          = "BLOCK"
-	COMPUND_ERROR_VALUE_ASSINGMENT = "COMPUND_ERROR_VALUE_ASSINGMENT"
-	COMPOUND_ERROR_PIPE            = "COMPOUND_ERROR_PIPE"
-	COMPOUND_COMPLEX_ASSIGNMENT    = "COMPOUND_COMPLEX_ASSIGNMENT"
-	UNARY_FLOW                     = "UNARY_FLOW"
-	UNARY_CONTINUOUS_FLOW          = "UNARY_CONTINUOUS_FLOW"
-	CONDITIONAL                    = "CONDITIONAL"
-	CONDITIONAL_FAIL               = "CONDITIONAL_FAIL"
-	BOUNDARY                       = "BOUNDARY"
+	# TODO: Redefine based on syntax spec
 	UNKNOWN                        = "UNKNOWN"	# Copied wholesale for compatibility with libraries. should be registered for parsing with native python install
 
 #? yp regex
-class NOHTYP:
-	_values: dict[str, str] = {
-		TT_NOHTYP.COMMA                          : r",",
-		TT_NOHTYP.SET_OPERATOR                   : rf"\*set",
-		TT_NOHTYP.GROUP_OR_CALL                  : r"\(.*\)",
-		TT_NOHTYP.BLOCK                          : r"\{.*\}",
-		TT_NOHTYP.COMPUND_ERROR_VALUE_ASSINGMENT : r"\*\$",
-		TT_NOHTYP.COMPOUND_ERROR_PIPE            : r"\*\?",
-		TT_NOHTYP.COMPOUND_COMPLEX_ASSIGNMENT    : r"#\?",
-		TT_NOHTYP.UNARY_FLOW                     : r"\?",
-		TT_NOHTYP.UNARY_CONTINUOUS_FLOW          : r"\?=",
-		TT_NOHTYP.CONDITIONAL                    : r"~",
-		TT_NOHTYP.CONDITIONAL_FAIL               : r"\*~",
-		TT_NOHTYP.BOUNDARY                       : r";",
-		TT_NOHTYP.UNKNOWN                        : r".+",
-	}
+NOHTYP: dict[str, str] = {
+	# TODO: Redefine based on syntax spec
+}
 #? py regex
 class PYTHON:
 	_values: dict[str, str] = {
@@ -168,10 +145,12 @@ class PYTHON:
 	}
 
 class Identify:
-	def single_element(element :str) -> LexerObject:
-		...
-	def series(elements :TokenSeries) -> LexerSeries:
-		result = LexerSeries()
+	def single_element(element :str) -> LexObject:
+		for k, v in NOHTYP:
+			if re.match(v, element):
+				return LexObject(element, TT_NOHTYP[k])
+	def series(elements :TokenSeries) -> LexObjectSeries:
+		result = LexObjectSeries()
 		for i in elements:
 			result.append(Identify.single_element(i))
 		return result
