@@ -16,6 +16,11 @@ set "STARTDIR=%cd%"
 (
     call :relocate
     call :copy_files
+    call :create_venv
+    call :build
+    call :inspect
+    call :test_installs
+    :: cleanup removes venv and such so this is fine
 ) || rem no
 goto :eof
 
@@ -68,18 +73,20 @@ goto :eof
 
 :build
 (
-
+    python -m pip install build
+    python -m build
 )
 goto :eof
 
 :inspect
 (
     call :find
+    :: powershell unzip files
 )
 goto :eof
 
 :find
-::
+:: 
 goto :eof
 
 :test_installs
