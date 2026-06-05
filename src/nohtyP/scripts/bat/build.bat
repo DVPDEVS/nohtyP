@@ -6,7 +6,7 @@ setlocal enabledelayedexpansion
 chcp 65001 >nul
 
 call :start
-:: Ignore errors, exit immediately after anyways
+:: Ignore errors, exit immediately after anyways. best-effort imitation of set -euo pipefail. relies on goto returns and || rem no to ignore fails extra hard
 set "RC=%ERRORLEVEL%"
 call :cleanup
 exit /b %RC%
@@ -67,6 +67,7 @@ goto :eof
 
 :build
 (
+    :: Update venv pip and build, then build
     python -m pip install --upgrade pip
     python -m pip install build
     python -m build
@@ -121,6 +122,7 @@ goto :eof
 
 :cleanup
 (
+    :: remove the temp licenses
     rmdir /s /q LICENSES
     call :rm_venv
     cd "!STARTDIR!"
@@ -129,7 +131,9 @@ goto :eof
 
 :rm_venv
 (
+    :: deactivate venv
     if defined VIRTUAL_ENV call deactivate
+    :: delete venv folder
     rmdir /s /q "!TEMP_VENV!"
 )
 goto :eof
