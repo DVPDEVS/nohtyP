@@ -7,3 +7,6 @@ class internal:
     """Internal APIs"""
     #? this class is imported in __init__.py at root level
     ...
+    class lexer:
+        class objects:
+            from nohtyP.lexer.lex_tt import TT, TT_CTX, TT_NOHTYP, TT_PYTHON, REGEX_TT
