@@ -30,21 +30,22 @@ class LexType:
 @api_level(0)
 class LexObject:
 	def __init__(self, value :str, ltype :LexType):
-		self.__type__ = ltype
+		self.ltype = ltype
 		self.__value__ = value
 	def __repr__(self):
-		return f"LexObject ({self.__value__}), type={self.type}"
+		return f"LexObject ({self.__value__}), type={self.ltype}"
 	def __str__(self):
-		return f"{self.__type__}[{self.__value__}]"
+		return f"{self.ltype}[{self.__value__}]"
 
 @api_level(0)
 class LexObjectSeries:
 	def __init__(self):
-		self.objectlist :list[LexObject] = []
+		self.objectlist :tuple[LexObject] = []
 		pass
 	def append(self, obj :LexObject) -> None:
 		self.objectlist.append(obj)
 
+@api_level(0)
 class TokenSeries(list[str]):
 	"""Series of tokens  \n
 	Subclasses `list`  \n
@@ -57,7 +58,7 @@ class TokenSeries(list[str]):
 		if not isinstance(item, str):
 			raise TypeError("TokenSeries only accepts strings")
 		super().append(item)
-	# Block all other ways to add to the list
+	# Block all other ways to add to the list (besides setattr)
 	def extend     (self, iterable: Iterable[str]                  ) -> Never: raise NotImplementedError
 	def insert     (self, index: int, item: str                    ) -> Never: raise NotImplementedError
 	def __setitem__(self, key: int|slice, value: str|Iterable[str] ) -> Never: raise NotImplementedError
