@@ -80,7 +80,30 @@ class __TT_NOHTYP():
 		return cls.__getattribute__(key)
 	# nohtyP lex types and objects
 	# TODO: Redefine based on syntax spec
-	UNKNOWN                        = "UNKNOWN"	# Copied wholesale for compatibility with libraries. should be registered for parsing with native python install
+	SEPARATOR           = "SEPARATOR"           #? ;
+	BAREWORD            = "BAREWORD"            #? <anything>
+	CBRACKET_LEFT       = "CBRACKET_LEFT"       #? {
+	CBRACKET_RIGHT      = "CBRACKET_RIGHT"      #? }
+	ASS_EQ              = "ASS_EQ"              #? =
+	FLOW_Q              = "FLOW_Q"              #? ?
+	FLOW_HASH_Q         = "FLOW_HASH_Q"         #? #?
+	GEN_AST             = "GEN_AST"             #? *
+	WHILE               = "WHILE"               #? ?=
+	ITERATOR            = "ITERATOR"            #? @
+	CONDITION_TILDE     = "CONDITION_TILDE"     #? ~
+	CONDITION_AST_TILDE = "CONDITION_AST_TILDE"	#? *~
+	ARROW_LEFT          = "ARROW_LEFT"          #? ->
+	ARROW_RIGHT         = "ARROW_RIGHT"         #? <-
+	EXCEPT_STORE        = "EXCEPT_STORE"        #? *$<insert var>
+	EXCEPT_GET          = "EXCEPT_GET"          #? $<insert var>
+	EXCEPT_HANDLE       = "EXCEPT_HANDLE"       #? *?
+	EXCEPT_SET          = "EXCEPT_SET"          #? *set
+	EXCEPT_SET_NEG      = "EXCEPT_SET_NEG"      #? -e
+	EXCEPT_SET_POS      = "EXCEPT_SET_POS"      #? +e
+	KW_GO               = "KW_GO"               #? go
+	KW_FETCH            = "KW_FETCH"            #? fetch
+	KW_MATCH            = "KW_MATCH"            #? match
+	UNKNOWN             = "UNKNOWN"	# Copied wholesale for compatibility with libraries. should be registered for parsing with native python install
 
 @regex
 @api_level(0)
