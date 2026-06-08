@@ -6,7 +6,7 @@ import re
 
 @api_level(0)
 class __TT_PYTHON:
-	"""Holds lexical element definitions for Python"""
+	"""Holds lexical elements for Python"""
 	def __class_getitem__(cls, key :str):
 		return cls.__getattribute__(key)
 
@@ -75,11 +75,10 @@ class __TT_PYTHON:
 
 @api_level(0)
 class __TT_NOHTYP():
-	"""Holds lexical element definitions for nohtyP"""
+	"""Holds lexical elements for nohtyP"""
 	def __class_getitem__(cls, key :str):
 		return cls.__getattribute__(key)
-	# nohtyP lex types and objects
-	# TODO: Redefine based on syntax spec
+	# nohtyP lexical objects
 	SEPARATOR           = "SEPARATOR"           #? ;
 	BAREWORD            = "BAREWORD"            #? <anything>
 	CBRACKET_LEFT       = "CBRACKET_LEFT"       #? {
@@ -97,13 +96,10 @@ class __TT_NOHTYP():
 	EXCEPT_STORE        = "EXCEPT_STORE"        #? *$<insert var>
 	EXCEPT_GET          = "EXCEPT_GET"          #? $<insert var>
 	EXCEPT_HANDLE       = "EXCEPT_HANDLE"       #? *?
-	EXCEPT_SET          = "EXCEPT_SET"          #? *set
-	EXCEPT_SET_NEG      = "EXCEPT_SET_NEG"      #? -e
-	EXCEPT_SET_POS      = "EXCEPT_SET_POS"      #? +e
+	EXCEPT_SET          = "EXCEPT_SET"          #? *set -e/+e
 	KW_GO               = "KW_GO"               #? go
 	KW_FETCH            = "KW_FETCH"            #? fetch
 	KW_MATCH            = "KW_MATCH"            #? match
-	UNKNOWN             = "UNKNOWN"	# Copied wholesale for compatibility with libraries. should be registered for parsing with native python install
 
 @regex
 @api_level(0)
@@ -113,7 +109,30 @@ class YP:
 	# Regex dict
 	REGEX: dict[str, str] = {
 		# TODO: Redefine based on syntax spec
+		ELEM.SEPARATOR           : r";", # shouldnt require boundaries but they wont hurt either
+		ELEM.BAREWORD            : r"\b(?<!\.)(?![0-9])[\w\.]*(?!\.+)\b", #* sauce: https://regex101.com/r/fPlKx6/1 --- but fucking christ lookbehind/lookahead is painful to use with boundaries
+		ELEM.CBRACKET_LEFT       : r"\{",
+		ELEM.CBRACKET_RIGHT      : r"\}",
+		ELEM.ASS_EQ              : r"=",
+		ELEM.FLOW_Q              : r"\?",
+		ELEM.FLOW_HASH_Q         : r"#\?",
+		ELEM.GEN_AST             : r"\*",
+		ELEM.WHILE               : r"\?=",
+		ELEM.ITERATOR            : r"@",
+		ELEM.CONDITION_TILDE     : r"~",
+		ELEM.CONDITION_AST_TILDE : r"\*~",
+		ELEM.ARROW_LEFT          : r"<-",
+		ELEM.ARROW_RIGHT         : r"->",
+		ELEM.EXCEPT_STORE        : r"\b(?<!\.)\*\$[\w\.]*(?!\.+)\b",
+		ELEM.EXCEPT_GET          : r"\b(?<!\.)\$[\w\.]*(?!\.+)\b",
+		ELEM.EXCEPT_HANDLE       : r"\*\?",
+		ELEM.EXCEPT_SET          : r"(?<!\.)\*set\ [-+]e(?!\.)", #* sauce: https://regex101.com/r/3QG7Y0/1	# case sensitive
+		ELEM.KW_GO               : r"(?<!\.)go(?!\.)",														# case sensitive
+		ELEM.KW_FETCH            : r"(?<!\.)fetch(?!\.)",													# case sensitive
+		ELEM.KW_MATCH            : r"(?<!\.)match(?!\.)",													# case sensitive
 	}
+
+#! add a generic unknown lexical obj here
 
 @regex
 @api_level(0)
@@ -123,69 +142,70 @@ class PY:
 	# Regex dict
 	REGEX: dict[str, str] = {
 		# --- literals ---
-		__TT_PYTHON.INT: r"[+-]?(?:0b[01_]+|0o[0-7_]+|0x[\da-fA-F_]+|\d[\d_]*)(?![\w.])",
-		__TT_PYTHON.FLOAT: r"[+-]?(?:\d[\d_]*\.\d[\d_]*|\.\d[\d_]*|\d[\d_]*\.)(?:[eE][+-]?\d+)?",
-		__TT_PYTHON.BOOL: r"\b(?:True|False)\b",
-		__TT_PYTHON.NONE: r"\bNone\b",
-		__TT_PYTHON.BYTES: r"(?i)\b(?:b|br)\"(?:\\.|[^\"\\])*\"|\b(?:b|br)'(?:\\.|[^'\\])*'",
-		__TT_PYTHON.BYTEARRAY: r"bytearray\s*\(\s*b?(?:\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')\s*\)",
+		ELEM.INT: r"[+-]?(?:0b[01_]+|0o[0-7_]+|0x[\da-fA-F_]+|\d[\d_]*)(?![\w.])",
+		ELEM.FLOAT: r"[+-]?(?:\d[\d_]*\.\d[\d_]*|\.\d[\d_]*|\d[\d_]*\.)(?:[eE][+-]?\d+)?",
+		ELEM.BOOL: r"\b(?:True|False)\b",
+		ELEM.NONE: r"\bNone\b",
+		ELEM.BYTES: r"(?i)\b(?:b|br)\"(?:\\.|[^\"\\])*\"|\b(?:b|br)'(?:\\.|[^'\\])*'",
+		ELEM.BYTEARRAY: r"bytearray\s*\(\s*b?(?:\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')\s*\)",
 		# TT_PYTHON.STR: rf'((rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b)?({'|'.join(REGEX_TT.string_quotes_ls)})([.\n]*)\5(\..+\(\)*',
 		# --- identifiers / keywords ---
-		__TT_PYTHON.ID: r"\b[a-zA-Z_][a-zA-Z0-9_]*\b",
-		__TT_PYTHON.KEYWORD: r"\b(?:if|else|elif|while|for|def|class|return|import|from|as|pass|break|continue|try|except|finally|raise|with|yield|lambda|async|await|global|nonlocal|assert|del|match|case)\b",
+		ELEM.ID: r"\b[a-zA-Z_][a-zA-Z0-9_]*\b",
+		ELEM.KEYWORD: r"\b(?:if|else|elif|while|for|def|class|return|import|from|as|pass|break|continue|try|except|finally|raise|with|yield|lambda|async|await|global|nonlocal|assert|del|match|case)\b",
 		# --- operators ---
-		__TT_PYTHON.OP: r"(?:\*\*|//|==|!=|<=|>=|<|>|\+|-|\*|/|%|=)",
-		__TT_PYTHON.ASSIGN: r"=",
-		__TT_PYTHON.AUGASSIGN: r"(?:\+=|-=|\*=|/=|//=|%=|\*\*=|&=|\|=|\^=|<<=|>>=)",
-		__TT_PYTHON.BITOP: r"(?:&|\||\^|~|<<|>>)",
-		__TT_PYTHON.COMPARE: r"(?:==|!=|<=|>=|<|>|is(?:\s+not)?|in|not\s+in)",
-		__TT_PYTHON.LOGIC: r"\b(?:and|or|not)\b",
+		ELEM.OP: r"(?:\*\*|//|==|!=|<=|>=|<|>|\+|-|\*|/|%|=)",
+		ELEM.ASSIGN: r"=",
+		ELEM.AUGASSIGN: r"(?:\+=|-=|\*=|/=|//=|%=|\*\*=|&=|\|=|\^=|<<=|>>=)",
+		ELEM.BITOP: r"(?:&|\||\^|~|<<|>>)",
+		ELEM.COMPARE: r"(?:==|!=|<=|>=|<|>|is(?:\s+not)?|in|not\s+in)",
+		ELEM.LOGIC: r"\b(?:and|or|not)\b",
 		# --- punctuation ---
-		__TT_PYTHON.PUNCT: r"(?:->|:|;|@|\.|,)",
-		__TT_PYTHON.DOT: r"\.",
-		__TT_PYTHON.COLON: r":",
-		__TT_PYTHON.SEMICOLON: r";",
-		__TT_PYTHON.ARROW: r"->",
-		__TT_PYTHON.AT: r"@",
+		ELEM.PUNCT: r"(?:->|:|;|@|\.|,)",
+		ELEM.DOT: r"\.",
+		ELEM.COLON: r":",
+		ELEM.SEMICOLON: r";",
+		ELEM.ARROW: r"->",
+		ELEM.AT: r"@",
 		# --- grouping ---
-		__TT_PYTHON.LPAREN: r"\(",
-		__TT_PYTHON.RPAREN: r"\)",
-		__TT_PYTHON.LBRACE: r"\{",
-		__TT_PYTHON.RBRACE: r"\}",
-		__TT_PYTHON.LBRACKET: r"\[",
-		__TT_PYTHON.RBRACKET: r"\]",
+		ELEM.LPAREN: r"\(",
+		ELEM.RPAREN: r"\)",
+		ELEM.LBRACE: r"\{",
+		ELEM.RBRACE: r"\}",
+		ELEM.LBRACKET: r"\[",
+		ELEM.RBRACKET: r"\]",
 		# --- structures (heuristic, not syntax-perfect) ---
-		__TT_PYTHON.LIST: r"\[[^\[\]]*\]",
-		__TT_PYTHON.TUPLE: r"\([^()]*\)",
-		__TT_PYTHON.SET: r"\{(?![^:]*:)[^{}]*\}",
-		__TT_PYTHON.DICT: r"\{[^{}]*:[^{}]*\}",
-		__TT_PYTHON.SLICE: r"[a-zA-Z_][\w]*\s*:\s*[a-zA-Z_0-9]*\s*(?::\s*[a-zA-Z_0-9]*)?",
-		__TT_PYTHON.ELLIPSIS: r"\.\.\.",
+		ELEM.LIST: r"\[[^\[\]]*\]",
+		ELEM.TUPLE: r"\([^()]*\)",
+		ELEM.SET: r"\{(?![^:]*:)[^{}]*\}",
+		ELEM.DICT: r"\{[^{}]*:[^{}]*\}",
+		ELEM.SLICE: r"[a-zA-Z_][\w]*\s*:\s*[a-zA-Z_0-9]*\s*(?::\s*[a-zA-Z_0-9]*)?",
+		ELEM.ELLIPSIS: r"\.\.\.",
 		# --- functions / async / decorators ---
-		__TT_PYTHON.LAMBDA: r"\blambda\b",
-		__TT_PYTHON.YIELD: r"\byield(?:\s+from)?\b",
-		__TT_PYTHON.AWAIT: r"\bawait\b",
-		__TT_PYTHON.ASYNC: r"\basync\b",
-		__TT_PYTHON.DECORATOR: r"@[a-zA-Z_][a-zA-Z0-9_\.]*",
+		ELEM.LAMBDA: r"\blambda\b",
+		ELEM.YIELD: r"\byield(?:\s+from)?\b",
+		ELEM.AWAIT: r"\bawait\b",
+		ELEM.ASYNC: r"\basync\b",
+		ELEM.DECORATOR: r"@[a-zA-Z_][a-zA-Z0-9_\.]*",
 		# --- type hints ---
-		__TT_PYTHON.TYPEHINT: r"(?:->\s*[a-zA-Z_][\w\.\[\], ]*|:\s*[a-zA-Z_][\w\.\[\], ]*)",
+		ELEM.TYPEHINT: r"(?:->\s*[a-zA-Z_][\w\.\[\], ]*|:\s*[a-zA-Z_][\w\.\[\], ]*)",
 		# --- strings / f-strings ---
-		__TT_PYTHON.FSTRING: r"""(?x)
+		ELEM.FSTRING: r"""(?x)
 			f(?:\"\"\".*?\"\"\"|''' .*? '''|\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')
 		""",
-		__TT_PYTHON.FORMAT: r"\{[^{}]+\}",
+		ELEM.FORMAT: r"\{[^{}]+\}",
 		# --- comprehensions / generators (heuristic) ---
-		__TT_PYTHON.LISTCOMP: r"\[[^\]]+for[^\]]+\]",
-		__TT_PYTHON.SETCOMP: r"\{[^}]+for[^}]+\}",
-		__TT_PYTHON.DICTCOMP: r"\{[^}]+:[^}]+for[^}]+\}",
-		__TT_PYTHON.GENEXP: r"\([^)]+for[^)]+\)",
+		ELEM.LISTCOMP: r"\[[^\]]+for[^\]]+\]",
+		ELEM.SETCOMP: r"\{[^}]+for[^}]+\}",
+		ELEM.DICTCOMP: r"\{[^}]+:[^}]+for[^}]+\}",
+		ELEM.GENEXP: r"\([^)]+for[^)]+\)",
 		# --- misc ---
-		__TT_PYTHON.COMMENT: r"#.*",
-		__TT_PYTHON.NEWLINE: r"\n",
-		__TT_PYTHON.INDENT:   "(\t|\\ +|\n)",
-		__TT_PYTHON.DEDENT:  r"",
+		ELEM.COMMENT: r"#.*",
+		ELEM.NEWLINE: r"\n",
+		ELEM.INDENT:   "(\t|\\ +|\n)",
+		ELEM.DEDENT:  r"",
 	}
 
+@regex
 @api_level(0)
 class Identify:
 	"""Identify lexical objects"""

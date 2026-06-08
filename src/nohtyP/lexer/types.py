@@ -20,21 +20,21 @@ class lexer_langs:
 @api_level(0)
 class LexType:
 	def __init__(self, name :str, lang :lexer_langs = None):
-		self.__name__ = name
-		self.__lang__ = lang
-	def __repr__(self):
+		self.__name__ :str = name
+		self.__lang__ :lexer_langs = lang
+	def __repr__(self) -> str:
 		return f"LexerType ({self.__name__}), lang={self.lang}"
-	def __str__(self):
+	def __str__(self) -> str:
 		return f"{self.__lang__}[{self.__name__}]"
 
 @api_level(0)
 class LexObject:
 	def __init__(self, value :str, ltype :LexType):
-		self.ltype = ltype
-		self.__value__ = value
-	def __repr__(self):
+		self.ltype :LexType = ltype
+		self.__value__ :str = value
+	def __repr__(self) -> str:
 		return f"LexObject ({self.__value__}), type={self.ltype}"
-	def __str__(self):
+	def __str__(self) -> str:
 		return f"{self.ltype}[{self.__value__}]"
 
 @api_level(0)
