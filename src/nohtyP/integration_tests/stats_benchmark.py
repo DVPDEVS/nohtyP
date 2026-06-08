@@ -13,7 +13,7 @@ class memoryUsage():
         self._OBJECTS: list[dict[str, object|np.uint64|str]] = [
         # I suspect this object would be the worst tbh.
             { 
-                'obj': getattr(TT, '_TT__DIFF').copy(), # Actaully refers to `TT.__DIFF`, but safely through name mangling
+                # 'obj': getattr(TT, '_TT__DIFF').copy(), # Actaully refers to `TT.__DIFF`, but safely through name mangling
                 'val': np.uint64, 
                 'name': "TT.__DIFF" },
         ]

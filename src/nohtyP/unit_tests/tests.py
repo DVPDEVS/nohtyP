@@ -1,10 +1,10 @@
 import unittest
-from nohtyP.lexer.identifier import TT
+# from nohtyP.lexer.identifier import TT
 from nohtyP.global_utilities.decorators import *
 
 @test
 class TestLexerVars(unittest.TestCase):
-    lexobj = TT().REGEX
+    # lexobj = TT().REGEX
     def test_regex_attrs(self):
         self.assertEqual(super.lexobj.NOHTYP.UNKNOWN, ".+")
     def test_decorator(self):

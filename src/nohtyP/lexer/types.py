@@ -16,6 +16,7 @@ __all__ = [
 class lexer_langs:
 	NOHTYP = "NOHTYP"
 	PYTHON = "PYTHON"
+	GENERIC = "GENERIC"
 
 @api_level(0)
 class LexType:
@@ -23,7 +24,7 @@ class LexType:
 		self.__name__ :str = name
 		self.__lang__ :lexer_langs = lang
 	def __repr__(self) -> str:
-		return f"LexerType ({self.__name__}), lang={self.lang}"
+		return f"LexType ({self.__name__}), lang={self.__lang__}"
 	def __str__(self) -> str:
 		return f"{self.__lang__}[{self.__name__}]"
 
