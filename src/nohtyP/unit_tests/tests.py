@@ -1,5 +1,5 @@
 import unittest
-from nohtyP.lexer.lex_tt import TT
+from nohtyP.lexer.identifier import TT
 from nohtyP.global_utilities.decorators import *
 
 @test

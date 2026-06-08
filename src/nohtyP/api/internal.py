@@ -9,7 +9,7 @@ class internal:
     class lexer:
         class objects:
             class TT:
-                from nohtyP.lexer.lex_tt import TT, TT_CTX, TT_NOHTYP, TT_PYTHON, REGEX_TT
+                from nohtyP.lexer.identifier import TT, TT_CTX, TT_NOHTYP, TT_PYTHON, REGEX_TT
             class types:
                 from nohtyP.lexer.types import lexer_langs, LexType
             from nohtyP.lexer.utils import file, regex_patterns, lex_helpers
