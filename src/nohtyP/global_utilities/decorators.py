@@ -1,6 +1,6 @@
 """Various decorators for fun, actual use, or warnings :3"""
 
-def vibe_check(vibe: str) -> object:
+def vibe_check(vibe: str) -> function|type|object|any:
 	"""Vibe checking decorator"""
 	def wrapper(_obj: object) -> object:
 		if not (":3" in vibe): raise ValueError(f"Vibe `{vibe!r}` is NOT silly enough")
@@ -23,7 +23,7 @@ def stub(fn: function) -> function:
 		except: return None
 	return wrapper
 
-def api_level(level: int) -> object:
+def api_level(level: int) -> function|type|object|any:
 	"""Decorator to mark as internal or public  \n
 	`level == 0`: internal  \n
 	`level == 1`: public  \n
@@ -36,7 +36,7 @@ def api_level(level: int) -> object:
 		return _obj
 	return wrapper
 
-def test(_obj: object) -> object:
+def test(_obj: function|type|object|any) -> function|type|object|any:
 	"""Test objects are excluded from apilevel markers and SPDX License identifiers in attributes.  \n
 	Instead they're to be considered as internal regardless.  \n
 	The apilevel and license decorators and their associated attribute marks are for testing only.  \n
@@ -45,7 +45,7 @@ def test(_obj: object) -> object:
 	return _obj
 
 from .types import SPDX_License_Identifers
-def license(license: SPDX_License_Identifers) -> object:
+def license(license: SPDX_License_Identifers) -> function|type|object|any:
 	"""Decorator to register an SDPX license ID.  \n
 	`<OBJ>.SPDX_LICENSE_IDENTIFIER == "<identifier>"`"""
 	def wrapper(_obj: object) -> object:
@@ -54,19 +54,19 @@ def license(license: SPDX_License_Identifers) -> object:
 	return wrapper
 
 #? attributes
-def fragile(_obj: object) -> object:
+def fragile(_obj: function|type|object|any) -> function|type|object|any:
 	"""Decorator to mark as fragile."""
 	setattr(_obj, "__fragile__",True)
 	return _obj
-def unstable(_obj: object) -> object:
+def unstable(_obj: function|type|object|any) -> function|type|object|any:
 	"""Decorator to mark as unstable."""
 	setattr(_obj, "__unstable__",True)
 	return _obj
-def regex(_obj: object) -> object:
+def regex(_obj: function|type|object|any) -> function|type|object|any:
 	"""Decorator to mark use of regex."""
 	setattr(_obj, "__regex__", True)
 	return _obj
-def experimental(_obj: object) -> object:
+def experimental(_obj: function|type|object|any) -> function|type|object|any:
 	"""Decorator to mark as being experimental, in beta, etc."""
 	setattr(_obj, "__experimental__", True)
 	return _obj
