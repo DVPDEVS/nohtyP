@@ -2,7 +2,7 @@
 # Might use matplotlib or pygame later but ill start with shell scripts, numpy, and pympler.asizeof
 from pympler.asizeof import asizeof
 import numpy as np
-from nohtyP.lexer.identifier import TT
+# from nohtyP.lexer.identifier import TT
 from nohtyP.global_utilities.decorators import *
 
 # @test
