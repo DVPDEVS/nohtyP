@@ -73,8 +73,11 @@ class TT:
 			r";", # shouldnt require boundaries but they wont hurt either
 			LexType("SEPARATOR", lexer_langs.NOHTYP) ), #? ;
 		"BAREWORD" :(
-			r"\b(?<!\.)(?![0-9])[\w\.]*(?!\.+)\b", #* sauce: https://regex101.com/r/fPlKx6/1 --- but fucking christ lookbehind/lookahead is painful to use with boundaries
+			r"^(?<![\.])(?![0-9])[\w\.]*(?!\.+)$", #* sauce: https://regex101.com/r/L0MnX3/1 
 			LexType("BAREWORD", lexer_langs.NOHTYP) ), #? <anything>
+		"TYPE_DECLARATION" :(
+			r"^\:\s?(?<![\.])(?![0-9])[\w\.]*(?!\.+)$", #* sauce: https://regex101.com/r/FniyHg/2 
+			LexType("TYPE_DECLARATION", lexer_langs.NOHTYP) ), #? bareword preceded by a colon and optional whitespace
 		"CBRACKET_LEFT" :(
 			r"\{",
 			LexType("CBRACKET_LEFT", lexer_langs.NOHTYP) ), #? {

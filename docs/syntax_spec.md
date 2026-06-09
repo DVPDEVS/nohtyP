@@ -1,7 +1,7 @@
 # nohtyP Syntax Specification (.yp files)
 
-File Extension: .yp
-*nohtyP* source code files. FULLY INTERCOMPATIBLE with standard Python 3.10+
+File Extension: .yp  
+*nohtyP* source code files.  
 
 ## Undecided syntax  
 
@@ -54,6 +54,70 @@ int ? print()         -> print(<class 'int'>)
 ```
 
 Lexers MAY issue warnings when a bareword string appears in ambiguous positions (e.g., where an expression, not a literal, is expected).
+
+### Token separation
+
+Token separation is supported either through brackets `{}()`, whitespace, commas, or colons.  
+
+Colon is, however, exclusively for type declarations.  
+They're the only lexical objects to be preceded by a colon and optional whitespace.  
+This may change in later specification versions.  
+
+Since python will natively consider values in brackets to be dictionaries or tuples, nohtyP will not assume types for anything.  
+Thus `(1,2)` is lexically the same as `1 2` and dictionaries and tuples need a type declaration like this:  
+
+```yp
+tuple:nums(1,2)
+```
+
+This allows using zero whitespace in scripts :3  
+This also means no operator characters can be used in most contexts, however i consider this acceptable so long as this becomes valid syntax:  
+
+```yp
+10?range()?~{@%2~@*2?str()?}=*list[str]:res?print()
+```
+
+TODO: Update the type declaration in this document to precede definitions.
+
+#### Supported whitespace  
+
+| Name                      | Escape   | Python shorthand |
+|:--------------------------|:---------|:-----------------|
+| Space                     | `\u0020` | `" "`            |
+| Tab                       | `\u0009` | `\t`             |
+| Line Feed                 | `\u000A` | `\n`             |
+| Vertical Tab              | `\u000B` | `\v`             |
+| Form Feed                 | `\u000C` | `\f`             |
+| Carriage Return           | `\u000D` | `\r`             |
+| File Separator            | `\u001C` |                  |
+| Group Separator           | `\u001D` |                  |
+| Record Separator          | `\u001E` |                  |
+| Unit Separator            | `\u001F` |                  |
+| Next Line                 | `\u0085` |                  |
+| No-Break Space            | `\u00A0` |                  |
+| Ogham Space Mark          | `\u1680` |                  |
+| En Quad                   | `\u2000` |                  |
+| Em Quad                   | `\u2001` |                  |
+| En Space                  | `\u2002` |                  |
+| Em Space                  | `\u2003` |                  |
+| Three-Per-Em Space        | `\u2004` |                  |
+| Four-Per-Em Space         | `\u2005` |                  |
+| Six-Per-Em Space          | `\u2006` |                  |
+| Figure Space              | `\u2007` |                  |
+| Punctuation Space         | `\u2008` |                  |
+| Thin Space                | `\u2009` |                  |
+| Hair Space                | `\u200A` |                  |
+| Line Separator            | `\u2028` |                  |
+| Paragraph Separator       | `\u2029` |                  |
+| Narrow No-Break Space     | `\u202F` |                  |
+| Medium Mathematical Space | `\u205F` |                  |
+| Ideographic Space         | `\u3000` |                  |
+
+As a python string:  
+
+```py
+whitespace: str = " \t\n\v\f\r\u001C\u001D\u001E\u001F\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000"
+```
 
 ## Precendence layering and priority
 
@@ -140,9 +204,9 @@ Additionally pipes the result of a block out of the block
 
 ```yp
 Python: num:int = 80085
-nohtyP: 80085 = num:int
-nohtyP: 80085 -> num:int
-nohtyP: 80085 ? num:int
+nohtyP: 80085 = num :int
+nohtyP: 80085 -> num :int
+nohtyP: 80085 ? num :int
 ```
 
 ### COMPOSITE LITERALS (#?)
