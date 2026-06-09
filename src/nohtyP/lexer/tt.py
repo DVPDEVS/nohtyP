@@ -1,147 +1,68 @@
 from __future__ import annotations
 from nohtyP.global_utilities.decorators import regex, api_level
 from nohtyP.lexer.types import *
-from typing import ClassVar
 
-# @api_level(0)
-# class __TT_PYTHON:
-# 	"""Holds lexical elements for Python"""
-# 	def __class_getitem__(cls, key :str):
-# 		return cls.__getattribute__(key)
+# Native int                    -> 123, 0, -42, 0b1010, 0o77, 0xFF
+# Native float                  -> 1.23, .5, 10., 1e10, -3.4e-2
+# Native bool                   -> True, False
+# NoneType                      -> None
+# Native bytes                  -> b"bytes", br"raw"
+# Native bytearray              -> bytearray(b"bytes")
+# Native str                    -> "text", 'text', """text""", r"raw", f"format"
 
-# 	# Standard python lex types and objects
-# 	INT       = "INT"		# Native int                    -> 123, 0, -42, 0b1010, 0o77, 0xFF
-# 	FLOAT     = "FLOAT"		# Native float                  -> 1.23, .5, 10., 1e10, -3.4e-2
-# 	BOOL      = "BOOL"		# Native bool                   -> True, False
-# 	NONE      = "NONE"		# NoneType                      -> None
-# 	BYTES     = "BYTES"		# Native bytes                  -> b"bytes", br"raw"
-# 	BYTEARRAY = "BYTEARRAY"	# Native bytearray              -> bytearray(b"bytes")
-# 	STR       = "STR"		# Native str                    -> "text", 'text', """text""", r"raw", f"format"
+# Known identifiers             -> variable_name, _private, ClassName
+# Python keywords               -> if, else, while, def, class, return, import
+# Operators                     -> +, -, *, /, //, %, **, =, ==, !=, <, >, <=, >=, and, or, not, is, in
+# General punctuation           -> :, ;, ., @, = (contextual), ->
+# End of file/input             -> <EOF>
 
-# 	ID        = "ID"		# Known identifiers             -> variable_name, _private, ClassName
-# 	KEYWORD   = "KEYWORD"	# Python keywords               -> if, else, while, def, class, return, import
-# 	OP        = "OP"		# Operators                     -> +, -, *, /, //, %, **, =, ==, !=, <, >, <=, >=, and, or, not, is, in
-# 	PUNCT     = "PUNCT"		# General punctuation           -> :, ;, ., @, = (contextual), ->
-# 	EOF       = "EOF"		# End of file/input             -> <EOF>
+# Native list literal           -> [1, 2, 3]
+# Native tuple literal          -> (1, 2), ()
+# Native set literal            -> {1, 2, 3}
+# Native dict literal           -> {"a": 1, "b": 2}
+# Ellipsis object               -> ...
+# Slice syntax                  -> a:b, a:b:c
 
-# 	LIST      = "LIST"		# Native list literal           -> [1, 2, 3]
-# 	TUPLE     = "TUPLE"		# Native tuple literal          -> (1, 2), ()
-# 	SET       = "SET"		# Native set literal            -> {1, 2, 3}
-# 	DICT      = "DICT"		# Native dict literal           -> {"a": 1, "b": 2}
-# 	ELLIPSIS  = "ELLIPSIS"	# Ellipsis object               -> ...
-# 	SLICE     = "SLICE"		# Slice syntax                  -> a:b, a:b:c
+# Left parenthesis              -> (
+# Right parenthesis             -> )
+# Left brace                    -> {
+# Right brace                   -> }
+# Left bracket                  -> (
+# Right bracket                 -> ]
 
-# 	LPAREN    = "LPAREN"	# Left parenthesis              -> (
-# 	RPAREN    = "RPAREN"	# Right parenthesis             -> )
-# 	LBRACE    = "LBRACE"	# Left brace                    -> {
-# 	RBRACE    = "RBRACE"	# Right brace                   -> }
-# 	LBRACKET  = "LBRACKET"	# Left bracket                  -> (
-# 	RBRACKET  = "RBRACKET"	# Right bracket                 -> ]
+# Attribute access              -> .
+# Colon                         -> :
+# Statement separator           -> ;
+# Function return annotation    -> ->
+# Decorator/operator            -> @
 
-# 	DOT       = "DOT"		# Attribute access              -> .
-# 	COLON     = "COLON"		# Colon                         -> :
-# 	SEMICOLON = "SEMICOLON"	# Statement separator           -> ;
-# 	ARROW     = "ARROW"		# Function return annotation    -> ->
-# 	AT        = "AT"		# Decorator/operator            -> @
+# Assignment                    -> =
+# Augmented assignment          -> +=, -=, *=, /=, //=, %=, **=, &=, |=, ^=, <<=, >>=
 
-# 	ASSIGN    = "ASSIGN"	# Assignment                    -> =
-# 	AUGASSIGN = "AUGASSIGN"	# Augmented assignment          -> +=, -=, *=, /=, //=, %=, **=, &=, |=, ^=, <<=, >>=
+# Bitwise operators             -> &, |, ^, ~, <<, >>
+# Comparison operators          -> ==, !=, <, >, <=, >=, is, is not, in, not in
+# Logical operators             -> and, or, not
 
-# 	BITOP     = "BITOP"		# Bitwise operators             -> &, |, ^, ~, <<, >>
-# 	COMPARE   = "COMPARE"	# Comparison operators          -> ==, !=, <, >, <=, >=, is, is not, in, not in
-# 	LOGIC     = "LOGIC"		# Logical operators             -> and, or, not
+# Line break                    -> \n
+# Indentation increase          -> (whitespace block start)
+# Indentation decrease          -> (whitespace block end)
 
-# 	NEWLINE   = "NEWLINE"	# Line break                    -> \n
-# 	INDENT    = "INDENT"	# Indentation increase          -> (whitespace block start)
-# 	DEDENT    = "DEDENT"	# Indentation decrease          -> (whitespace block end)
+# Comment                       -> # comment text
+# Formatted string              -> f"{x}", f"text {expr}"
+# Format specifier (inside fstr)-> {value:.2f}
 
-# 	COMMENT   = "COMMENT"	# Comment                       -> # comment text
-# 	FSTRING   = "FSTRING"	# Formatted string              -> f"{x}", f"text {expr}"
-# 	FORMAT    = "FORMAT"	# Format specifier (inside fstr)-> {value:.2f}
+# Generator expression          -> (x for x in y)
+# List comprehension            -> [x for x in y]
+# Set comprehension             -> {x for x in y}
+# Dict comprehension            -> {k: v for k, v in y}
 
-# 	GENEXP    = "GENEXP"	# Generator expression          -> (x for x in y)
-# 	LISTCOMP  = "LISTCOMP"	# List comprehension            -> [x for x in y]
-# 	SETCOMP   = "SETCOMP"	# Set comprehension             -> {x for x in y}
-# 	DICTCOMP  = "DICTCOMP"	# Dict comprehension            -> {k: v for k, v in y}
+# Lambda expression             -> lambda x: x + 1
+# Yield expression              -> yield x, yield from x
+# Await expression              -> await coro()
+# Async keyword                 -> async def, async for
 
-# 	LAMBDA    = "LAMBDA"	# Lambda expression             -> lambda x: x + 1
-# 	YIELD     = "YIELD"		# Yield expression              -> yield x, yield from x
-# 	AWAIT     = "AWAIT"		# Await expression              -> await coro()
-# 	ASYNC     = "ASYNC"		# Async keyword                 -> async def, async for
-
-# 	DECORATOR = "DECORATOR"	# Decorator usage               -> @decorator
-# 	TYPEHINT  = "TYPEHINT"	# Type annotations              -> x: int, -> str
-
-# @regex
-# @api_level(0)
-# class PY:
-# 	# Elements
-# 	ELEM: type[__TT_PYTHON] = __TT_PYTHON
-# 	# Regex dict
-# 	REGEX: dict[str, str] = {
-# 		# --- literals ---
-# 		ELEM.INT: r"[+-]?(?:0b[01_]+|0o[0-7_]+|0x[\da-fA-F_]+|\d[\d_]*)(?![\w.])",
-# 		ELEM.FLOAT: r"[+-]?(?:\d[\d_]*\.\d[\d_]*|\.\d[\d_]*|\d[\d_]*\.)(?:[eE][+-]?\d+)?",
-# 		ELEM.BOOL: r"\b(?:True|False)\b",
-# 		ELEM.NONE: r"\bNone\b",
-# 		ELEM.BYTES: r"(?i)\b(?:b|br)\"(?:\\.|[^\"\\])*\"|\b(?:b|br)'(?:\\.|[^'\\])*'",
-# 		ELEM.BYTEARRAY: r"bytearray\s*\(\s*b?(?:\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')\s*\)",
-# 		# TT_PYTHON.STR: rf'((rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b)?({'|'.join(REGEX_TT.string_quotes_ls)})([.\n]*)\5(\..+\(\)*',
-# 		# --- identifiers / keywords ---
-# 		ELEM.ID: r"\b[a-zA-Z_][a-zA-Z0-9_]*\b",
-# 		ELEM.KEYWORD: r"\b(?:if|else|elif|while|for|def|class|return|import|from|as|pass|break|continue|try|except|finally|raise|with|yield|lambda|async|await|global|nonlocal|assert|del|match|case)\b",
-# 		# --- operators ---
-# 		ELEM.OP: r"(?:\*\*|//|==|!=|<=|>=|<|>|\+|-|\*|/|%|=)",
-# 		ELEM.ASSIGN: r"=",
-# 		ELEM.AUGASSIGN: r"(?:\+=|-=|\*=|/=|//=|%=|\*\*=|&=|\|=|\^=|<<=|>>=)",
-# 		ELEM.BITOP: r"(?:&|\||\^|~|<<|>>)",
-# 		ELEM.COMPARE: r"(?:==|!=|<=|>=|<|>|is(?:\s+not)?|in|not\s+in)",
-# 		ELEM.LOGIC: r"\b(?:and|or|not)\b",
-# 		# --- punctuation ---
-# 		ELEM.PUNCT: r"(?:->|:|;|@|\.|,)",
-# 		ELEM.DOT: r"\.",
-# 		ELEM.COLON: r":",
-# 		ELEM.SEMICOLON: r";",
-# 		ELEM.ARROW: r"->",
-# 		ELEM.AT: r"@",
-# 		# --- grouping ---
-# 		ELEM.LPAREN: r"\(",
-# 		ELEM.RPAREN: r"\)",
-# 		ELEM.LBRACE: r"\{",
-# 		ELEM.RBRACE: r"\}",
-# 		ELEM.LBRACKET: r"\[",
-# 		ELEM.RBRACKET: r"\]",
-# 		# --- structures (heuristic, not syntax-perfect) ---
-# 		ELEM.LIST: r"\[[^\[\]]*\]",
-# 		ELEM.TUPLE: r"\([^()]*\)",
-# 		ELEM.SET: r"\{(?![^:]*:)[^{}]*\}",
-# 		ELEM.DICT: r"\{[^{}]*:[^{}]*\}",
-# 		ELEM.SLICE: r"[a-zA-Z_][\w]*\s*:\s*[a-zA-Z_0-9]*\s*(?::\s*[a-zA-Z_0-9]*)?",
-# 		ELEM.ELLIPSIS: r"\.\.\.",
-# 		# --- functions / async / decorators ---
-# 		ELEM.LAMBDA: r"\blambda\b",
-# 		ELEM.YIELD: r"\byield(?:\s+from)?\b",
-# 		ELEM.AWAIT: r"\bawait\b",
-# 		ELEM.ASYNC: r"\basync\b",
-# 		ELEM.DECORATOR: r"@[a-zA-Z_][a-zA-Z0-9_\.]*",
-# 		# --- type hints ---
-# 		ELEM.TYPEHINT: r"(?:->\s*[a-zA-Z_][\w\.\[\), ]*|:\s*[a-zA-Z_][\w\.\[\), ]*)",
-# 		# --- strings / f-strings ---
-# 		ELEM.FSTRING: r"""(?x)
-# 			f(?:\"\"\".*?\"\"\"|''' .*? '''|\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')
-# 		""",
-# 		ELEM.FORMAT: r"\{[^{}]+\}",
-# 		# --- comprehensions / generators (heuristic) ---
-# 		ELEM.LISTCOMP: r"\[[^\]]+for[^\]]+\]",
-# 		ELEM.SETCOMP: r"\{[^}]+for[^}]+\}",
-# 		ELEM.DICTCOMP: r"\{[^}]+:[^}]+for[^}]+\}",
-# 		ELEM.GENEXP: r"\([^)]+for[^)]+\)",
-# 		# --- misc ---
-# 		ELEM.COMMENT: r"#.*",
-# 		ELEM.NEWLINE: r"\n",
-# 		ELEM.INDENT:   "(\t|\\ +|\n)",
-# 		ELEM.DEDENT:  r"",
-# 	}
+# Decorator usage               -> @decorator
+# Type annotations              -> x: int, -> str
 
 @regex
 @api_level(0)
@@ -212,15 +133,171 @@ class TT:
 			r"(?<!\.)match(?!\.)", # case sensitive
 			LexType("KW_MATCH", lexer_langs.NOHTYP) ), #? match
 	}
-	G: ClassVar[dict[str, tuple[str, LexType]]] = {
+	G: dict[str, tuple[str, LexType]] = {
 		#! Generic elements
 		"UNKNOWN" :(
 			"",
 			LexType("UNKNOWN", lexer_langs.GENERIC)	),
 	}
+	PY: dict[str, tuple[str, LexType]] = {
+		#! Python elements
+		# --- literals ---
+		"INT" :(
+			r"[+-]?(?:0b[01_]+|0o[0-7_]+|0x[\da-fA-F_]+|\d[\d_]*)(?![\w.])" , 
+			LexType("INT", lexer_langs.PYTHON) ),
+		"FLOAT" :(
+			r"[+-]?(?:\d[\d_]*\.\d[\d_]*|\.\d[\d_]*|\d[\d_]*\.)(?:[eE][+-]?\d+)?" , 
+			LexType("FLOAT", lexer_langs.PYTHON) ),
+		"BOOL" :(
+			r"\b(?:True|False)\b" , 
+			LexType("BOOL", lexer_langs.PYTHON) ),
+		"NONE" :(
+			r"\bNone\b" , 
+			LexType("NONE", lexer_langs.PYTHON) ),
+		"BYTES" :(
+			r"(?i)\b(?:b|br)\"(?:\\.|[^\"\\])*\"|\b(?:b|br)'(?:\\.|[^'\\])*'" , 
+			LexType("BYTES", lexer_langs.PYTHON) ),
+		"BYTEARRAY" :(
+			r"bytearray\s*\(\s*b?(?:\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')\s*\)" , 
+			LexType("BYTEARRAY", lexer_langs.PYTHON) ),
+		"STR" :(
+			rf'((rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b)?(\'|\"|´|`|\"\"\"|\'\'\')([.\n]*)\5(\..+\(\)*' , 
+			LexType("STR", lexer_langs.PYTHON) ),
+		# --- identifiers / keywords ---
+		"ID" :(
+			r"\b[a-zA-Z_][a-zA-Z0-9_]*\b" , 
+			LexType("ID", lexer_langs.PYTHON) ),
+		"KEYWORD" :(
+			r"\b(?:if|else|elif|while|for|def|class|return|import|from|as|pass|break|continue|try|except|finally|raise|with|yield|lambda|async|await|global|nonlocal|assert|del|match|case)\b" , 
+			LexType("KEYWORD", lexer_langs.PYTHON) ),
+		# --- operators ---
+		"OP" :(
+			r"(?:\*\*|//|==|!=|<=|>=|<|>|\+|-|\*|/|%|=)" , 
+			LexType("OP", lexer_langs.PYTHON) ),
+		"ASSIGN" :(
+			r"=" , 
+			LexType("ASSIGN", lexer_langs.PYTHON) ),
+		"AUGASSIGN" :(
+			r"(?:\+=|-=|\*=|/=|//=|%=|\*\*=|&=|\|=|\^=|<<=|>>=)" , 
+			LexType("AUGASSIGN", lexer_langs.PYTHON) ),
+		"BITOP" :(
+			r"(?:&|\||\^|~|<<|>>)" , 
+			LexType("BITOP", lexer_langs.PYTHON) ),
+		"COMPARE" :(
+			r"(?:==|!=|<=|>=|<|>|is(?:\s+not)?|in|not\s+in)" , 
+			LexType("COMPARE", lexer_langs.PYTHON) ),
+		"LOGIC" :(
+			r"\b(?:and|or|not)\b" , 
+			LexType("LOGIC", lexer_langs.PYTHON) ),
+		# --- punctuation ---
+		"PUNCT" :(
+			r"(?:->|:|;|@|\.|,)" , 
+			LexType("PUNCT", lexer_langs.PYTHON) ),
+		"DOT" :(
+			r"\." , 
+			LexType("DOT", lexer_langs.PYTHON) ),
+		"COLON" :(
+			r":" , 
+			LexType("COLON", lexer_langs.PYTHON) ),
+		"SEMICOLON" :(
+			r";" , 
+			LexType("SEMICOLON", lexer_langs.PYTHON) ),
+		"ARROW" :(
+			r"->" , 
+			LexType("ARROW", lexer_langs.PYTHON) ),
+		"AT" :(
+			r"@" , 
+			LexType("AT", lexer_langs.PYTHON) ),
+		# --- grouping ---
+		"LPAREN" :(
+			r"\(" , 
+			LexType("LPAREN", lexer_langs.PYTHON) ),
+		"RPAREN" :(
+			r"\)" , 
+			LexType("RPAREN", lexer_langs.PYTHON) ),
+		"LBRACE" :(
+			r"\{" , 
+			LexType("LBRACE", lexer_langs.PYTHON) ),
+		"RBRACE" :(
+			r"\}" , 
+			LexType("RBRACE", lexer_langs.PYTHON) ),
+		"LBRACKET" :(
+			r"\[" , 
+			LexType("LBRACKET", lexer_langs.PYTHON) ),
+		"RBRACKET" :(
+			r"\]" , 
+			LexType("RBRACKET", lexer_langs.PYTHON) ),
+		# --- structures (heuristic, not syntax-perfect) ---
+		"LIST" :(
+			r"\[[^\[\]]*\]" , 
+			LexType("LIST", lexer_langs.PYTHON) ),
+		"TUPLE" :(
+			r"\([^()]*\)" , 
+			LexType("TUPLE", lexer_langs.PYTHON) ),
+		"SET" :(
+			r"\{(?![^:]*:)[^{}]*\}" , 
+			LexType("SET", lexer_langs.PYTHON) ),
+		"DICT" :(
+			r"\{[^{}]*:[^{}]*\}" , 
+			LexType("DICT", lexer_langs.PYTHON) ),
+		"SLICE" :(
+			r"[a-zA-Z_][\w]*\s*:\s*[a-zA-Z_0-9]*\s*(?::\s*[a-zA-Z_0-9]*)?" , 
+			LexType("SLICE", lexer_langs.PYTHON) ),
+		"ELLIPSIS" :(
+			r"\.\.\." , 
+			LexType("ELLIPSIS", lexer_langs.PYTHON) ),
+		# --- functions / async / decorators ---
+		"LAMBDA" :(
+			r"\blambda\b" , 
+			LexType("LAMBDA", lexer_langs.PYTHON) ),
+		"YIELD" :(
+			r"\byield(?:\s+from)?\b" , 
+			LexType("YIELD", lexer_langs.PYTHON) ),
+		"AWAIT" :(
+			r"\bawait\b" , 
+			LexType("AWAIT", lexer_langs.PYTHON) ),
+		"ASYNC" :(
+			r"\basync\b" , 
+			LexType("ASYNC", lexer_langs.PYTHON) ),
+		"DECORATOR" :(
+			r"@[a-zA-Z_][a-zA-Z0-9_\.]*" , 
+			LexType("DECORATOR", lexer_langs.PYTHON) ),
+		# --- type hints ---
+		"TYPEHINT" :(
+			r"(?:->\s*[a-zA-Z_][\w\.\[\), ]*|:\s*[a-zA-Z_][\w\.\[\), ]*)" , 
+			LexType("TYPEHINT", lexer_langs.PYTHON) ),
+		# --- strings / f-strings ---
+		"FSTRING" :(
+			r"(?x )f(?:\"\"\".*?\"\"\"|''' .*? '''|\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')",
+			LexType("FSTRING", lexer_langs.PYTHON) ),
+		"FORMAT" :(
+			r"\{[^{}]+\}" , 
+			LexType("FORMAT", lexer_langs.PYTHON) ),
+		# --- comprehensions / generators (heuristic) ---
+		"LISTCOMP" :(
+			r"\[[^\]]+for[^\]]+\]" , 
+			LexType("LISTCOMP", lexer_langs.PYTHON) ),
+		"SETCOMP" :(
+			r"\{[^}]+for[^}]+\}" , 
+			LexType("SETCOMP", lexer_langs.PYTHON) ),
+		"DICTCOMP" :(
+			r"\{[^}]+:[^}]+for[^}]+\}" , 
+			LexType("DICTCOMP", lexer_langs.PYTHON) ),
+		"GENEXP" :(
+			r"\([^)]+for[^)]+\)" , 
+			LexType("GENEXP", lexer_langs.PYTHON) ),
+		# --- misc ---
+		"COMMENT" :(
+			r"#.*" , 
+			LexType("COMMENT", lexer_langs.PYTHON) ),
+		"NEWLINE" :(
+			r"\n" , 
+			LexType("NEWLINE", lexer_langs.PYTHON) ),
+		"INDENT" :(
+			"(\t|\\ +|\n)" , 
+			LexType("INDENT", lexer_langs.PYTHON) ),
+		"DEDENT" :(
+			r"" , 
+			LexType("DEDENT", lexer_langs.PYTHON) ),
+	}
 
-reveal_type(TT)
-reveal_type(TT.G)
-reveal_type(LexType)
-reveal_type(lexer_langs)
-reveal_type(lexer_langs.GENERIC)
