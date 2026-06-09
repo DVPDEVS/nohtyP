@@ -2,68 +2,6 @@ from __future__ import annotations
 from nohtyP.global_utilities.decorators import regex, api_level
 from nohtyP.lexer.types import *
 
-# Native int                    -> 123, 0, -42, 0b1010, 0o77, 0xFF
-# Native float                  -> 1.23, .5, 10., 1e10, -3.4e-2
-# Native bool                   -> True, False
-# NoneType                      -> None
-# Native bytes                  -> b"bytes", br"raw"
-# Native bytearray              -> bytearray(b"bytes")
-# Native str                    -> "text", 'text', """text""", r"raw", f"format"
-
-# Known identifiers             -> variable_name, _private, ClassName
-# Python keywords               -> if, else, while, def, class, return, import
-# Operators                     -> +, -, *, /, //, %, **, =, ==, !=, <, >, <=, >=, and, or, not, is, in
-# General punctuation           -> :, ;, ., @, = (contextual), ->
-# End of file/input             -> <EOF>
-
-# Native list literal           -> [1, 2, 3]
-# Native tuple literal          -> (1, 2), ()
-# Native set literal            -> {1, 2, 3}
-# Native dict literal           -> {"a": 1, "b": 2}
-# Ellipsis object               -> ...
-# Slice syntax                  -> a:b, a:b:c
-
-# Left parenthesis              -> (
-# Right parenthesis             -> )
-# Left brace                    -> {
-# Right brace                   -> }
-# Left bracket                  -> (
-# Right bracket                 -> ]
-
-# Attribute access              -> .
-# Colon                         -> :
-# Statement separator           -> ;
-# Function return annotation    -> ->
-# Decorator/operator            -> @
-
-# Assignment                    -> =
-# Augmented assignment          -> +=, -=, *=, /=, //=, %=, **=, &=, |=, ^=, <<=, >>=
-
-# Bitwise operators             -> &, |, ^, ~, <<, >>
-# Comparison operators          -> ==, !=, <, >, <=, >=, is, is not, in, not in
-# Logical operators             -> and, or, not
-
-# Line break                    -> \n
-# Indentation increase          -> (whitespace block start)
-# Indentation decrease          -> (whitespace block end)
-
-# Comment                       -> # comment text
-# Formatted string              -> f"{x}", f"text {expr}"
-# Format specifier (inside fstr)-> {value:.2f}
-
-# Generator expression          -> (x for x in y)
-# List comprehension            -> [x for x in y]
-# Set comprehension             -> {x for x in y}
-# Dict comprehension            -> {k: v for k, v in y}
-
-# Lambda expression             -> lambda x: x + 1
-# Yield expression              -> yield x, yield from x
-# Await expression              -> await coro()
-# Async keyword                 -> async def, async for
-
-# Decorator usage               -> @decorator
-# Type annotations              -> x: int, -> str
-
 @regex
 @api_level(0)
 class TT:
@@ -142,160 +80,209 @@ class TT:
 	PY: dict[str, tuple[str, LexType]] = {
 		#! Python elements
 		# --- literals ---
+		# Native int                 -> 123, 0, -42, 0b1010, 0o77, 0xFF
 		"INT" :(
 			r"[+-]?(?:0b[01_]+|0o[0-7_]+|0x[\da-fA-F_]+|\d[\d_]*)(?![\w.])" , 
 			LexType("INT", lexer_langs.PYTHON) ),
+		# Native float               -> 1.23, .5, 10., 1e10, -3.4e-2
 		"FLOAT" :(
 			r"[+-]?(?:\d[\d_]*\.\d[\d_]*|\.\d[\d_]*|\d[\d_]*\.)(?:[eE][+-]?\d+)?" , 
 			LexType("FLOAT", lexer_langs.PYTHON) ),
+		# Native bool                -> True, False
 		"BOOL" :(
 			r"\b(?:True|False)\b" , 
 			LexType("BOOL", lexer_langs.PYTHON) ),
+		# NoneType                   -> None
 		"NONE" :(
 			r"\bNone\b" , 
 			LexType("NONE", lexer_langs.PYTHON) ),
+		# Native bytes               -> b"bytes", br"raw"
 		"BYTES" :(
 			r"(?i)\b(?:b|br)\"(?:\\.|[^\"\\])*\"|\b(?:b|br)'(?:\\.|[^'\\])*'" , 
 			LexType("BYTES", lexer_langs.PYTHON) ),
+		# Native bytearray           -> bytearray(b"bytes")
 		"BYTEARRAY" :(
 			r"bytearray\s*\(\s*b?(?:\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')\s*\)" , 
 			LexType("BYTEARRAY", lexer_langs.PYTHON) ),
+		# Native str                 -> "text", 'text', """text""", r"raw", f"format"
 		"STR" :(
 			rf'((rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b)?(\'|\"|´|`|\"\"\"|\'\'\')([.\n]*)\5(\..+\(\)*' , 
 			LexType("STR", lexer_langs.PYTHON) ),
 		# --- identifiers / keywords ---
+		# Known identifiers          -> variable_name, _private, ClassName
 		"ID" :(
 			r"\b[a-zA-Z_][a-zA-Z0-9_]*\b" , 
 			LexType("ID", lexer_langs.PYTHON) ),
+		# Python keywords            -> if, else, while, def, class, return, import
 		"KEYWORD" :(
 			r"\b(?:if|else|elif|while|for|def|class|return|import|from|as|pass|break|continue|try|except|finally|raise|with|yield|lambda|async|await|global|nonlocal|assert|del|match|case)\b" , 
 			LexType("KEYWORD", lexer_langs.PYTHON) ),
 		# --- operators ---
+		# Operators                  -> +, -, *, /, //, %, **, =, ==, !=, <, >, <=, >=, and, or, not, is, in
 		"OP" :(
 			r"(?:\*\*|//|==|!=|<=|>=|<|>|\+|-|\*|/|%|=)" , 
 			LexType("OP", lexer_langs.PYTHON) ),
+		# Assignment                 -> =
 		"ASSIGN" :(
 			r"=" , 
 			LexType("ASSIGN", lexer_langs.PYTHON) ),
+		# Augmented assignment       -> +=, -=, *=, /=, //=, %=, **=, &=, |=, ^=, <<=, >>=
 		"AUGASSIGN" :(
 			r"(?:\+=|-=|\*=|/=|//=|%=|\*\*=|&=|\|=|\^=|<<=|>>=)" , 
 			LexType("AUGASSIGN", lexer_langs.PYTHON) ),
+		# Bitwise operators         -> &, |, ^, ~, <<, >>
 		"BITOP" :(
 			r"(?:&|\||\^|~|<<|>>)" , 
 			LexType("BITOP", lexer_langs.PYTHON) ),
+		# Comparison operators      -> ==, !=, <, >, <=, >=, is, is not, in, not in
 		"COMPARE" :(
 			r"(?:==|!=|<=|>=|<|>|is(?:\s+not)?|in|not\s+in)" , 
 			LexType("COMPARE", lexer_langs.PYTHON) ),
+		# Logical operators         -> and, or, not
 		"LOGIC" :(
 			r"\b(?:and|or|not)\b" , 
 			LexType("LOGIC", lexer_langs.PYTHON) ),
 		# --- punctuation ---
+		# General punctuation       -> :, ;, ., @, = (contextual), ->
 		"PUNCT" :(
 			r"(?:->|:|;|@|\.|,)" , 
 			LexType("PUNCT", lexer_langs.PYTHON) ),
+		# Attribute access          -> .
 		"DOT" :(
 			r"\." , 
 			LexType("DOT", lexer_langs.PYTHON) ),
+		# Colon                     -> :
 		"COLON" :(
 			r":" , 
 			LexType("COLON", lexer_langs.PYTHON) ),
+		# Statement separator       -> ;
 		"SEMICOLON" :(
 			r";" , 
 			LexType("SEMICOLON", lexer_langs.PYTHON) ),
+		# Function return annotation -> ->
 		"ARROW" :(
 			r"->" , 
 			LexType("ARROW", lexer_langs.PYTHON) ),
+		# Decorator/operator        -> @
 		"AT" :(
 			r"@" , 
 			LexType("AT", lexer_langs.PYTHON) ),
 		# --- grouping ---
+		# Left parenthesis          -> (
 		"LPAREN" :(
 			r"\(" , 
 			LexType("LPAREN", lexer_langs.PYTHON) ),
+		# Right parenthesis         -> )
 		"RPAREN" :(
 			r"\)" , 
 			LexType("RPAREN", lexer_langs.PYTHON) ),
+		# Left brace                -> {
 		"LBRACE" :(
 			r"\{" , 
 			LexType("LBRACE", lexer_langs.PYTHON) ),
+		# Right brace               -> }
 		"RBRACE" :(
 			r"\}" , 
 			LexType("RBRACE", lexer_langs.PYTHON) ),
+		# Left bracket              -> [
 		"LBRACKET" :(
 			r"\[" , 
 			LexType("LBRACKET", lexer_langs.PYTHON) ),
+		# Right bracket             -> ]
 		"RBRACKET" :(
 			r"\]" , 
 			LexType("RBRACKET", lexer_langs.PYTHON) ),
 		# --- structures (heuristic, not syntax-perfect) ---
+		# Native list literal       -> [1, 2, 3]
 		"LIST" :(
 			r"\[[^\[\]]*\]" , 
 			LexType("LIST", lexer_langs.PYTHON) ),
+		# Native tuple literal      -> (1, 2), ()
 		"TUPLE" :(
 			r"\([^()]*\)" , 
 			LexType("TUPLE", lexer_langs.PYTHON) ),
+		# Native set literal        -> {1, 2, 3}
 		"SET" :(
 			r"\{(?![^:]*:)[^{}]*\}" , 
 			LexType("SET", lexer_langs.PYTHON) ),
+		# Native dict literal       -> {"a": 1, "b": 2}
 		"DICT" :(
 			r"\{[^{}]*:[^{}]*\}" , 
 			LexType("DICT", lexer_langs.PYTHON) ),
+		# Slice syntax              -> a:b, a:b:c
 		"SLICE" :(
 			r"[a-zA-Z_][\w]*\s*:\s*[a-zA-Z_0-9]*\s*(?::\s*[a-zA-Z_0-9]*)?" , 
 			LexType("SLICE", lexer_langs.PYTHON) ),
+		# Ellipsis object           -> ...
 		"ELLIPSIS" :(
 			r"\.\.\." , 
 			LexType("ELLIPSIS", lexer_langs.PYTHON) ),
 		# --- functions / async / decorators ---
+		# Lambda expression         -> lambda x: x + 1
 		"LAMBDA" :(
 			r"\blambda\b" , 
 			LexType("LAMBDA", lexer_langs.PYTHON) ),
+		# Yield expression          -> yield x, yield from x
 		"YIELD" :(
 			r"\byield(?:\s+from)?\b" , 
 			LexType("YIELD", lexer_langs.PYTHON) ),
+		# Await expression          -> await coro()
 		"AWAIT" :(
 			r"\bawait\b" , 
 			LexType("AWAIT", lexer_langs.PYTHON) ),
+		# Async keyword             -> async def, async for
 		"ASYNC" :(
 			r"\basync\b" , 
 			LexType("ASYNC", lexer_langs.PYTHON) ),
+		# Decorator usage           -> @decorator
 		"DECORATOR" :(
 			r"@[a-zA-Z_][a-zA-Z0-9_\.]*" , 
 			LexType("DECORATOR", lexer_langs.PYTHON) ),
 		# --- type hints ---
+		# Type annotations          -> x: int, -> str
 		"TYPEHINT" :(
 			r"(?:->\s*[a-zA-Z_][\w\.\[\), ]*|:\s*[a-zA-Z_][\w\.\[\), ]*)" , 
 			LexType("TYPEHINT", lexer_langs.PYTHON) ),
 		# --- strings / f-strings ---
+		# Formatted string          -> f"{x}", f"text {expr}"
 		"FSTRING" :(
 			r"(?x )f(?:\"\"\".*?\"\"\"|''' .*? '''|\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')",
 			LexType("FSTRING", lexer_langs.PYTHON) ),
+		# Format specifier (inside fstr) -> {value:.2f}
 		"FORMAT" :(
 			r"\{[^{}]+\}" , 
 			LexType("FORMAT", lexer_langs.PYTHON) ),
 		# --- comprehensions / generators (heuristic) ---
-		"LISTCOMP" :(
-			r"\[[^\]]+for[^\]]+\]" , 
-			LexType("LISTCOMP", lexer_langs.PYTHON) ),
-		"SETCOMP" :(
-			r"\{[^}]+for[^}]+\}" , 
-			LexType("SETCOMP", lexer_langs.PYTHON) ),
-		"DICTCOMP" :(
-			r"\{[^}]+:[^}]+for[^}]+\}" , 
-			LexType("DICTCOMP", lexer_langs.PYTHON) ),
+		# Generator expression      -> (x for x in y)
 		"GENEXP" :(
 			r"\([^)]+for[^)]+\)" , 
 			LexType("GENEXP", lexer_langs.PYTHON) ),
+		# List comprehension        -> [x for x in y]
+		"LISTCOMP" :(
+			r"\[[^\]]+for[^\]]+\]" , 
+			LexType("LISTCOMP", lexer_langs.PYTHON) ),
+		# Set comprehension         -> {x for x in y}
+		"SETCOMP" :(
+			r"\{[^}]+for[^}]+\}" , 
+			LexType("SETCOMP", lexer_langs.PYTHON) ),
+		# Dict comprehension        -> {k: v for k, v in y}
+		"DICTCOMP" :(
+			r"\{[^}]+:[^}]+for[^}]+\}" , 
+			LexType("DICTCOMP", lexer_langs.PYTHON) ),
 		# --- misc ---
+		# Comment                   -> # comment text
 		"COMMENT" :(
 			r"#.*" , 
 			LexType("COMMENT", lexer_langs.PYTHON) ),
+		# Line break                -> \n
 		"NEWLINE" :(
 			r"\n" , 
 			LexType("NEWLINE", lexer_langs.PYTHON) ),
+		# Indentation increase      -> (whitespace block start)
 		"INDENT" :(
 			"(\t|\\ +|\n)" , 
 			LexType("INDENT", lexer_langs.PYTHON) ),
+		# Indentation decrease      -> (whitespace block end)
 		"DEDENT" :(
 			r"" , 
 			LexType("DEDENT", lexer_langs.PYTHON) ),
