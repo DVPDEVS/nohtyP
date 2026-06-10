@@ -18,9 +18,10 @@ class funcs:
 		result = TokenSeries()
 		#* loop over text, check for whitespace / semicolon, append to result
 		#* separate on all valid operators, too
-		token = ""
 		skips = 0
 		for i in range(len(text)):
+			#* reset token each loop
+			token = ""
 			if skips > 0:
 				skips -= 1
 				continue
@@ -119,8 +120,8 @@ class funcs:
 				result.append(char)
 				continue
 			...
-			#* reset token each loop
-			token = ""
+			# fallback
+			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
 		return result
 	def tokenize_file(file_path :str|Path) -> TokenSeries:
 		path = Path(file_path)
