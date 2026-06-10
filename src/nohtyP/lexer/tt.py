@@ -7,21 +7,33 @@ from nohtyP.lexer.types import *
 class TT:
 	ELEM: dict[str, tuple[str, LexType]] = {
 		#! nohtyP elements
-		"SEPARATOR" :(
+		"SEMICOLON" :(
 			r";", # shouldnt require boundaries but they wont hurt either
-			LexType("SEPARATOR", lexer_langs.NOHTYP) ), #? ;
+			LexType("SEMICOLON", lexer_langs.NOHTYP) ), #? ;
 		"BAREWORD" :(
-			r"^(?<![\.])(?![0-9])[\w\.]*(?!\.+)$", #* sauce: https://regex101.com/r/L0MnX3/1 
+			r"^(?![\.])(?![0-9])[\w\.]+(?<![\.])$", #* sauce: https://regex101.com/r/L0MnX3/2 
 			LexType("BAREWORD", lexer_langs.NOHTYP) ), #? <anything>
 		"TYPE_DECLARATION" :(
-			r"^\:\s?(?<![\.])(?![0-9])[\w\.]*(?!\.+)$", #* sauce: https://regex101.com/r/FniyHg/2 
-			LexType("TYPE_DECLARATION", lexer_langs.NOHTYP) ), #? bareword preceded by a colon and optional whitespace
+			r"^\*?(?![\.])(?![0-9])[\w\.]+(?<![\.])\:$", #* sauce: https://regex101.com/r/lhwcEL/1 
+			LexType("TYPE_DECLARATION", lexer_langs.NOHTYP) ), #? optional * followed by a bareword and a :
 		"CBRACKET_LEFT" :(
 			r"\{",
 			LexType("CBRACKET_LEFT", lexer_langs.NOHTYP) ), #? {
 		"CBRACKET_RIGHT" :(
 			r"\}",
 			LexType("CBRACKET_RIGHT", lexer_langs.NOHTYP) ), #? }
+		"BRACKET_LEFT" :(
+			r"\[",
+			LexType("BRACKET_LEFT", lexer_langs.NOHTYP) ), #? [
+		"BRACKET_RIGHT" :(
+			r"\]",
+			LexType("BRACKET_RIGHT", lexer_langs.NOHTYP) ), #? ]
+		"PAREN_LEFT" :(
+			r"\(",
+			LexType("PAREN_LEFT", lexer_langs.NOHTYP) ), #? (
+		"PAREN_RIGHT" :(
+			r"\)",
+			LexType("PAREN_RIGHT", lexer_langs.NOHTYP) ), #? )
 		"ASS_EQ" :(
 			r"=",
 			LexType("ASS_EQ", lexer_langs.NOHTYP) ), #? =
@@ -31,15 +43,15 @@ class TT:
 		"FLOW_HASH_Q" :(
 			r"#\?",
 			LexType("FLOW_HASH_Q", lexer_langs.NOHTYP) ), #? #?
-		"WHILE" :(
+		"FLOW_WHILE" :(
 			r"\?=",
-			LexType("WHILE", lexer_langs.NOHTYP) ), #? ?=
-		"ITERATOR" :(
+			LexType("FLOW_WHILE", lexer_langs.NOHTYP) ), #? ?=
+		"SYMBOL_AT" :(
 			r"@",
-			LexType("ITERATOR", lexer_langs.NOHTYP) ), #? @
-		"CONDITION_TILDE" :(
+			LexType("SYMBOL_AT", lexer_langs.NOHTYP) ), #? @
+		"TILDE" :(
 			r"~",
-			LexType("CONDITION_TILDE", lexer_langs.NOHTYP) ), #? ~
+			LexType("TILDE", lexer_langs.NOHTYP) ), #? ~
 		"CONDITION_AST_TILDE" :(
 			r"\*~",
 			LexType("CONDITION_AST_TILDE", lexer_langs.NOHTYP) ), #? *~
@@ -93,16 +105,12 @@ class TT:
 			r"\bNone\b" , 
 			LexType("NONE", lexer_langs.PYTHON) ),
 		# Native bytes               -> b"bytes", br"raw"
-		"BYTES" :(
-			r"(?i)\b(?:b|br)\"(?:\\.|[^\"\\])*\"|\b(?:b|br)'(?:\\.|[^'\\])*'" , 
-			LexType("BYTES", lexer_langs.PYTHON) ),
+		#* Covered by native string
 		# Native bytearray           -> bytearray(b"bytes")
-		"BYTEARRAY" :(
-			r"bytearray\s*\(\s*b?(?:\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')\s*\)" , 
-			LexType("BYTEARRAY", lexer_langs.PYTHON) ),
+		#* Just native bytes flowed into bytearray()
 		# Native str                 -> "text", 'text', """text""", r"raw", f"format"
 		"STR" :(
-			rf'((rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b)?(\'|\"|´|`|\"\"\"|\'\'\')([.\n]*)\5(\..+\(\)*' , 
+			rf'((rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b)?(\'|\"|´|`|\"\"\"|\'\'\')([.\n]*)\5(\..+\(\)*' , #* sauce : https://regex101.com/r/Hhihv5/1 
 			LexType("STR", lexer_langs.PYTHON) ),
 		# --- identifiers / keywords ---
 		# Known identifiers          -> variable_name, _private, ClassName
@@ -118,17 +126,13 @@ class TT:
 		"OP" :(
 			r"(?:\*\*|//|==|!=|<=|>=|<|>|\+|-|\*|/|%|=)" , 
 			LexType("OP", lexer_langs.PYTHON) ),
-		# Assignment                 -> =
-		"ASSIGN" :(
-			r"=" , 
-			LexType("ASSIGN", lexer_langs.PYTHON) ),
 		# Augmented assignment       -> +=, -=, *=, /=, //=, %=, **=, &=, |=, ^=, <<=, >>=
 		"AUGASSIGN" :(
 			r"(?:\+=|-=|\*=|/=|//=|%=|\*\*=|&=|\|=|\^=|<<=|>>=)" , 
 			LexType("AUGASSIGN", lexer_langs.PYTHON) ),
 		# Bitwise operators         -> &, |, ^, ~, <<, >>
 		"BITOP" :(
-			r"(?:&|\||\^|~|<<|>>)" , 
+			r"(?:&|\||\^|~|<<|>>)" , #! ~ will be consumed by earlier nohtyp lex
 			LexType("BITOP", lexer_langs.PYTHON) ),
 		# Comparison operators      -> ==, !=, <, >, <=, >=, is, is not, in, not in
 		"COMPARE" :(
@@ -141,7 +145,7 @@ class TT:
 		# --- punctuation ---
 		# General punctuation       -> :, ;, ., @, = (contextual), ->
 		"PUNCT" :(
-			r"(?:->|:|;|@|\.|,)" , 
+			r"(?:->|:|;|@|\.|,)" , #! -> will be consumed by earlier nohtyp lex
 			LexType("PUNCT", lexer_langs.PYTHON) ),
 		# Attribute access          -> .
 		"DOT" :(
@@ -151,64 +155,23 @@ class TT:
 		"COLON" :(
 			r":" , 
 			LexType("COLON", lexer_langs.PYTHON) ),
-		# Statement separator       -> ;
-		"SEMICOLON" :(
-			r";" , 
-			LexType("SEMICOLON", lexer_langs.PYTHON) ),
 		# Function return annotation -> ->
-		"ARROW" :(
-			r"->" , 
-			LexType("ARROW", lexer_langs.PYTHON) ),
+			#! -> will be consumed by earlier nohtyp lex
 		# Decorator/operator        -> @
-		"AT" :(
-			r"@" , 
-			LexType("AT", lexer_langs.PYTHON) ),
-		# --- grouping ---
-		# Left parenthesis          -> (
-		"LPAREN" :(
-			r"\(" , 
-			LexType("LPAREN", lexer_langs.PYTHON) ),
-		# Right parenthesis         -> )
-		"RPAREN" :(
-			r"\)" , 
-			LexType("RPAREN", lexer_langs.PYTHON) ),
-		# Left brace                -> {
-		"LBRACE" :(
-			r"\{" , 
-			LexType("LBRACE", lexer_langs.PYTHON) ),
-		# Right brace               -> }
-		"RBRACE" :(
-			r"\}" , 
-			LexType("RBRACE", lexer_langs.PYTHON) ),
-		# Left bracket              -> [
-		"LBRACKET" :(
-			r"\[" , 
-			LexType("LBRACKET", lexer_langs.PYTHON) ),
-		# Right bracket             -> ]
-		"RBRACKET" :(
-			r"\]" , 
-			LexType("RBRACKET", lexer_langs.PYTHON) ),
+			#! @ will be consumed by earlier nohtyp lex
 		# --- structures (heuristic, not syntax-perfect) ---
 		# Native list literal       -> [1, 2, 3]
-		"LIST" :(
-			r"\[[^\[\]]*\]" , 
-			LexType("LIST", lexer_langs.PYTHON) ),
+			#! all new syntax handled in the parser
 		# Native tuple literal      -> (1, 2), ()
-		"TUPLE" :(
-			r"\([^()]*\)" , 
-			LexType("TUPLE", lexer_langs.PYTHON) ),
+			#! all new syntax handled in the parser
 		# Native set literal        -> {1, 2, 3}
-		"SET" :(
-			r"\{(?![^:]*:)[^{}]*\}" , 
-			LexType("SET", lexer_langs.PYTHON) ),
+			#! all new syntax handled in the parser
 		# Native dict literal       -> {"a": 1, "b": 2}
-		"DICT" :(
-			r"\{[^{}]*:[^{}]*\}" , 
-			LexType("DICT", lexer_langs.PYTHON) ),
-		# Slice syntax              -> a:b, a:b:c
+			#! all new syntax handled in the parser
+		# Slice syntax              -> a:b, a:b:cssssss
 		"SLICE" :(
-			r"[a-zA-Z_][\w]*\s*:\s*[a-zA-Z_0-9]*\s*(?::\s*[a-zA-Z_0-9]*)?" , 
-			LexType("SLICE", lexer_langs.PYTHON) ),
+			r"^(?![\.])[\w\.]+(?<![\.])*\s*:\s*(?![\.])[\w\.]+(?<![\.])*\s*(?::\s*(?![\.])[\w\.]+(?<![\.])*)?$" , 
+			LexType("SLICE", lexer_langs.PYTHON) ), #* additionally needs validation as it should be in an index block []
 		# Ellipsis object           -> ...
 		"ELLIPSIS" :(
 			r"\.\.\." , 
@@ -231,56 +194,22 @@ class TT:
 			r"\basync\b" , 
 			LexType("ASYNC", lexer_langs.PYTHON) ),
 		# Decorator usage           -> @decorator
-		"DECORATOR" :(
-			r"@[a-zA-Z_][a-zA-Z0-9_\.]*" , 
-			LexType("DECORATOR", lexer_langs.PYTHON) ),
-		# --- type hints ---
-		# Type annotations          -> x: int, -> str
-		"TYPEHINT" :(
-			r"(?:->\s*[a-zA-Z_][\w\.\[\), ]*|:\s*[a-zA-Z_][\w\.\[\), ]*)" , 
-			LexType("TYPEHINT", lexer_langs.PYTHON) ),
+			#! should be considered in lex val or parser.
 		# --- strings / f-strings ---
 		# Formatted string          -> f"{x}", f"text {expr}"
-		"FSTRING" :(
-			r"(?x )f(?:\"\"\".*?\"\"\"|''' .*? '''|\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')",
-			LexType("FSTRING", lexer_langs.PYTHON) ),
+			#! covered by earlier string def
 		# Format specifier (inside fstr) -> {value:.2f}
-		"FORMAT" :(
-			r"\{[^{}]+\}" , 
-			LexType("FORMAT", lexer_langs.PYTHON) ),
+			#! not considered in nohtyp
 		# --- comprehensions / generators (heuristic) ---
-		# Generator expression      -> (x for x in y)
-		"GENEXP" :(
-			r"\([^)]+for[^)]+\)" , 
-			LexType("GENEXP", lexer_langs.PYTHON) ),
-		# List comprehension        -> [x for x in y]
-		"LISTCOMP" :(
-			r"\[[^\]]+for[^\]]+\]" , 
-			LexType("LISTCOMP", lexer_langs.PYTHON) ),
-		# Set comprehension         -> {x for x in y}
-		"SETCOMP" :(
-			r"\{[^}]+for[^}]+\}" , 
-			LexType("SETCOMP", lexer_langs.PYTHON) ),
-		# Dict comprehension        -> {k: v for k, v in y}
-		"DICTCOMP" :(
-			r"\{[^}]+:[^}]+for[^}]+\}" , 
-			LexType("DICTCOMP", lexer_langs.PYTHON) ),
+			#! not considered in nohtyp
 		# --- misc ---
 		# Comment                   -> # comment text
 		"COMMENT" :(
-			r"#.*" , 
+			r"#" , #! only really relevant in parser/lexical validation
 			LexType("COMMENT", lexer_langs.PYTHON) ),
 		# Line break                -> \n
-		"NEWLINE" :(
-			r"\n" , 
-			LexType("NEWLINE", lexer_langs.PYTHON) ),
 		# Indentation increase      -> (whitespace block start)
-		"INDENT" :(
-			"(\t|\\ +|\n)" , 
-			LexType("INDENT", lexer_langs.PYTHON) ),
 		# Indentation decrease      -> (whitespace block end)
-		"DEDENT" :(
-			r"" , 
-			LexType("DEDENT", lexer_langs.PYTHON) ),
+		#! not used
 	}
 
