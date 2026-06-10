@@ -110,7 +110,8 @@ class TT:
 		#* Just native bytes flowed into bytearray()
 		# Native str                 -> "text", 'text', """text""", r"raw", f"format"
 		"STR" :(
-			rf'((rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b)?(\'|\"|´|`|\"\"\"|\'\'\')([.\n]*)\5(\..+\(\)*' , #* sauce : https://regex101.com/r/Hhihv5/1 
+			'^(rf|fr|r|f|u|b|br|rb)?(\\"\\"\\"|\'\'\'|\\"|\'|´|`)((?!\\2)(.*)\\2|\\2)$' , 
+			#* sauce : https://regex101.com/r/Hhihv5/5 
 			LexType("STR", lexer_langs.PYTHON) ),
 		# --- identifiers / keywords ---
 		# Known identifiers          -> variable_name, _private, ClassName

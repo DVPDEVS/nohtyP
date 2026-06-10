@@ -28,8 +28,6 @@ class funcs:
 				continue
 			char = text[i]
 			if char in whitespace:
-				result.append(token)
-				token = ""
 				continue
 			# begin with simpler tokens starts
 			if char == ";": #* ;
@@ -121,7 +119,7 @@ class funcs:
 				result.append(char)
 				continue
 			# various
-			if char == "*":
+			if char == "*": #* * *? *: *~ *type: *$variable *= ** **=
 				# first check for simpler ops
 				token = char
 				next_char = text[i+1]
@@ -143,6 +141,17 @@ class funcs:
 						token += next_char
 				result.append(token)
 				continue
+			if re.match(r"[a-zA-Z_\.]", char): #* barewords strings
+				for j in range(1,3):
+					next_char = text[i+j]
+					if next_char in [ "'", '"', '´', '`', ]: # '"""', "'''", 
+						# verify that token is currently a valid string type
+						if re.match(r"(rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b", token):
+							while True:
+								# reminder to check for if the last char before ending quotation is an escape
+								...
+					elif re.match(r"[\w\.]", next_char):
+						token += next_char
 			# fallback (improve later)
 			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
 		return result
