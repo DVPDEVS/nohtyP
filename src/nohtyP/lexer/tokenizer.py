@@ -3,6 +3,7 @@
 from nohtyP.lexer.types import TokenSeries
 from nohtyP.global_utilities.decorators import api_level
 from pathlib import Path
+import re
 
 __all__ = [
 	"whitespace",
@@ -119,8 +120,30 @@ class funcs:
 					skips += 1
 				result.append(char)
 				continue
-			...
-			# fallback
+			# various
+			if char == "*":
+				# first check for simpler ops
+				token = char
+				next_char = text[i+1]
+				if next_char in "?:~":
+					token += next_char
+				elif next_char == "$":
+					if re.match(r"[a-zA-Z_]", next_char):
+						n = 3
+						while True:
+							token += next_char
+							next_char = text[i+n]
+							if re.match(r"", next_char):
+								...
+				else:
+					if next_char == "*":
+						token += next_char
+						next_char = text[i+2]
+					if next_char == "=":
+						token += next_char
+				result.append(token)
+				continue
+			# fallback (improve later)
 			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
 		return result
 	def tokenize_file(file_path :str|Path) -> TokenSeries:
