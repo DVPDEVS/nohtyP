@@ -142,14 +142,21 @@ class funcs:
 				result.append(token)
 				continue
 			if re.match(r"[a-zA-Z_\.]", char): #* barewords strings
-				for j in range(1,3):
+				quote = ""
+				for j in range(1,2):
 					next_char = text[i+j]
 					if next_char in [ "'", '"', '´', '`', ]: # '"""', "'''", 
 						# verify that token is currently a valid string type
 						if re.match(r"(rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b", token):
-							while True:
-								# reminder to check for if the last char before ending quotation is an escape
-								...
+							quote = next_char
+							if text[i+j+1] == next_char: 
+								quote += text[i+j+1]
+								if text[i+j+2] == next_char: quote += text[i+j+2]
+							# reminder to check for if the last char before ending quotation is an escape
+							if len(quote) == 2:
+								result.append(token+quote)
+								continue
+						... # idk how to continue here
 					elif re.match(r"[\w\.]", next_char):
 						token += next_char
 			# fallback (improve later)
