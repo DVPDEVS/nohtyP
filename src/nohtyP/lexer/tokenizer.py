@@ -41,25 +41,32 @@ class funcs:
 					token += next_char
 					skips += 1
 				result.append(token)
-			elif char == ")":
+				continue
+			if char == ")":
 				result.append(char)
-			elif char == "{":
+				continue
+			if char == "{":
 				result.append(char)
-			elif char == "}":
+				continue
+			if char == "}":
 				result.append(char)
-			elif char == "[":
+				continue
+			if char == "[":
 				result.append(char)
-			elif char == "]":
+				continue
+			if char == "]":
 				result.append(char)
+				continue
 			## ops
-			elif char == "+":
+			if char == "+":
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
 					token += next_char
 					skips += 1
 				result.append(char)
-			elif char == "/":
+				continue
+			if char == "/":
 				token = char
 				next_char = text[i+1]
 				if next_char == "/":
@@ -70,41 +77,47 @@ class funcs:
 					token += next_char
 					skips += 1
 				result.append(char)
-			elif char == "^":
+				continue
+			if char == "^":
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
 					token += next_char
 					skips += 1
 				result.append(char)
-			elif char == "%":
+				continue
+			if char == "%":
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
 					token += next_char
 					skips += 1
 				result.append(char)
-			elif char == "&":
+				continue
+			if char == "&":
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
 					token += next_char
 					skips += 1
 				result.append(char)
-			elif char == "!":
+				continue
+			if char == "!":
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
 					token += next_char
 					skips += 1
 				result.append(char)
-			elif char == "|":
+				continue
+			if char == "|":
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
 					token += next_char
 					skips += 1
 				result.append(char)
+				continue
 			...
 			#* reset token each loop
 			token = ""
