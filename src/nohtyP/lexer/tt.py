@@ -213,3 +213,6 @@ class TT:
 		#! not used
 	}
 
+from typing import reveal_type
+
+reveal_type(TT)
