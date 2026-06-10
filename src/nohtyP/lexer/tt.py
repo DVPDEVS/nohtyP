@@ -5,7 +5,7 @@ from nohtyP.lexer.types import *
 @regex
 @api_level(0)
 class TT:
-	YP: dict[str, tuple[str, LexType]] = {
+	ELEM: dict[str, tuple[str, LexType]] = {
 		#! nohtyP elements
 		"SEPARATOR" :(
 			r";", # shouldnt require boundaries but they wont hurt either
@@ -31,9 +31,6 @@ class TT:
 		"FLOW_HASH_Q" :(
 			r"#\?",
 			LexType("FLOW_HASH_Q", lexer_langs.NOHTYP) ), #? #?
-		"GEN_AST" :(
-			r"\*",
-			LexType("GEN_AST", lexer_langs.NOHTYP) ), #? *
 		"WHILE" :(
 			r"\?=",
 			LexType("WHILE", lexer_langs.NOHTYP) ), #? ?=
@@ -64,23 +61,19 @@ class TT:
 		"EXCEPT_SET" :(
 			r"(?<!\.)\*set\ [-+]e(?!\.)", #* sauce: https://regex101.com/r/3QG7Y0/1 # case sensitive
 			LexType("EXCEPT_SET", lexer_langs.NOHTYP) ), #? *set -e/+e
-		"KW_GO" :(
-			r"(?<!\.)go(?!\.)", # case sensitive
-			LexType("KW_GO", lexer_langs.NOHTYP) ), #? go
 		"KW_FETCH" :(
 			r"(?<!\.)fetch(?!\.)", # case sensitive
 			LexType("KW_FETCH", lexer_langs.NOHTYP) ), #? fetch
 		"KW_MATCH" :(
 			r"(?<!\.)match(?!\.)", # case sensitive
 			LexType("KW_MATCH", lexer_langs.NOHTYP) ), #? match
-	}
-	G: dict[str, tuple[str, LexType]] = {
 		#! Generic elements
 		"UNKNOWN" :(
 			"",
 			LexType("UNKNOWN", lexer_langs.GENERIC)	),
-	}
-	PY: dict[str, tuple[str, LexType]] = {
+		"STAR" :(
+			r"\*",
+			LexType("STAR", lexer_langs.GENERIC) ), #? *
 		#! Python elements
 		# --- literals ---
 		# Native int                 -> 123, 0, -42, 0b1010, 0o77, 0xFF

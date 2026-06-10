@@ -121,6 +121,8 @@ whitespace: str = " \t\n\v\f\r\u001C\u001D\u001E\u001F\u0085\u00A0\u1680\u2000\u
 
 ## Precendence layering and priority
 
+! Subject to review !  
+
 | Layer | Operators                | Scope                   | Example → Desugaring                                     |
 | ----- | ------------------------ | ----------------------- | -------------------------------------------------------- |
 | 1     | () [] . \*\*             | Python atoms/access     | lst\[0]                                                  |
@@ -207,6 +209,13 @@ Python: num:int = 80085
 nohtyP: 80085 = num :int
 nohtyP: 80085 -> num :int
 nohtyP: 80085 ? num :int
+```
+
+Additionally, any Python native Augmented assignment is also applicable, such as:  
+
+```py
+num1, num2 = 0x12
+num2 |= 3
 ```
 
 ### COMPOSITE LITERALS (#?)
