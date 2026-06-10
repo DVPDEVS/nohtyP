@@ -142,23 +142,36 @@ class funcs:
 				result.append(token)
 				continue
 			if re.match(r"[a-zA-Z_\.]", char): #* barewords strings
-				quote = ""
-				for j in range(1,2):
-					next_char = text[i+j]
-					if next_char in [ "'", '"', '´', '`', ]: # '"""', "'''", 
-						# verify that token is currently a valid string type
-						if re.match(r"(rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b", token):
-							quote = next_char
-							if text[i+j+1] == next_char: 
-								quote += text[i+j+1]
-								if text[i+j+2] == next_char: quote += text[i+j+2]
-							# reminder to check for if the last char before ending quotation is an escape
-							if len(quote) == 2:
-								result.append(token+quote)
-								continue
-						... # idk how to continue here
-					elif re.match(r"[\w\.]", next_char):
-						token += next_char
+				token = text[i:i+4] # text[i] through i+4 (5 chars)
+				quote = '"""' if '"""' in token else "'''" if "'''" in token else "'" if "'" in token else '"' if '"' in token else '´' if '´' in token else '`' if '`' in token else ""
+				if quote != "":
+					... # string token
+				else:
+					# remove anything past a whitespace if there is ws
+					for i in range(0,4,1):
+						if token[i] not in whitespace:
+							continue
+						else:
+							token = token[0:i]
+							result.append(token)
+							break
+					if len(token) != 5: continue
+				# for j in range(0,4,1):
+				# 	next_char = text[i+j]
+				# 	if next_char in [ "'", '"', '´', '`', ]: # 
+				# 		# verify that token is currently a valid string type
+				# 		if re.match(r"(rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b", token):
+				# 			quote = next_char
+				# 			if text[i+j+1] == next_char: 
+				# 				quote += text[i+j+1]
+				# 				if text[i+j+2] == next_char: quote += text[i+j+2]
+				# 			# reminder to check for if the last char before ending quotation is an escape
+				# 			if len(quote) == 2:
+				# 				result.append(token+quote)
+				# 				continue
+				# 		... # idk how to continue here
+				# 	elif re.match(r"[\w\.]", next_char):
+				# 		token += next_char
 			# fallback (improve later)
 			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
 		return result
