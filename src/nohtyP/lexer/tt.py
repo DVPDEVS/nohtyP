@@ -114,9 +114,7 @@ class TT:
 			LexType("STR", lexer_langs.PYTHON) ),
 		# --- identifiers / keywords ---
 		# Known identifiers          -> variable_name, _private, ClassName
-		"ID" :(
-			r"\b[a-zA-Z_][a-zA-Z0-9_]*\b" , 
-			LexType("ID", lexer_langs.PYTHON) ),
+			#! bareword
 		# Python keywords            -> if, else, while, def, class, return, import
 		"KEYWORD" :(
 			r"\b(?:if|else|elif|while|for|def|class|return|import|from|as|pass|break|continue|try|except|finally|raise|with|yield|lambda|async|await|global|nonlocal|assert|del|match|case)\b" , 
@@ -144,9 +142,9 @@ class TT:
 			LexType("LOGIC", lexer_langs.PYTHON) ),
 		# --- punctuation ---
 		# General punctuation       -> :, ;, ., @, = (contextual), ->
-		"PUNCT" :(
-			r"(?:->|:|;|@|\.|,)" , #! -> will be consumed by earlier nohtyp lex
-			LexType("PUNCT", lexer_langs.PYTHON) ),
+		"COMMA" :(
+			r"," , #! ->, ;, :, ., = and @ will be consumed by other lex
+			LexType("COMMA", lexer_langs.PYTHON) ),
 		# Attribute access          -> .
 		"DOT" :(
 			r"\." , 
@@ -168,10 +166,11 @@ class TT:
 			#! all new syntax handled in the parser
 		# Native dict literal       -> {"a": 1, "b": 2}
 			#! all new syntax handled in the parser
-		# Slice syntax              -> a:b, a:b:cssssss
-		"SLICE" :(
-			r"^(?![\.])[\w\.]+(?<![\.])*\s*:\s*(?![\.])[\w\.]+(?<![\.])*\s*(?::\s*(?![\.])[\w\.]+(?<![\.])*)?$" , 
-			LexType("SLICE", lexer_langs.PYTHON) ), #* additionally needs validation as it should be in an index block []
+		# Slice syntax              -> a:b, a:b:c
+			#! perform in parsing
+		# "SLICE" :(
+		# 	r"^(?![\.])[\w\.]+(?<![\.])*\s*:\s*(?![\.])[\w\.]+(?<![\.])*\s*(?::\s*(?![\.])[\w\.]+(?<![\.])*)?$" , 
+		# 	LexType("SLICE", lexer_langs.PYTHON) ), #* additionally needs validation as it should be in an index block []
 		# Ellipsis object           -> ...
 		"ELLIPSIS" :(
 			r"\.\.\." , 

@@ -74,7 +74,7 @@ This allows using zero whitespace in scripts :3
 This also means no operator characters can be used in most contexts, however i consider this acceptable so long as this becomes valid syntax:  
 
 ```yp
-10?range()?~{@%2~@*2?str()?}=*list[str]:res?print()
+10?range()?~{@%2~@*2?str()?}=*list[str]:res?print()  
 ```
 
 TODO: Update the type declaration in this document to precede definitions.
