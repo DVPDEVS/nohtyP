@@ -30,11 +30,11 @@ class funcs:
 				token = ""
 				continue
 			# begin with simpler tokens starts
-			if char == ";":
+			if char == ";": #* ;
 				result.append(";")
 				continue
 			## brackets
-			if char == "(":
+			if char == "(": #* ( ()
 				token = char
 				next_char = text[i+1]
 				if next_char == ")":
@@ -42,23 +42,23 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
-			if char == ")":
+			if char == ")": #* )
 				result.append(char)
 				continue
-			if char == "{":
+			if char == "{": #* {
 				result.append(char)
 				continue
-			if char == "}":
+			if char == "}": #* }
 				result.append(char)
 				continue
-			if char == "[":
+			if char == "[": #* [
 				result.append(char)
 				continue
-			if char == "]":
+			if char == "]": #* ]
 				result.append(char)
 				continue
 			## ops
-			if char == "+":
+			if char == "+": #* + +=
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
@@ -66,7 +66,7 @@ class funcs:
 					skips += 1
 				result.append(char)
 				continue
-			if char == "/":
+			if char == "/": #* / // /= //=
 				token = char
 				next_char = text[i+1]
 				if next_char == "/":
@@ -78,7 +78,7 @@ class funcs:
 					skips += 1
 				result.append(char)
 				continue
-			if char == "^":
+			if char == "^": #* ^ ^=
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
@@ -86,7 +86,7 @@ class funcs:
 					skips += 1
 				result.append(char)
 				continue
-			if char == "%":
+			if char == "%": #* % %=
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
@@ -94,7 +94,7 @@ class funcs:
 					skips += 1
 				result.append(char)
 				continue
-			if char == "&":
+			if char == "&": #* & &=
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
@@ -102,7 +102,7 @@ class funcs:
 					skips += 1
 				result.append(char)
 				continue
-			if char == "!":
+			if char == "!": #* ! !=
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
@@ -110,7 +110,7 @@ class funcs:
 					skips += 1
 				result.append(char)
 				continue
-			if char == "|":
+			if char == "|": #* | |=
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
