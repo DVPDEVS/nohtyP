@@ -125,14 +125,17 @@ class funcs:
 				next_char = text[i+1]
 				if next_char in "?:~":
 					token += next_char
+				# then error value assignment
 				elif next_char == "$":
 					if re.match(r"[a-zA-Z_]", next_char):
+						# validate bareword
 						n = 3
 						while True:
 							token += next_char
 							next_char = text[i+n]
 							if re.match(r"", next_char):
 								...
+				# add a check here for type decl
 				else:
 					if next_char == "*":
 						token += next_char
@@ -145,9 +148,9 @@ class funcs:
 				token = text[i:i+4] # text[i] through i+4 (5 chars)
 				quote = '"""' if '"""' in token else "'''" if "'''" in token else "'" if "'" in token else '"' if '"' in token else '´' if '´' in token else '`' if '`' in token else ""
 				if quote != "":
-					stringtype = token[0:token.index(quote)]
 					# string token
-					## verify that token is currently a valid string type
+					stringtype = token[0:token.index(quote)]
+					## validate string type
 					if re.match(r"(rf|fr|r|f|u|b|br|rb)", stringtype):
 						# eternal loop of lookahead appends until the quote appears without a \ before it
 						## single quotes
