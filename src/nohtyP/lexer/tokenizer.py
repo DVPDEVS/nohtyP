@@ -141,26 +141,83 @@ class funcs:
 						token += next_char
 				result.append(token)
 				continue
-			if re.match(r"[a-zA-Z_\.]", char): #* barewords strings
+			if re.match(r"[a-zA-Z_]", char): #* barewords strings
 				token = text[i:i+4] # text[i] through i+4 (5 chars)
 				quote = '"""' if '"""' in token else "'''" if "'''" in token else "'" if "'" in token else '"' if '"' in token else '´' if '´' in token else '`' if '`' in token else ""
 				if quote != "":
-					... # string token
+					stringtype = token[0:token.index(quote)]
+					# string token
+					## verify that token is currently a valid string type
+					if re.match(r"(rf|fr|r|f|u|b|br|rb)", stringtype):
+						# eternal loop of lookahead appends until the quote appears without a \ before it
+						## single quotes
+						if len(quote) == 1:
+							counter = 0
+							while True:
+								next_char = text[i+5+counter]
+								if next_char == "\n": # explicit break on newline (singles dont accept)
+									result.append(token)
+									break
+								elif not next_char == quote: # non-quote
+									token += next_char
+									counter += 1
+									continue # stay inside the while loop but skip quotation check
+								else:
+									# quote end?
+									if token[-1] == "\\": # escaped
+										token += next_char
+										counter += 1
+										continue
+									else: # valid end quote - break out
+										token += quote
+										skips += counter+len(stringtype)+2 # string length + string decl
+										result.append(token)
+										break
+						## multiline quotes
+						else:
+							counter = 0
+							while True:
+								next_char = text[i+5+counter]
+								if not next_char == quote[0]: # non-quote
+									token += next_char
+									counter += 1
+									continue # stay inside the while loop but skip quotation check
+								else:
+									# quote end?
+									if token[-1] == "\\": # escaped
+										token += next_char
+										counter += 1
+										continue
+									elif text[i+5+counter:i+7+counter] == quote: # valid end quote
+										token += quote
+										skips += counter+len(stringtype)+6 # string length + string decl
+										result.append(token)
+										break
+									else: # invalid length
+										token += next_char
+										counter += 1
+										continue
+					else: # invalid string type, assume it to be a bareword instead
+						result.append(stringtype)
+						skips += len(stringtype-1)
+						continue
 				else:
 					# remove anything past a whitespace if there is ws
 					for i in range(0,4,1):
-						if token[i] not in whitespace:
+						if not re.match(r"^(?![\.])(?![0-9])[\w\.]+(?<![\.])$", token[0:i]):
+							# the best bareword check is just the same regex as the identifier uses
 							continue
 						else:
 							token = token[0:i]
 							result.append(token)
 							break
 					if len(token) != 5: continue
+					# continue appends for bareword string
+					...
+				continue
 				# for j in range(0,4,1):
 				# 	next_char = text[i+j]
 				# 	if next_char in [ "'", '"', '´', '`', ]: # 
-				# 		# verify that token is currently a valid string type
-				# 		if re.match(r"(rf|fr|r|f)?u?|u?(rf|fr|r|f)?|(fur|ruf)|r?b", token):
 				# 			quote = next_char
 				# 			if text[i+j+1] == next_char: 
 				# 				quote += text[i+j+1]
