@@ -11,10 +11,10 @@ class TT:
 			r";", # shouldnt require boundaries but they wont hurt either
 			LexType("SEMICOLON", lexer_langs.NOHTYP) ), #? ;
 		"BAREWORD" :(
-			r"^(?![\.])(?![0-9])[\w\.]+(?<![\.])$", #* sauce: https://regex101.com/r/L0MnX3/2 
+			r"^(?![0-9])\w+$", #* sauce: https://regex101.com/r/L0MnX3/3 
 			LexType("BAREWORD", lexer_langs.NOHTYP) ), #? <anything>
 		"TYPE_DECLARATION" :(
-			r"^\*?(?![\.])(?![0-9])[\w\.]+(?<![\.])\:$", #* sauce: https://regex101.com/r/lhwcEL/1 
+			r"^\*?(?![0-9])\w+\:$", #* sauce: https://regex101.com/r/lhwcEL/2 
 			LexType("TYPE_DECLARATION", lexer_langs.NOHTYP) ), #? optional * followed by a bareword and a :
 		"CBRACKET_LEFT" :(
 			r"\{",

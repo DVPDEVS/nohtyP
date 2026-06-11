@@ -120,34 +120,50 @@ class funcs:
 				continue
 			# various
 			if char == "*": #* * *? *: *~ *type: *$variable *= ** **=
-				# first check for simpler ops
 				token = char
-				next_char = text[i+1]
-				if next_char in "?:~":
-					token += next_char
+				char = text[i+1]
+				# first check for simpler ops
+				if char in "?:~":
+					token += char
 				# then error value assignment
-				elif next_char == "$":
-					if re.match(r"[a-zA-Z_]", next_char):
+				elif char == "$":
+					if re.match(r"[a-zA-Z_]", char):
 						# validate bareword
-						n = 3
+						counter = 3
 						while True:
-							token += next_char
-							next_char = text[i+n]
-							if re.match(r"", next_char):
-								...
-				# add a check here for type decl
+							char = text[i+counter]
+							if re.match(r"\w", char):
+								token += char
+								continue
+							result.append(token)
+							break
+						continue
+				# check for type decl
+				elif re.match(r"[a-zA-Z_]", char):
+					counter = 3
+					while True:
+						char = text[i+counter]
+						if char == ":":
+							token += char
+						elif re.match(r"\w", char):
+							token += char
+							continue
+						result.append(token)
+						break
+					continue
+				# lastly the easiest checks
 				else:
-					if next_char == "*":
-						token += next_char
-						next_char = text[i+2]
-					if next_char == "=":
-						token += next_char
+					if char == "*":
+						token += char
+						char = text[i+2]
+					if char == "=":
+						token += char
 				result.append(token)
 				continue
 			if re.match(r"[a-zA-Z_]", char): #* barewords strings
 				token = text[i:i+4] # text[i] through i+4 (5 chars)
 				quote = '"""' if '"""' in token else "'''" if "'''" in token else "'" if "'" in token else '"' if '"' in token else '´' if '´' in token else '`' if '`' in token else ""
-				if quote != "":
+				if not len(quote) == 0:
 					# string token
 					stringtype = token[0:token.index(quote)]
 					## validate string type
@@ -205,33 +221,17 @@ class funcs:
 						skips += len(stringtype-1)
 						continue
 				else:
-					# remove anything past a whitespace if there is ws
-					for i in range(0,4,1):
-						if not re.match(r"^(?![\.])(?![0-9])[\w\.]+(?<![\.])$", token[0:i]):
-							# the best bareword check is just the same regex as the identifier uses
+					# parse through it again from the beginning (simplest way)
+					token = char
+					counter = 1
+					while True:
+						char = text[i+counter]
+						if re.match(r"\w", char):
+							token += char
 							continue
-						else:
-							token = token[0:i]
-							result.append(token)
-							break
-					if len(token) != 5: continue
-					# continue appends for bareword string
-					...
+						result.append(token)
+						break
 				continue
-				# for j in range(0,4,1):
-				# 	next_char = text[i+j]
-				# 	if next_char in [ "'", '"', '´', '`', ]: # 
-				# 			quote = next_char
-				# 			if text[i+j+1] == next_char: 
-				# 				quote += text[i+j+1]
-				# 				if text[i+j+2] == next_char: quote += text[i+j+2]
-				# 			# reminder to check for if the last char before ending quotation is an escape
-				# 			if len(quote) == 2:
-				# 				result.append(token+quote)
-				# 				continue
-				# 		... # idk how to continue here
-				# 	elif re.match(r"[\w\.]", next_char):
-				# 		token += next_char
 			# fallback (improve later)
 			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
 		return result
