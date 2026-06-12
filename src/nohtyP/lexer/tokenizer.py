@@ -31,7 +31,7 @@ class funcs:
 			if char in whitespace:
 				continue
 			# begin with simpler tokens starts
-			elif char in ";,~@": #* ; , ~ @
+			elif char in ";,~@:": #* ; , ~ @ :
 				result.append(char)
 				continue
 			## brackets
@@ -59,14 +59,6 @@ class funcs:
 				result.append(char)
 				continue
 			## ops
-			elif char == "+": #* + += positive_nums
-				token = char
-				next_char = text[i+1]
-				if next_char == "=":
-					token += next_char
-					skips += 1
-				result.append(token)
-				continue
 			elif char == "/": #* / // /= //=
 				token = char
 				next_char = text[i+1]
@@ -135,7 +127,7 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
-			elif char == "$":
+			elif char == "$": #* $variable
 				token = char
 				char = text[i+1]
 				if re.match(r"[a-zA-Z_]", char):
@@ -364,6 +356,14 @@ class funcs:
 					skips += 1
 				continue
 			# arrows, numbers and such
+			elif char == "+": #* + += positive_nums
+				token = char
+				next_char = text[i+1]
+				if next_char == "=":
+					token += next_char
+					skips += 1
+				result.append(token)
+				continue
 			elif char == "<": #* < <- << <= <<=
 				token = char
 				char = text[i+1]
