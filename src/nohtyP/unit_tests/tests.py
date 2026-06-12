@@ -17,6 +17,7 @@ class TestTokenizer(unittest.TestCase):
     test_string = "sejejfoise () + *? f\"ghjkl\" r'''test2''' #? |= ]"
     def test_tokenize(self):
         result = funcs.tokenize(self.test_string)
-        self.assertListEqual(result, ['sjejfoise', '()', '+', '*?', 'f"ghjkl"', "r'''test2'''", '|', ']'])
+        print(result)
+        self.assertListEqual(result, ['sjejfoise', '()', '+', '*?', 'f"ghjkl"', "r'''test2'''", '|=', ']'])
 
 if __name__ == "__main__": unittest.main()

@@ -64,7 +64,7 @@ class funcs:
 				if next_char == "=":
 					token += next_char
 					skips += 1
-				result.append(char)
+				result.append(token)
 				continue
 			elif char == "/": #* / // /= //=
 				token = char
@@ -76,7 +76,7 @@ class funcs:
 				if next_char == "=":
 					token += next_char
 					skips += 1
-				result.append(char)
+				result.append(token)
 				continue
 			elif char == "^": #* ^ ^=
 				token = char
@@ -84,7 +84,7 @@ class funcs:
 				if next_char == "=":
 					token += next_char
 					skips += 1
-				result.append(char)
+				result.append(token)
 				continue
 			elif char == "%": #* % %=
 				token = char
@@ -92,7 +92,7 @@ class funcs:
 				if next_char == "=":
 					token += next_char
 					skips += 1
-				result.append(char)
+				result.append(token)
 				continue
 			elif char == "&": #* & &=
 				token = char
@@ -100,7 +100,7 @@ class funcs:
 				if next_char == "=":
 					token += next_char
 					skips += 1
-				result.append(char)
+				result.append(token)
 				continue
 			elif char == "!": #* ! !=
 				token = char
@@ -108,7 +108,7 @@ class funcs:
 				if next_char == "=":
 					token += next_char
 					skips += 1
-				result.append(char)
+				result.append(token)
 				continue
 			elif char == "|": #* | |=
 				token = char
@@ -116,7 +116,7 @@ class funcs:
 				if next_char == "=":
 					token += next_char
 					skips += 1
-				result.append(char)
+				result.append(token)
 				continue
 			# various
 			elif char == "*": #* * *? *: *~ *type: *$variable *= ** **=
