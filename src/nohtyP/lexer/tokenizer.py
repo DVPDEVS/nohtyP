@@ -59,7 +59,7 @@ class funcs:
 				result.append(char)
 				continue
 			## ops
-			elif char == "+": #* + +=
+			elif char == "+": #* + += positive_nums
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
@@ -393,7 +393,7 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
-			elif char == "-": #* - -> -= -0.xxx
+			elif char == "-": #* - -> -= negative_nums
 				token = char
 				char = text[i+1]
 				if char in ">=":
@@ -403,12 +403,14 @@ class funcs:
 					continue
 				result.append(token)
 				continue
-			elif char == ".": #* . .xxx
+			elif char == ".": #* . unsigned_floats
 				token = char
 				char = text[i+1]
 				if char not in "0123456789":
 					result.append(token)
 					continue
+			elif char in "0123456789": #* unsigned_nums 0 0.0 111_22 1_22.0 0b0 0X0 0o7 1e7 3.5E-7
+				...
 			# fallback (improve later)
 			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
 		return result
