@@ -1,50 +1,44 @@
+from __future__ import annotations
 import os, re, subprocess
-from __future__ import *
+from pathlib import Path
 from nohtyP.global_utilities.decorators import *
-
-@api_level(1)
-class PathLike(str, os.PathLike, os.path):
-	"""Holder class for path types, used for type hints.  \n
-	Semantic hint to any type usable by `os.path`"""
-	...
-
 
 @api_level(0)
 class file:
 	@staticmethod
-	def get_cwd() -> PathLike:
+	def get_cwd() -> Path:
 		return os.path.dirname(os.path.realpath(__file__))
 
 	@staticmethod
-	def get_from_cwd(filename :PathLike) -> PathLike:
+	def get_from_cwd(filename :Path) -> Path:
 		return os.path.join(file.get_cwd(), filename)
 
 	@staticmethod
-	def read_cwd(filename :PathLike) -> str:
+	def read_cwd(filename :Path) -> str:
 		with open(file.get_from_cwd(filename), 'r') as f:
 			return f.read()
 
 	@staticmethod
-	def write_cwd(filename :PathLike, content :str) -> None:
+	def write_cwd(filename :Path, content :str) -> None:
 		with open(file.get_from_cwd(filename), 'w') as f:
 			f.write(content)
 
 	@staticmethod
-	def get(filename :PathLike) -> PathLike:
+	def get(filename :Path) -> Path:
 		return os.path(filename)
 
 	@staticmethod
-	def read(filename :PathLike, readtype:str = 'r') -> str:
+	def read(filename :Path, readtype:str = 'r') -> str:
 		with open(file.get(filename), readtype) as f:
 			return f.read()
 
 	@staticmethod
-	def write(filename :PathLike, content :str, writetype:str = 'w') -> None:
+	def write(filename :Path, content :str, writetype:str = 'w') -> None:
 		with open(file.get(filename), writetype) as f:
 			f.write(content)
 
 	@staticmethod
-	def delete(filename :PathLike) -> bool|str:
+	def delete(filename :Path) -> bool|str:
 		if os.path.exists(filename):
 			try:
 				if os.name.lower()=='nt':

@@ -30,11 +30,11 @@ class funcs:
 			if char in whitespace:
 				continue
 			# begin with simpler tokens starts
-			if char == ";": #* ;
+			elif char == ";": #* ;
 				result.append(";")
 				continue
 			## brackets
-			if char == "(": #* ( ()
+			elif char == "(": #* ( ()
 				token = char
 				next_char = text[i+1]
 				if next_char == ")":
@@ -42,23 +42,23 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
-			if char == ")": #* )
+			elif char == ")": #* )
 				result.append(char)
 				continue
-			if char == "{": #* {
+			elif char == "{": #* {
 				result.append(char)
 				continue
-			if char == "}": #* }
+			elif char == "}": #* }
 				result.append(char)
 				continue
-			if char == "[": #* [
+			elif char == "[": #* [
 				result.append(char)
 				continue
-			if char == "]": #* ]
+			elif char == "]": #* ]
 				result.append(char)
 				continue
 			## ops
-			if char == "+": #* + +=
+			elif char == "+": #* + +=
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
@@ -66,7 +66,7 @@ class funcs:
 					skips += 1
 				result.append(char)
 				continue
-			if char == "/": #* / // /= //=
+			elif char == "/": #* / // /= //=
 				token = char
 				next_char = text[i+1]
 				if next_char == "/":
@@ -78,7 +78,7 @@ class funcs:
 					skips += 1
 				result.append(char)
 				continue
-			if char == "^": #* ^ ^=
+			elif char == "^": #* ^ ^=
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
@@ -86,7 +86,7 @@ class funcs:
 					skips += 1
 				result.append(char)
 				continue
-			if char == "%": #* % %=
+			elif char == "%": #* % %=
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
@@ -94,7 +94,7 @@ class funcs:
 					skips += 1
 				result.append(char)
 				continue
-			if char == "&": #* & &=
+			elif char == "&": #* & &=
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
@@ -102,7 +102,7 @@ class funcs:
 					skips += 1
 				result.append(char)
 				continue
-			if char == "!": #* ! !=
+			elif char == "!": #* ! !=
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
@@ -110,7 +110,7 @@ class funcs:
 					skips += 1
 				result.append(char)
 				continue
-			if char == "|": #* | |=
+			elif char == "|": #* | |=
 				token = char
 				next_char = text[i+1]
 				if next_char == "=":
@@ -119,29 +119,35 @@ class funcs:
 				result.append(char)
 				continue
 			# various
-			if char == "*": #* * *? *: *~ *type: *$variable *= ** **=
+			elif char == "*": #* * *? *: *~ *type: *$variable *= ** **=
 				token = char
 				char = text[i+1]
 				# first check for simpler ops
 				if char in "?:~":
 					token += char
+					skips += 1
+					result.append(token)
+					continue
 				# then error value assignment
 				elif char == "$":
 					if re.match(r"[a-zA-Z_]", char):
 						# validate bareword
 						counter = 3
 						while True:
+							counter += 1
 							char = text[i+counter]
 							if re.match(r"\w", char):
 								token += char
 								continue
 							result.append(token)
 							break
+						skip += counter - 1
 						continue
 				# check for type decl
 				elif re.match(r"[a-zA-Z_]", char):
 					counter = 3
 					while True:
+						counter += 1
 						char = text[i+counter]
 						if char == ":":
 							token += char
@@ -158,22 +164,23 @@ class funcs:
 						char = text[i+2]
 					if char == "=":
 						token += char
-				result.append(token)
-				continue
-			if re.match(r"[a-zA-Z_]", char): #* barewords strings
-				token = text[i:i+4] # text[i] through i+4 (5 chars)
+					result.append(token)
+					continue
+			elif re.match(r"[a-zA-Z_]", char): #* barewords strings
+				token = text[i:i+5] # text[i] to i+5 (5 chars)
 				quote = '"""' if '"""' in token else "'''" if "'''" in token else "'" if "'" in token else '"' if '"' in token else '´' if '´' in token else '`' if '`' in token else ""
 				if not len(quote) == 0:
 					# string token
 					stringtype = token[0:token.index(quote)]
 					## validate string type
 					if re.match(r"(rf|fr|r|f|u|b|br|rb)", stringtype):
+						token = stringtype + quote
 						# eternal loop of lookahead appends until the quote appears without a \ before it
 						## single quotes
 						if len(quote) == 1:
 							counter = 0
 							while True:
-								next_char = text[i+5+counter]
+								next_char = text[i+len(stringtype)+counter+1]
 								if next_char == "\n": # explicit break on newline (singles dont accept)
 									result.append(token)
 									break
@@ -196,7 +203,9 @@ class funcs:
 						else:
 							counter = 0
 							while True:
-								next_char = text[i+5+counter]
+								next_char = text[i+len(stringtype)+counter+3]
+								#? debug
+								# print(next_char)
 								if not next_char == quote[0]: # non-quote
 									token += next_char
 									counter += 1
@@ -207,8 +216,8 @@ class funcs:
 										token += next_char
 										counter += 1
 										continue
-									elif text[i+5+counter:i+7+counter] == quote: # valid end quote
-										token += quote
+									elif text[i+len(stringtype)+counter+1:i+len(stringtype)+counter+4] == quote: # valid end quote
+										token += next_char
 										skips += counter+len(stringtype)+6 # string length + string decl
 										result.append(token)
 										break
@@ -218,20 +227,42 @@ class funcs:
 										continue
 					else: # invalid string type, assume it to be a bareword instead
 						result.append(stringtype)
-						skips += len(stringtype-1)
+						skips += len(stringtype)-1
 						continue
 				else:
 					# parse through it again from the beginning (simplest way)
 					token = char
 					counter = 1
 					while True:
+						counter += 1
 						char = text[i+counter]
 						if re.match(r"\w", char):
 							token += char
 							continue
 						result.append(token)
 						break
+					skips += counter-1
 				continue
+			elif char == "#": #* comment #?
+				is_comment = text[i+1] != "?"
+				# if comment, loop lookahead appends until \n
+				# else just next char
+				if not is_comment:
+					result.append("#?")
+					skips += 1
+					continue
+				else:
+					counter = 0
+					while True:
+						counter += 1
+						char = text[i+counter]
+						if char != "\n":
+							token += char
+							continue
+						result.append(token)
+						break
+					# tweak skips here too, check after testing i think
+					continue
 			# fallback (improve later)
 			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
 		return result
