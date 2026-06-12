@@ -410,15 +410,72 @@ class funcs:
 					result.append(token)
 					continue
 			elif char in "0123456789": #* unsigned_nums 0 0.0 111_22 1_22.0 0b0 0X0 0o7 1e7 3.5E-7
-				non_decimal = False
+				non_decimal = 0
+				hexnum = False
 				sci_notation = False
+				token = char
+				char = text[i+1]
 				# six segments:
 				## check for hex/binary/octal r"[oOxXbB]"
+				if token == "0":
+					if char in "oObB":
+						non_decimal = 1
+						token += char
+						skips += 1
+					if char in "xX":
+						non_decimal = 1
+						hexnum = True
+						token += char
+						skips += 1
 				## detect initial digits
+				counter = 0
+				while True:
+					counter += 1
+					char = text[i+counter+non_decimal]
+					if char.lower() in f"0123456789{"abcdef" if hexnum else ""}":
+						token += char
+						continue
+					if char == "_" and text[i+counter+non_decimal+1] in f"0123456789{"abcdef" if hexnum else ""}":
+						token += char
+						continue
+					break
 				## check for .
-				## check subsequent digits
-				## check if sci notation unless non-decimal r"[eE][-+]?"
+				if not non_decimal:
+					if char == ".":
+						token += char
+						counter += 1
+					## check subsequent digits
+						while True:
+							counter += 1
+							char = text[i+counter+non_decimal]
+							if char in "0123456789":
+								token += char
+								continue
+							break
+					## check if sci notation
+					char = text[i+counter+non_decimal]
+					if char in "eE":
+						sci_notation = True
+						token += char
+					counter += 1
+					char = text[i+counter+non_decimal]
+					if char in "-+":
+						token += char
 				### get remaining digits
+				if sci_notation:
+					counter += 1
+					while True:
+						counter += 1
+						char = text[i+counter+non_decimal]
+						if char in "0123456789":
+							token += char
+							continue
+						if char == "_" and text[i+counter+non_decimal+1] in "0123456789":
+							token += char
+							continue
+						break
+				skips += counter
+				result.append(token)
 			# fallback (improve later)
 			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
 		return result
