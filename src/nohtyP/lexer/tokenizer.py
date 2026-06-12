@@ -410,7 +410,15 @@ class funcs:
 					result.append(token)
 					continue
 			elif char in "0123456789": #* unsigned_nums 0 0.0 111_22 1_22.0 0b0 0X0 0o7 1e7 3.5E-7
-				...
+				non_decimal = False
+				sci_notation = False
+				# six segments:
+				## check for hex/binary/octal r"[oOxXbB]"
+				## detect initial digits
+				## check for .
+				## check subsequent digits
+				## check if sci notation unless non-decimal r"[eE][-+]?"
+				### get remaining digits
 			# fallback (improve later)
 			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
 		return result
