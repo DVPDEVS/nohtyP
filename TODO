@@ -3,4 +3,4 @@ error/validity field in lexobj
 update str dunders in lex types?
 update (unify) TT
 
-
+Add guarding against EOS

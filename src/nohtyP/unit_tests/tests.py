@@ -14,10 +14,34 @@ from nohtyP.lexer.tokenizer import funcs
 #         self.assertEqual(tested.__getattribute__("__NOHTYP_API_LEVEL"), "PUBLIC")
 
 class TestTokenizer(unittest.TestCase):
-    test_string = "sejejfoise () + *? f\"ghjkl\" r'''test2''' #? |= ]"
+    strings = [
+        "sejejfoise () + *? f\"ghjkl\" r'''test2''' #? |= ]",
+        "# comment to newline chars\n\n(should appear separate)",
+        '"""multiline bare string\nhere"""',
+        "all_symbols + - == %= ! //= @ . , ; ({[]}) <- -> ~ $ehh *$o_ *type:",
+        # '"unterminated bare string',
+        # "fr'unterminated raw format string",
+    ]
+    results = [
+        [],
+        [],
+        [],
+        [],
+        # [],
+        # [],
+    ]
+    expected = [
+        ['sejejfoise', '()', '+', '*?', 'f"ghjkl"', "r'''test2'''", '#?', '|=', ']'],
+        ['# comment to newline chars', '(', 'should', 'appear', 'separate', ')'],
+        ['"""multiline bare string\nhere"""'],
+        ['all_symbols', '+', '-', '==', '%=', '!', '//=', '@', '.', ',', ';', '(', '{', '[', ']', '}', ')', '<-', '->', '~', '$ehh', '*$o_', '*type:'],
+        # [],
+        # [],
+    ]
     def test_tokenize(self):
-        result = funcs.tokenize(self.test_string)
-        print(result)
-        self.assertListEqual(result, ['sjejfoise', '()', '+', '*?', 'f"ghjkl"', "r'''test2'''", '|=', ']'])
+        for i in range(len(self.strings)):
+            self.results[i] = funcs.tokenize(self.strings[i])
+            self.assertListEqual(self.expected[i], self.results[i])
+        # for i in self.results: print(i)
 
 if __name__ == "__main__": unittest.main()

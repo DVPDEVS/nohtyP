@@ -17,6 +17,7 @@ whitespace :str = " \t\n\v\f\r\u001C\u001D\u001E\u001F\u0085\u00A0\u1680\u2000\u
 class funcs:
 	def tokenize(text :str) -> TokenSeries:
 		result = TokenSeries()
+		txtlen = len(text)
 		#* loop over text, check for whitespace / semicolon, append to result
 		#* separate on all valid operators, too
 		skips = 0
@@ -30,8 +31,8 @@ class funcs:
 			if char in whitespace:
 				continue
 			# begin with simpler tokens starts
-			elif char == ";": #* ;
-				result.append(";")
+			elif char in ";,~@": #* ; , ~ @
+				result.append(char)
 				continue
 			## brackets
 			elif char == "(": #* ( ()
@@ -118,6 +119,38 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
+			elif char == "=": #* = ==
+				token = char
+				next_char = text[i+1]
+				if next_char == "=":
+					token += next_char
+					skips += 1
+				result.append(token)
+				continue
+			elif char == "?": #* ? ?=
+				token = char
+				next_char = text[i+1]
+				if next_char == "=":
+					token += next_char
+					skips += 1
+				result.append(token)
+				continue
+			elif char == "$":
+				token = char
+				char = text[i+1]
+				if re.match(r"[a-zA-Z_]", char):
+					# validate bareword
+					counter = 0
+					while True:
+						counter += 1
+						char = text[i+counter]
+						if re.match(r"\w", char):
+							token += char
+							continue
+						result.append(token)
+						break
+					skips += counter - 1
+					continue
 			# various
 			elif char == "*": #* * *? *: *~ *type: *$variable *= ** **=
 				token = char
@@ -130,22 +163,25 @@ class funcs:
 					continue
 				# then error value assignment
 				elif char == "$":
+					token += char
+					char = text[i+2]
+					# validate bareword
 					if re.match(r"[a-zA-Z_]", char):
-						# validate bareword
-						counter = 3
+						token += char
+						counter = 2
 						while True:
 							counter += 1
 							char = text[i+counter]
-							if re.match(r"\w", char):
+							if re.match(r"[\w_]", char):
 								token += char
 								continue
 							result.append(token)
 							break
-						skip += counter - 1
+						skips += counter - 1
 						continue
 				# check for type decl
 				elif re.match(r"[a-zA-Z_]", char):
-					counter = 3
+					counter = 0
 					while True:
 						counter += 1
 						char = text[i+counter]
@@ -156,6 +192,7 @@ class funcs:
 							continue
 						result.append(token)
 						break
+					skips += counter
 					continue
 				# lastly the easiest checks
 				else:
@@ -196,11 +233,11 @@ class funcs:
 										continue
 									else: # valid end quote - break out
 										token += quote
-										skips += counter+len(stringtype)+2 # string length + string decl
+										skips += counter+len(stringtype)+1 # string length + string decl
 										result.append(token)
 										break
 						## multiline quotes
-						else:
+						elif len(quote) == 3:
 							counter = 0
 							while True:
 								next_char = text[i+len(stringtype)+counter+3]
@@ -218,13 +255,16 @@ class funcs:
 										continue
 									elif text[i+len(stringtype)+counter+1:i+len(stringtype)+counter+4] == quote: # valid end quote
 										token += next_char
-										skips += counter+len(stringtype)+6 # string length + string decl
+										skips += counter+len(stringtype)+3 # string length + string decl
 										result.append(token)
 										break
 									else: # invalid length
 										token += next_char
 										counter += 1
 										continue
+						else: 
+							result.append(stringtype + quote)
+							skips += 1
 					else: # invalid string type, assume it to be a bareword instead
 						result.append(stringtype)
 						skips += len(stringtype)-1
@@ -232,7 +272,7 @@ class funcs:
 				else:
 					# parse through it again from the beginning (simplest way)
 					token = char
-					counter = 1
+					counter = 0
 					while True:
 						counter += 1
 						char = text[i+counter]
@@ -244,14 +284,16 @@ class funcs:
 					skips += counter-1
 				continue
 			elif char == "#": #* comment #?
-				is_comment = text[i+1] != "?"
-				# if comment, loop lookahead appends until \n
-				# else just next char
-				if not is_comment:
-					result.append("#?")
+				token = char
+				# debug
+				print(text[i+1])
+				if text[i+1] == "?":
+					token += text[i+1]
+					result.append(token)
 					skips += 1
 					continue
 				else:
+					# loop lookahead appends until \n
 					counter = 0
 					while True:
 						counter += 1
@@ -261,7 +303,111 @@ class funcs:
 							continue
 						result.append(token)
 						break
-					# tweak skips here too, check after testing i think
+					skips += counter+1
+					continue
+			elif re.match('(\\"|\'|´|`)', char): #* strings
+				token = text[i:i+4]
+				quote = '"""' if '"""' in token else "'''" if "'''" in token else "'" if "'" in token else '"' if '"' in token else '´' if '´' in token else '`' if '`' in token else "" # wont reach this fallback
+				token = quote
+				# eternal loop of lookahead appends until the quote appears without a \ before it
+				## single quotes
+				if len(quote) == 1:
+					counter = 0
+					while True:
+						next_char = text[i+counter+1]
+						if next_char == "\n": # explicit break on newline (singles dont accept)
+							result.append(token)
+							break
+						elif not next_char == quote: # non-quote
+							token += next_char
+							counter += 1
+							continue # stay inside the while loop but skip quotation check
+						else:
+							# quote end?
+							if token[-1] == "\\": # escaped
+								token += next_char
+								counter += 1
+								continue
+							else: # valid end quote - break out
+								token += quote
+								skips += counter+2 # string length + string decl
+								result.append(token)
+								break
+				## multiline quotes
+				elif len(quote) == 3:
+					counter = 0
+					while True:
+						next_char = text[i+counter+3]
+						#? debug
+						# print(next_char)
+						if not next_char == quote[0]: # non-quote
+							token += next_char
+							counter += 1
+							continue # stay inside the while loop but skip quotation check
+						else:
+							# quote end?
+							if token[-1] == "\\": # escaped
+								token += next_char
+								counter += 1
+								continue
+							elif text[i+counter+1:i+counter+4] == quote: # valid end quote
+								token += next_char
+								skips += counter+6 # string length + string decl
+								result.append(token)
+								break
+							else: # invalid length
+								token += next_char
+								counter += 1
+								continue
+				else: 
+					result.append(quote)
+					skips += 1
+				continue
+			# arrows, numbers and such
+			elif char == "<": #* < <- << <= <<=
+				token = char
+				char = text[i+1]
+				if char == "-":
+					token += char
+					skips += 1
+					result.append(token)
+					continue
+				if char == "<":
+					token += char
+					next_char = text[i+2]
+					skips += 1
+				if char == "=":
+					token += char
+					skips += 1
+				result.append(token)
+				continue
+			elif char == ">": #* > >> >= >>=
+				token = char
+				char = text[i+1]
+				if char == ">":
+					token += char
+					next_char = text[i+2]
+					skips += 1
+				if char == "=":
+					token += char
+					skips += 1
+				result.append(token)
+				continue
+			elif char == "-": #* - -> -= -0.xxx
+				token = char
+				char = text[i+1]
+				if char in ">=":
+					token += char
+					skips += 1
+					result.append(token)
+					continue
+				result.append(token)
+				continue
+			elif char == ".": #* . .xxx
+				token = char
+				char = text[i+1]
+				if char not in "0123456789":
+					result.append(token)
 					continue
 			# fallback (improve later)
 			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
