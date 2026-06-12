@@ -1,7 +1,10 @@
 import unittest
 # from nohtyP.lexer.identifier import TT
-# from nohtyP.global_utilities.decorators import *
+from nohtyP.global_utilities.decorators import *
 from nohtyP.lexer.tokenizer import funcs
+from sys import argv
+
+devmode:bool = False
 
 # @test
 # class TestLexerVars(unittest.TestCase):
@@ -13,6 +16,7 @@ from nohtyP.lexer.tokenizer import funcs
 #         def tested(): ...
 #         self.assertEqual(tested.__getattribute__("__NOHTYP_API_LEVEL"), "PUBLIC")
 
+@test
 class TestTokenizer(unittest.TestCase):
     strings = [
         "sejejfoise () + *? f\"ghjkl\" r'''test2''' #? |= ]",
@@ -42,6 +46,11 @@ class TestTokenizer(unittest.TestCase):
         for i in range(len(self.strings)):
             self.results[i] = funcs.tokenize(self.strings[i])
             self.assertListEqual(self.expected[i], self.results[i])
-        # for i in self.results: print(i)
+        if devmode:
+            for i in self.results: print(i)
 
-if __name__ == "__main__": unittest.main()
+if __name__ == "__main__":
+    if len(argv) >= 2:
+        if argv[1] == "dev":
+            devmode = True
+    unittest.main()

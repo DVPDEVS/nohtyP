@@ -362,8 +362,79 @@ class funcs:
 				if next_char == "=":
 					token += next_char
 					skips += 1
-				result.append(token)
-				continue
+					result.append(token)
+					continue
+				elif char in "0123456789":
+					non_decimal = 0
+					hexnum = False
+					sci_notation = False
+					token = char
+					char = text[i+2]
+					# six segments:
+					## check for hex/binary/octal r"[oOxXbB]"
+					if token[1] == "0":
+						if char in "oObB":
+							non_decimal = 1
+							token += char
+							skips += 1
+						if char in "xX":
+							non_decimal = 1
+							hexnum = True
+							token += char
+							skips += 1
+					## detect initial digits
+					counter = 1
+					while True:
+						counter += 1
+						char = text[i+counter+non_decimal]
+						if char.lower() in f"0123456789{"abcdef" if hexnum else ""}":
+							token += char
+							continue
+						if char == "_" and text[i+counter+non_decimal+1] in f"0123456789{"abcdef" if hexnum else ""}":
+							token += char
+							continue
+						break
+					## check for .
+					if not non_decimal:
+						if char == ".":
+							token += char
+							counter += 1
+						## check subsequent digits
+							while True:
+								counter += 1
+								char = text[i+counter+non_decimal]
+								if char in "0123456789":
+									token += char
+									continue
+								break
+						## check if sci notation
+						char = text[i+counter+non_decimal]
+						if char in "eE":
+							sci_notation = True
+							token += char
+						counter += 1
+						char = text[i+counter+non_decimal]
+						if char in "-+":
+							token += char
+					### get remaining digits
+					if sci_notation:
+						counter += 1
+						while True:
+							counter += 1
+							char = text[i+counter+non_decimal]
+							if char in "0123456789":
+								token += char
+								continue
+							if char == "_" and text[i+counter+non_decimal+1] in "0123456789":
+								token += char
+								continue
+							break
+					skips += counter
+					result.append(token)
+					continue
+				else:
+					result.append(token)
+					continue
 			elif char == "<": #* < <- << <= <<=
 				token = char
 				char = text[i+1]
@@ -401,8 +472,77 @@ class funcs:
 					skips += 1
 					result.append(token)
 					continue
-				result.append(token)
-				continue
+				elif char in "0123456789":
+					non_decimal = 0
+					hexnum = False
+					sci_notation = False
+					token = char
+					char = text[i+2]
+					# six segments:
+					## check for hex/binary/octal r"[oOxXbB]"
+					if token[1] == "0":
+						if char in "oObB":
+							non_decimal = 1
+							token += char
+							skips += 1
+						if char in "xX":
+							non_decimal = 1
+							hexnum = True
+							token += char
+							skips += 1
+					## detect initial digits
+					counter = 1
+					while True:
+						counter += 1
+						char = text[i+counter+non_decimal]
+						if char.lower() in f"0123456789{"abcdef" if hexnum else ""}":
+							token += char
+							continue
+						if char == "_" and text[i+counter+non_decimal+1] in f"0123456789{"abcdef" if hexnum else ""}":
+							token += char
+							continue
+						break
+					## check for .
+					if not non_decimal:
+						if char == ".":
+							token += char
+							counter += 1
+						## check subsequent digits
+							while True:
+								counter += 1
+								char = text[i+counter+non_decimal]
+								if char in "0123456789":
+									token += char
+									continue
+								break
+						## check if sci notation
+						char = text[i+counter+non_decimal]
+						if char in "eE":
+							sci_notation = True
+							token += char
+						counter += 1
+						char = text[i+counter+non_decimal]
+						if char in "-+":
+							token += char
+					### get remaining digits
+					if sci_notation:
+						counter += 1
+						while True:
+							counter += 1
+							char = text[i+counter+non_decimal]
+							if char in "0123456789":
+								token += char
+								continue
+							if char == "_" and text[i+counter+non_decimal+1] in "0123456789":
+								token += char
+								continue
+							break
+					skips += counter
+					result.append(token)
+					continue
+				else:
+					result.append(token)
+					continue
 			elif char == ".": #* . unsigned_floats
 				token = char
 				char = text[i+1]
