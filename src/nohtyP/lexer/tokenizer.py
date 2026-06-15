@@ -34,7 +34,6 @@ class funcs:
 				result.append(char)
 				continue
 			## brackets
-			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "(": #* ( ()
 				token = char
 				next_val = i+1
@@ -61,7 +60,6 @@ class funcs:
 				result.append(char)
 				continue
 			## ops
-			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "/": #* / // /= //=
 				token = char
 				next_val = i+1
@@ -78,7 +76,6 @@ class funcs:
 						skips += 1
 				result.append(token)
 				continue
-			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "^": #* ^ ^=
 				token = char
 				next_val = i+1
@@ -89,7 +86,6 @@ class funcs:
 						skips += 1
 				result.append(token)
 				continue
-			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "%": #* % %=
 				token = char
 				next_val = i+1
@@ -100,7 +96,6 @@ class funcs:
 						skips += 1
 				result.append(token)
 				continue
-			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "&": #* & &=
 				token = char
 				next_val = i+1
@@ -111,7 +106,6 @@ class funcs:
 						skips += 1
 				result.append(token)
 				continue
-			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "!": #* ! !=
 				token = char
 				next_val = i+1
@@ -122,7 +116,6 @@ class funcs:
 						skips += 1
 				result.append(token)
 				continue
-			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "|": #* | |=
 				token = char
 				next_val = i+1
@@ -133,7 +126,6 @@ class funcs:
 						skips += 1
 				result.append(token)
 				continue
-			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "=": #* = ==
 				token = char
 				next_val = i+1
@@ -144,7 +136,6 @@ class funcs:
 						skips += 1
 				result.append(token)
 				continue
-			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "?": #* ? ?=
 				token = char
 				next_val = i+1
@@ -155,7 +146,6 @@ class funcs:
 						skips += 1
 				result.append(token)
 				continue
-			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "$": #* $variable
 				token = char
 				next_val = i+1
@@ -178,7 +168,6 @@ class funcs:
 					skips += counter - 1
 					continue
 			# various
-			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "*": #* * *? *: *~ *type: *$variable *= ** **=
 				token = char
 				next_val = i+1
@@ -322,7 +311,6 @@ class funcs:
 						break
 					skips += counter-1
 				continue
-			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "#": #* comment #?
 				token = char
 				# debug
@@ -490,7 +478,6 @@ class funcs:
 				else:
 					result.append(token)
 					continue
-			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "<": #* < <- << <= <<=
 				token = char
 				next_val = i+1
@@ -513,7 +500,6 @@ class funcs:
 						skips += 1
 				result.append(token)
 				continue
-			#// TODO: safe lookahead (protect over-indexing)
 			elif char == ">": #* > >> >= >>=
 				token = char
 				next_val = i+1
