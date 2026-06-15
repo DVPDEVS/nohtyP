@@ -234,8 +234,22 @@ class funcs:
 			elif re.match(r"[a-zA-Z_]", char): #* barewords strings
 				next_val = min(i+6, txtlen-1)
 				if next_val < txtlen:
-					token = text[i:next_val] # text[i] to i+6 (5 chars)
-					quote = '"""' if '"""' in token else "'''" if "'''" in token else "'" if "'" in token else '"' if '"' in token else '´' if '´' in token else '`' if '`' in token else ""
+					token:str = text[i:next_val] # text[i] to i+6 (5 chars)
+					# new approach to getting the quote here
+					## for each quote, try to get its index in token, then choose the smallest index available.
+					index = 5 # impossible start index is easy to break on (last index in token can at most be 4)
+					quote = ""
+					for j in ['"""', "'''", "'", '"', ]: # also cutting down on valid quotes bc of py version support (`´ invalid in 3.10+)
+						q_index = token.find(j)
+						if q_index != -1 and q_index < index:
+							index = q_index
+							quote = j
+					if index < 5:
+						quote = token[index:]
+						## sanitize
+						qc = quote[0]
+						while quote and quote[-1] != qc:
+							quote = quote.removesuffix(quote[-1])
 					if not len(quote) == 0:
 						# string token
 						stringtype = token.split()[0].split(quote)[0]
@@ -298,7 +312,6 @@ class funcs:
 							result.append(stringtype + quote)
 							skips += 1
 						else: # invalid string type, assume it to be a bareword instead
-							print(quote)
 							result.append(stringtype)
 							skips += len(stringtype)-1
 							continue
@@ -322,8 +335,6 @@ class funcs:
 				# TODO: this may need correction in parsing though. later investigate if this causes issues and nmw add guards
 			elif char == "#": #* comment #?
 				token = char
-				# debug
-				# print(text[i+1])
 				next_val = i+1
 				if next_val < txtlen:
 					char = text[next_val]
@@ -348,10 +359,10 @@ class funcs:
 				skips += counter+1
 				continue
 			#! mostly guarded.
-			elif re.match('(\\"|\'|´|`)', char): #* strings
-				next_val = i+4
+			elif char in "'\"": #* strings
+				next_val = min(i+4, txtlen-1)
 				if next_val < txtlen:
-					token = text[i:i+4]
+					token = text[i:next_val]
 					quote = '"""' if '"""' in token else "'''" if "'''" in token else "'" if "'" in token else '"' if '"' in token else '´' if '´' in token else '`' if '`' in token else "" # wont reach this fallback
 					token = quote
 					# eternal loop of lookahead appends until the quote appears without a \ before it
