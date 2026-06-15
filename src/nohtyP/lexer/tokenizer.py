@@ -238,7 +238,7 @@ class funcs:
 					quote = '"""' if '"""' in token else "'''" if "'''" in token else "'" if "'" in token else '"' if '"' in token else '´' if '´' in token else '`' if '`' in token else ""
 					if not len(quote) == 0:
 						# string token
-						stringtype = token.split(quote)[0]
+						stringtype = token.split()[0].split(quote)[0]
 						print(stringtype)
 						## validate string type
 						if re.match(r"(rf|fr|r|f|u|b|br|rb)", stringtype):
@@ -265,7 +265,7 @@ class funcs:
 										else: # non-quote
 											token += char
 											counter += 1
-									break
+									else: break
 								skips += counter+len(stringtype)+2-nl_fail # string length + string decl
 								result.append(token)
 								continue
