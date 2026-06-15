@@ -232,10 +232,9 @@ class funcs:
 				continue
 			#! mostly guarded.
 			elif re.match(r"[a-zA-Z_]", char): #* barewords strings
-				print(char)
-				next_val = i+6
+				next_val = min(i+6, txtlen-1)
 				if next_val < txtlen:
-					token = text[i:i+6] # text[i] to i+6 (5 chars)
+					token = text[i:next_val] # text[i] to i+6 (5 chars)
 					quote = '"""' if '"""' in token else "'''" if "'''" in token else "'" if "'" in token else '"' if '"' in token else '´' if '´' in token else '`' if '`' in token else ""
 					if not len(quote) == 0:
 						# string token
@@ -299,6 +298,7 @@ class funcs:
 							result.append(stringtype + quote)
 							skips += 1
 						else: # invalid string type, assume it to be a bareword instead
+							print(quote)
 							result.append(stringtype)
 							skips += len(stringtype)-1
 							continue
@@ -314,11 +314,9 @@ class funcs:
 								if re.match(r"[\w_]", char):
 									token += char
 									continue
-								else:
-									break
 							break
 						result.append(token)
-						skips += counter
+						skips += counter - 1
 						continue
 				result.append(token)
 				# TODO: this may need correction in parsing though. later investigate if this causes issues and nmw add guards
@@ -687,7 +685,6 @@ class funcs:
 				skips += counter
 				result.append(token)
 			# fallback (improve later)
-			print(f"-{char}")
 			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
 		return result
 	def tokenize_file(file_path :str|Path) -> TokenSeries:
