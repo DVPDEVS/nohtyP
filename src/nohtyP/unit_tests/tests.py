@@ -26,6 +26,7 @@ class TestTokenizer(unittest.TestCase):
             "all_symbols + - == %= ! //= @ . , ; ({[]}) <- -> ~ $ehh *$o_ *type:",
             # '"unterminated bare string',
             # "fr'unterminated raw format string",
+            # "'''string to''''new string''''without space'''",
         ]
         results = [
             [],
@@ -34,12 +35,14 @@ class TestTokenizer(unittest.TestCase):
             [],
             # [],
             # [],
+            # [],
         ]
         expected = [
             ['sejejfoise', '()', '+', '*?', 'f"ghjkl"', "r'''test2'''", '#?', '|=', ']'],
             ['# comment to newline chars', '(', 'should', 'appear', 'separate', ')'],
             ['"""multiline bare string\nhere"""'],
             ['all_symbols', '+', '-', '==', '%=', '!', '//=', '@', '.', ',', ';', '(', '{', '[', ']', '}', ')', '<-', '->', '~', '$ehh', '*$o_', '*type:'],
+            # [],
             # [],
             # [],
         ]
