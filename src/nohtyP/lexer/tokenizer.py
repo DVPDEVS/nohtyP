@@ -38,7 +38,7 @@ class funcs:
 			elif char == "(": #* ( ()
 				token = char
 				next_val = i+1
-				if not next_val >= txtlen:
+				if next_val < txtlen:
 					char = text[next_val]
 					if char == ")":
 						token += char
@@ -61,99 +61,121 @@ class funcs:
 				result.append(char)
 				continue
 			## ops
-			# TODO: safe lookahead (protect over-indexing)
+			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "/": #* / // /= //=
 				token = char
-				next_char = text[i+1]
-				if next_char == "/":
-					token += next_char
-					next_char = text[i+2]
-					skips += 1
-				if next_char == "=":
-					token += next_char
-					skips += 1
+				next_val = i+1
+				if next_val < txtlen:
+					char = text[next_val]
+					if char == "/":
+						token += char
+						next_val = i+2
+						if next_val < txtlen:
+							char = text[next_val]
+						skips += 1
+					if char == "=": # fails anyways if next char isnt assigned
+						token += char
+						skips += 1
 				result.append(token)
 				continue
-			# TODO: safe lookahead (protect over-indexing)
+			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "^": #* ^ ^=
 				token = char
-				next_char = text[i+1]
-				if next_char == "=":
-					token += next_char
-					skips += 1
+				next_val = i+1
+				if next_val < txtlen:
+					char = text[next_val]
+					if char == "=":
+						token += char
+						skips += 1
 				result.append(token)
 				continue
-			# TODO: safe lookahead (protect over-indexing)
+			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "%": #* % %=
 				token = char
-				next_char = text[i+1]
-				if next_char == "=":
-					token += next_char
-					skips += 1
+				next_val = i+1
+				if next_val < txtlen:
+					char = text[next_val]
+					if char == "=":
+						token += char
+						skips += 1
 				result.append(token)
 				continue
-			# TODO: safe lookahead (protect over-indexing)
+			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "&": #* & &=
 				token = char
-				next_char = text[i+1]
-				if next_char == "=":
-					token += next_char
-					skips += 1
+				next_val = i+1
+				if next_val < txtlen:
+					char = text[next_val]
+					if char == "=":
+						token += char
+						skips += 1
 				result.append(token)
 				continue
-			# TODO: safe lookahead (protect over-indexing)
+			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "!": #* ! !=
 				token = char
-				next_char = text[i+1]
-				if next_char == "=":
-					token += next_char
-					skips += 1
+				next_val = i+1
+				if next_val < txtlen:
+					char = text[next_val]
+					if char == "=":
+						token += char
+						skips += 1
 				result.append(token)
 				continue
-			# TODO: safe lookahead (protect over-indexing)
+			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "|": #* | |=
 				token = char
-				next_char = text[i+1]
-				if next_char == "=":
-					token += next_char
-					skips += 1
+				next_val = i+1
+				if next_val < txtlen:
+					char = text[next_val]
+					if char == "=":
+						token += char
+						skips += 1
 				result.append(token)
 				continue
-			# TODO: safe lookahead (protect over-indexing)
+			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "=": #* = ==
 				token = char
-				next_char = text[i+1]
-				if next_char == "=":
-					token += next_char
-					skips += 1
+				next_val = i+1
+				if next_val < txtlen:
+					char = text[next_val]
+					if char == "=":
+						token += char
+						skips += 1
 				result.append(token)
 				continue
-			# TODO: safe lookahead (protect over-indexing)
+			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "?": #* ? ?=
 				token = char
-				next_char = text[i+1]
-				if next_char == "=":
-					token += next_char
-					skips += 1
+				next_val = i+1
+				if next_val < txtlen:
+					char = text[next_val]
+					if char == "=":
+						token += char
+						skips += 1
 				result.append(token)
 				continue
-			# TODO: safe lookahead (protect over-indexing)
+			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "$": #* $variable
 				token = char
-				char = text[i+1]
-				if re.match(r"[a-zA-Z_]", char):
-					# validate bareword
-					counter = 0
-					while True:
-						counter += 1
-						char = text[i+counter]
-						if re.match(r"\w", char):
-							token += char
-							continue
-						result.append(token)
-						break
-					skips += counter - 1
-					continue
+				next_val = i+1
+				if next_val < txtlen:
+					char = text[next_val]
+					if re.match(r"[a-zA-Z_]", char):
+						# validate bareword
+						counter = 0
+						while True:
+							counter += 1
+							next_val = i+counter
+							if next_val < txtlen:
+								char = text[next_val]
+								if re.match(r"\w", char):
+									token += char
+									continue
+							result.append(token)
+							break
+						skips += counter - 1
+						continue
 			# various
 			# TODO: safe lookahead (protect over-indexing)
 			elif char == "*": #* * *? *: *~ *type: *$variable *= ** **=
