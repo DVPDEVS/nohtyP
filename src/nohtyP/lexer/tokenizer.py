@@ -232,6 +232,7 @@ class funcs:
 				continue
 			#! mostly guarded.
 			elif re.match(r"[a-zA-Z_]", char): #* barewords strings
+				print(char)
 				next_val = i+6
 				if next_val < txtlen:
 					token = text[i:i+6] # text[i] to i+6 (5 chars)
@@ -313,13 +314,13 @@ class funcs:
 								if re.match(r"[\w_]", char):
 									token += char
 									continue
+								else:
+									break
 							break
 						result.append(token)
-						skips += counter-1
+						skips += counter
 						continue
-				# somehow invalid, skip the minimum amount of chars for now
 				result.append(token)
-				skips += 1
 				# TODO: this may need correction in parsing though. later investigate if this causes issues and nmw add guards
 			elif char == "#": #* comment #?
 				token = char
@@ -415,9 +416,9 @@ class funcs:
 			# TODO: safe lookahead (protect over-indexing)
 			elif char == "+": #* + += positive_nums
 				token = char
-				next_char = text[i+1]
-				if next_char == "=":
-					token += next_char
+				char = text[i+1]
+				if char == "=":
+					token += char
 					skips += 1
 					result.append(token)
 					continue
@@ -686,6 +687,7 @@ class funcs:
 				skips += counter
 				result.append(token)
 			# fallback (improve later)
+			print(f"-{char}")
 			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
 		return result
 	def tokenize_file(file_path :str|Path) -> TokenSeries:
