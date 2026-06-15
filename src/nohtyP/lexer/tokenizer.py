@@ -172,63 +172,75 @@ class funcs:
 								if re.match(r"\w", char):
 									token += char
 									continue
-							result.append(token)
+							else: counter -= 1
 							break
-						skips += counter - 1
-						continue
+					result.append(token)
+					skips += counter - 1
+					continue
 			# various
-			# TODO: safe lookahead (protect over-indexing)
+			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "*": #* * *? *: *~ *type: *$variable *= ** **=
 				token = char
-				char = text[i+1]
-				# first check for simpler ops
-				if char in "?:~":
-					token += char
-					skips += 1
-					result.append(token)
-					continue
-				# then error value assignment
-				elif char == "$":
-					token += char
-					char = text[i+2]
-					# validate bareword
-					if re.match(r"[a-zA-Z_]", char):
+				next_val = i+1
+				if next_val < txtlen:
+					char = text[next_val]
+					# first check for simpler ops
+					if char in "?:~":
 						token += char
-						counter = 2
-						while True:
-							counter += 1
-							char = text[i+counter]
-							if re.match(r"[\w_]", char):
+						skips += 1
+						result.append(token)
+						continue
+					# then error value assignment
+					elif char == "$":
+						token += char
+						next_val = i+1
+						if next_val < txtlen:
+							# validate bareword
+							if re.match(r"[a-zA-Z_]", char):
 								token += char
-								continue
-							result.append(token)
-							break
+								counter = 2
+								while True:
+									counter += 1
+									next_val = i+counter
+									if next_val < txtlen:
+										char = text[next_val]
+										if re.match(r"[\w_]", char):
+											token += char
+											continue
+									else: counter -= 1
+									break
+						result.append(token)
 						skips += counter - 1
 						continue
-				# check for type decl
-				elif re.match(r"[a-zA-Z_]", char):
-					counter = 0
-					while True:
-						counter += 1
-						char = text[i+counter]
-						if char == ":":
-							token += char
-						elif re.match(r"\w", char):
-							token += char
-							continue
+					# check for type decl
+					elif re.match(r"[a-zA-Z_]", char):
+						counter = 0
+						while True:
+							counter += 1
+							next_val = i + counter
+							if next_val < txtlen:
+								char = text[next_val]
+								if char == ":":
+									token += char
+								elif re.match(r"\w", char):
+									token += char
+									continue
+								else: counter -= 1
+							break
 						result.append(token)
-						break
-					skips += counter
-					continue
-				# lastly the easiest checks
-				else:
-					if char == "*":
-						token += char
-						char = text[i+2]
-					if char == "=":
-						token += char
-					result.append(token)
-					continue
+						skips += counter
+						continue
+					# lastly the easiest checks
+					else:
+						if char == "*":
+							token += char
+							next_val = i+2
+							if next_val < txtlen:
+								char = text[next_val]
+						if char == "=": # fails anyways if next char isnt assigned
+							token += char
+				result.append(token)
+				continue
 			# TODO: safe lookahead (protect over-indexing)
 			elif re.match(r"[a-zA-Z_]", char): #* barewords strings
 				token = text[i:i+5] # text[i] to i+5 (5 chars)
@@ -310,29 +322,34 @@ class funcs:
 						break
 					skips += counter-1
 				continue
-			# TODO: safe lookahead (protect over-indexing)
+			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "#": #* comment #?
 				token = char
 				# debug
-				print(text[i+1])
-				if text[i+1] == "?":
-					token += text[i+1]
-					result.append(token)
-					skips += 1
-					continue
-				else:
-					# loop lookahead appends until \n
-					counter = 0
-					while True:
-						counter += 1
-						char = text[i+counter]
-						if char != "\n":
-							token += char
-							continue
+				# print(text[i+1])
+				next_val = i+1
+				if next_val < txtlen:
+					char = text[next_val]
+					if char == "?":
+						token += char
 						result.append(token)
-						break
-					skips += counter+1
-					continue
+						skips += 1
+						continue
+					else:
+						# loop lookahead appends until \n
+						counter = 0
+						while True:
+							counter += 1
+							next_val = i + counter
+							if next_val < txtlen:
+								char = text[next_val]
+								if char != "\n":
+									token += char
+									continue
+							break
+				result.append(token)
+				skips += counter+1
+				continue
 			# TODO: safe lookahead (protect over-indexing)
 			elif re.match('(\\"|\'|´|`)', char): #* strings
 				token = text[i:i+4]
@@ -473,35 +490,44 @@ class funcs:
 				else:
 					result.append(token)
 					continue
-			# TODO: safe lookahead (protect over-indexing)
+			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "<": #* < <- << <= <<=
 				token = char
-				char = text[i+1]
-				if char == "-":
-					token += char
-					skips += 1
-					result.append(token)
-					continue
-				if char == "<":
-					token += char
-					next_char = text[i+2]
-					skips += 1
-				if char == "=":
-					token += char
-					skips += 1
+				next_val = i+1
+				if next_val < txtlen:
+					char = text[next_val]
+					if char == "-":
+						token += char
+						skips += 1
+						result.append(token)
+						continue
+					char = text[next_val]
+					if char == "<":
+						token += char
+						next_val = i+2
+						if next_val < txtlen:
+							char = text[next_val]
+						skips += 1
+					if char == "=": # fails anyways if next char isnt assigned
+						token += char
+						skips += 1
 				result.append(token)
 				continue
-			# TODO: safe lookahead (protect over-indexing)
+			#// TODO: safe lookahead (protect over-indexing)
 			elif char == ">": #* > >> >= >>=
 				token = char
-				char = text[i+1]
-				if char == ">":
-					token += char
-					next_char = text[i+2]
-					skips += 1
-				if char == "=":
-					token += char
-					skips += 1
+				next_val = i+1
+				if next_val < txtlen:
+					char = text[next_val]
+					if char == ">":
+						token += char
+						next_val = i+2
+						if next_val < txtlen:
+							char = text[next_val]
+						skips += 1
+					if char == "=": # fails anyways if next char isnt assigned
+						token += char
+						skips += 1
 				result.append(token)
 				continue
 			# TODO: safe lookahead (protect over-indexing)
