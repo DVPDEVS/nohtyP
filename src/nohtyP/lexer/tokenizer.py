@@ -1,5 +1,4 @@
-# note: has to handle sep by whitespace AND semicolon
-
+from __future__ import annotations
 from nohtyP.lexer.types import TokenSeries
 from nohtyP.global_utilities.decorators import api_level
 from pathlib import Path
@@ -7,7 +6,7 @@ import re
 
 __all__ = [
 	"whitespace",
-	"tokenize",
+	"tokenize_str",
 	"tokenize_file",
 ]
 
@@ -15,7 +14,7 @@ whitespace :str = " \t\n\v\f\r\u001C\u001D\u001E\u001F\u0085\u00A0\u1680\u2000\u
 
 @api_level(0)
 class funcs:
-	def tokenize(text :str) -> TokenSeries:
+	def tokenize_str(text :str) -> TokenSeries:
 		result = TokenSeries()
 		txtlen = len(text)
 		#* loop over text, check for whitespace / semicolon, append to result
@@ -650,3 +649,9 @@ class funcs:
 				return funcs.tokenize(f.read())
 		except Exception as e: # broad but idc the only thing that realistically fails here is Path
 			raise ValueError(f"Unable to open the provided file path. Error;\n{e}")
+
+# shadowing with equivalent signature for imports
+def tokenize_str(*args, **kwargs) -> TokenSeries:
+	return funcs.tokenize_str(*args, **kwargs)
+def tokenize_file(*args, **kwargs) -> TokenSeries:
+	return funcs.tokenize_file(*args, **kwargs)

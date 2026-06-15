@@ -1,18 +1,17 @@
 """Various decorators for fun, actual use, or warnings :3"""
 
-from typing import Any
-from collections.abc import Callable
+from typing import Any, Callable
 
-#? These type signatures are in fact necessary for both type checkers to get it right (any) and for semantics (Callable|function, object, type, Any)
+#? These type signatures are in fact necessary for both type checkers to get it right (any) and for semantics (Callable, object, type, Any)
 
-def vibe_check(vibe: str) -> Callable|function|type|object|Any|any:
+def vibe_check(vibe: str) -> Callable|type|object|Any|any:
 	"""Vibe checking decorator"""
 	def wrapper(_obj: object) -> object:
 		if not (":3" in vibe): raise ValueError(f"Vibe `{vibe!r}` is NOT silly enough")
 		return _obj
 	return wrapper
 
-def stub(fn: Callable|function|Any|any) -> Callable|function|Any|any:
+def stub(fn: Callable|Any|any) -> Callable|Any|any:
 	"""Stub function generator.  \n
 	Syntax:
 	```python
@@ -28,7 +27,7 @@ def stub(fn: Callable|function|Any|any) -> Callable|function|Any|any:
 		except: return None
 	return wrapper
 
-def api_level(level: int) -> Callable|function|type|object|Any|any:
+def api_level(level: int) -> Callable|type|object|Any|any:
 	"""Decorator to mark as internal or public  \n
 	`level == 0`: internal  \n
 	`level == 1`: public  \n
@@ -41,7 +40,7 @@ def api_level(level: int) -> Callable|function|type|object|Any|any:
 		return _obj
 	return wrapper
 
-def test(_obj: Callable|function|type|object|Any|any) -> Callable|function|type|object|Any|any:
+def test(_obj: Callable|type|object|Any|any) -> Callable|type|object|Any|any:
 	"""Test objects are excluded from apilevel markers and SPDX License identifiers in attributes.  \n
 	Instead they're to be considered as internal regardless.  \n
 	The apilevel and license decorators and their associated attribute marks are for testing only.  \n
@@ -50,7 +49,7 @@ def test(_obj: Callable|function|type|object|Any|any) -> Callable|function|type|
 	return _obj
 
 from .types import SPDX_License_Identifers
-def license(license: SPDX_License_Identifers) -> Callable|function|type|object|Any|any:
+def license(license: SPDX_License_Identifers) -> Callable|type|object|Any|any:
 	"""Decorator to register an SDPX license ID.  \n
 	`<OBJ>.SPDX_LICENSE_IDENTIFIER == "<identifier>"`"""
 	def wrapper(_obj: object) -> object:
@@ -59,19 +58,19 @@ def license(license: SPDX_License_Identifers) -> Callable|function|type|object|A
 	return wrapper
 
 #? attributes
-def fragile(_obj: Callable|function|type|object|Any|any) -> Callable|function|type|object|Any|any:
+def fragile(_obj: Callable|type|object|Any|any) -> Callable|type|object|Any|any:
 	"""Decorator to mark as fragile."""
 	setattr(_obj, "__fragile__",True)
 	return _obj
-def unstable(_obj: Callable|function|type|object|Any|any) -> Callable|function|type|object|Any|any:
+def unstable(_obj: Callable|type|object|Any|any) -> Callable|type|object|Any|any:
 	"""Decorator to mark as unstable."""
 	setattr(_obj, "__unstable__",True)
 	return _obj
-def regex(_obj: Callable|function|type|object|Any|any) -> Callable|function|type|object|Any|any:
+def regex(_obj: Callable|type|object|Any|any) -> Callable|type|object|Any|any:
 	"""Decorator to mark use of regex."""
 	setattr(_obj, "__regex__", True)
 	return _obj
-def experimental(_obj: Callable|function|type|object|Any|any) -> Callable|function|type|object|Any|any:
+def experimental(_obj: Callable|type|object|Any|any) -> Callable|type|object|Any|any:
 	"""Decorator to mark as being experimental, in beta, etc."""
 	setattr(_obj, "__experimental__", True)
 	return _obj
