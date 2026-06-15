@@ -21,7 +21,7 @@ class funcs:
 		#* loop over text, check for whitespace / semicolon, append to result
 		#* separate on all valid operators, too
 		skips = 0
-		for i in range(len(text)):
+		for i in range(txtlen):
 			#* reset token each loop
 			token = ""
 			if skips > 0:
@@ -35,12 +35,15 @@ class funcs:
 				result.append(char)
 				continue
 			## brackets
+			#// TODO: safe lookahead (protect over-indexing)
 			elif char == "(": #* ( ()
 				token = char
-				next_char = text[i+1]
-				if next_char == ")":
-					token += next_char
-					skips += 1
+				next_val = i+1
+				if not next_val >= txtlen:
+					char = text[next_val]
+					if char == ")":
+						token += char
+						skips += 1
 				result.append(token)
 				continue
 			elif char == ")": #* )
@@ -59,6 +62,7 @@ class funcs:
 				result.append(char)
 				continue
 			## ops
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == "/": #* / // /= //=
 				token = char
 				next_char = text[i+1]
@@ -71,6 +75,7 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == "^": #* ^ ^=
 				token = char
 				next_char = text[i+1]
@@ -79,6 +84,7 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == "%": #* % %=
 				token = char
 				next_char = text[i+1]
@@ -87,6 +93,7 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == "&": #* & &=
 				token = char
 				next_char = text[i+1]
@@ -95,6 +102,7 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == "!": #* ! !=
 				token = char
 				next_char = text[i+1]
@@ -103,6 +111,7 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == "|": #* | |=
 				token = char
 				next_char = text[i+1]
@@ -111,6 +120,7 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == "=": #* = ==
 				token = char
 				next_char = text[i+1]
@@ -119,6 +129,7 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == "?": #* ? ?=
 				token = char
 				next_char = text[i+1]
@@ -127,6 +138,7 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == "$": #* $variable
 				token = char
 				char = text[i+1]
@@ -144,6 +156,7 @@ class funcs:
 					skips += counter - 1
 					continue
 			# various
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == "*": #* * *? *: *~ *type: *$variable *= ** **=
 				token = char
 				char = text[i+1]
@@ -195,6 +208,7 @@ class funcs:
 						token += char
 					result.append(token)
 					continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif re.match(r"[a-zA-Z_]", char): #* barewords strings
 				token = text[i:i+5] # text[i] to i+5 (5 chars)
 				quote = '"""' if '"""' in token else "'''" if "'''" in token else "'" if "'" in token else '"' if '"' in token else '´' if '´' in token else '`' if '`' in token else ""
@@ -275,6 +289,7 @@ class funcs:
 						break
 					skips += counter-1
 				continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == "#": #* comment #?
 				token = char
 				# debug
@@ -297,6 +312,7 @@ class funcs:
 						break
 					skips += counter+1
 					continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif re.match('(\\"|\'|´|`)', char): #* strings
 				token = text[i:i+4]
 				quote = '"""' if '"""' in token else "'''" if "'''" in token else "'" if "'" in token else '"' if '"' in token else '´' if '´' in token else '`' if '`' in token else "" # wont reach this fallback
@@ -356,6 +372,7 @@ class funcs:
 					skips += 1
 				continue
 			# arrows, numbers and such
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == "+": #* + += positive_nums
 				token = char
 				next_char = text[i+1]
@@ -435,6 +452,7 @@ class funcs:
 				else:
 					result.append(token)
 					continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == "<": #* < <- << <= <<=
 				token = char
 				char = text[i+1]
@@ -452,6 +470,7 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == ">": #* > >> >= >>=
 				token = char
 				char = text[i+1]
@@ -464,6 +483,7 @@ class funcs:
 					skips += 1
 				result.append(token)
 				continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == "-": #* - -> -= negative_nums
 				token = char
 				char = text[i+1]
@@ -543,12 +563,14 @@ class funcs:
 				else:
 					result.append(token)
 					continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif char == ".": #* . unsigned_floats
 				token = char
 				char = text[i+1]
 				if char not in "0123456789":
 					result.append(token)
 					continue
+			# TODO: safe lookahead (protect over-indexing)
 			elif char in "0123456789": #* unsigned_nums 0 0.0 111_22 1_22.0 0b0 0X0 0o7 1e7 3.5E-7
 				non_decimal = 0
 				hexnum = False
