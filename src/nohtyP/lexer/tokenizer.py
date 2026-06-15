@@ -159,7 +159,7 @@ class funcs:
 							next_val = i+counter
 							if next_val < txtlen:
 								char = text[next_val]
-								if re.match(r"\w", char):
+								if re.match(r"[\w_]", char):
 									token += char
 									continue
 							else: counter -= 1
@@ -182,9 +182,10 @@ class funcs:
 					# then error value assignment
 					elif char == "$":
 						token += char
-						next_val = i+1
+						next_val = i+2
 						if next_val < txtlen:
 							# validate bareword
+							char = text[next_val]
 							if re.match(r"[a-zA-Z_]", char):
 								token += char
 								counter = 2
@@ -196,10 +197,9 @@ class funcs:
 										if re.match(r"[\w_]", char):
 											token += char
 											continue
-									else: counter -= 1
 									break
 						result.append(token)
-						skips += counter - 1
+						skips += counter-1
 						continue
 					# check for type decl
 					elif re.match(r"[a-zA-Z_]", char):
@@ -239,21 +239,18 @@ class funcs:
 					if not len(quote) == 0:
 						# string token
 						stringtype = token.split()[0].split(quote)[0]
-						print(stringtype)
 						## validate string type
 						if re.match(r"(rf|fr|r|f|u|b|br|rb)", stringtype):
 							token = stringtype + quote
 							# eternal loop of lookahead appends until the quote appears without a \ before it
 							## single quotes
 							if len(quote) == 1:
-								nl_fail = 0
 								counter = 0
 								while True:
 									next_val = i+len(stringtype)+1+counter
 									if next_val < txtlen:
 										char = text[next_val]
 										if char == "\n": # explicit break on newline (singles dont accept)
-											nl_fail = 1
 											break
 										elif char == quote:
 											if token[-1] == "\\": # escaped
@@ -266,7 +263,7 @@ class funcs:
 											token += char
 											counter += 1
 									else: break
-								skips += counter+len(stringtype)+2-nl_fail # string length + string decl
+								skips += counter+len(stringtype)+1 # string length + string decl
 								result.append(token)
 								continue
 							## multiline quotes
@@ -275,32 +272,27 @@ class funcs:
 								while True:
 									next_val = i+len(stringtype)+counter+3
 									if next_val < txtlen:
-										next_char = text[next_val]
-										#? debug
-										# print(next_char)
-										if not next_char == quote[0]: # non-quote
-											token += next_char
-											counter += 1
-											continue # stay inside the while loop but skip quotation check
-										else:
-											# quote end?
+										char = text[next_val]
+										if char == quote[0]: # quote end?
 											if token[-1] == "\\": # escaped
-												token += next_char
+												token += char
 												counter += 1
-												continue
 											else:
-												next_val = i+len(stringtype)+counter+4
-												if next_val < txtlen:
-													if text[next_val-3:next_val] == quote: # valid end quote
-														token += next_char
-														skips += counter+len(stringtype)+3 # string length + string decl
+												if next_val+2 < txtlen:
+													if text[next_val:next_val+3] == quote: # valid end quote
+														token += quote
+														break
 													else: # invalid length
-														token += next_char
+														token += char
 														counter += 1
-														continue
-										#! break out even with an unclosed string. warn in validation instead, prioritize avoiding errors
-										result.append(token)
-										break
+												else: break
+										else: # non-quote
+											token += char
+											counter += 1
+									else: break
+								#! break out even with an unclosed string. warn in validation instead, prioritize avoiding errors
+								skips += counter+len(stringtype)+5 # string length + string decl
+								result.append(token)
 								continue
 							# invalid quote or empty single quoted string
 							result.append(stringtype + quote)
@@ -318,7 +310,7 @@ class funcs:
 							next_val = i+counter
 							if next_val < txtlen:
 								char = text[next_val]
-								if re.match(r"\w", char):
+								if re.match(r"[\w_]", char):
 									token += char
 									continue
 							break
@@ -368,25 +360,25 @@ class funcs:
 					if len(quote) == 1:
 						counter = 0
 						while True:
-							next_val = i+counter+1
+							next_val = i+1+counter
 							if next_val < txtlen:
 								char = text[next_val]
 								if char == "\n": # explicit break on newline (singles dont accept)
-									result.append(token)
 									break
-								elif not char == quote: # non-quote
-									token += char
-									counter += 1
-								else:
-									# quote end?
+								elif char == quote:
 									if token[-1] == "\\": # escaped
 										token += char
 										counter += 1
 									else: # valid end quote - break out
 										token += quote
-							skips += counter+2 # string length + string decl
-							result.append(token)
-							break
+										break
+								else: # non-quote
+									token += char
+									counter += 1
+							else: break
+						skips += counter+1 # string length + string decl
+						result.append(token)
+						continue
 					## multiline quotes
 					elif len(quote) == 3:
 						counter = 0
@@ -394,31 +386,27 @@ class funcs:
 							next_val = i+counter+3
 							if next_val < txtlen:
 								char = text[next_val]
-								#? debug
-								# print(char)
-								if not char == quote[0]: # non-quote
-									token += char
-									counter += 1
-									continue # stay inside the while loop but skip quotation check
-								else:
-									# quote end?
+								if char == quote[0]: # quote end?
 									if token[-1] == "\\": # escaped
 										token += char
 										counter += 1
-										continue
 									else:
-										next_val = i+counter+4
-										if next_val < txtlen:
-											if text[next_val-3:next_val] == quote: # valid end quote
-												token += char
-												skips += counter+6 # string length + string decl
+										if next_val+2 < txtlen:
+											if text[next_val:next_val+3] == quote: # valid end quote
+												token += quote
+												break
 											else: # invalid length
 												token += char
 												counter += 1
-												continue
-							#! break out even with an unclosed string. warn in validation instead, prioritize avoiding errors
-							result.append(token)
-							break
+										else: break
+								else: # non-quote
+									token += char
+									counter += 1
+							else: break
+						#! break out even with an unclosed string. warn in validation instead, prioritize avoiding errors
+						skips += counter+5 # string length + string decl
+						result.append(token)
+						continue
 				# invalid quote or empty single quoted string
 				result.append(quote)
 				skips += 1
