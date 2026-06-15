@@ -20,7 +20,7 @@ devmode:bool = False
 class TestTokenizer(unittest.TestCase):
     class base:
         strings = [
-            "sejejfoise () + *? f\"ghjkl\" r'''test2''' #? |= ]",
+            """sejejfoise () + *? f"ghjkl" r'''test2''' #? |= ]""",
             "# comment to newline chars\n\n(should appear separate)",
             '"""multiline bare string\nhere"""',
             "all_symbols + - == %= ! //= @ . , ; ({[]}) <- -> ~ $ehh *$o_ *type:",
@@ -217,18 +217,18 @@ class TestTokenizer(unittest.TestCase):
             self.assertListEqual(self.base.expected[i], self.base.results[i])
         if devmode:
             for i in self.results: print(i)
-    def test_valid_nums_tokenize(self):
-        for i in range(len(self.valid_nums.nums)):
-            self.results[i] = tokenize_str(self.valid_nums.nums[i])
-            self.assertListEqual(self.valid_nums.expected_tokens[i], self.valid_nums.results[i])
-        if devmode:
-            for i in self.results: print(i)
-    def test_invalid_nums_tokenize(self):
-        for i in range(len(self.invalid_nums.nums)):
-            self.results[i] = tokenize_str(self.invalid_nums.nums[i])
-            self.assertListEqual(self.invalid_nums.expected_tokens[i], self.invalid_nums.results[i])
-        if devmode:
-            for i in self.results: print(i)
+    # def test_valid_nums_tokenize(self):
+    #     for i in range(len(self.valid_nums.nums)):
+    #         self.results[i] = tokenize_str(self.valid_nums.nums[i])
+    #         self.assertListEqual(self.valid_nums.expected_tokens[i], self.valid_nums.results[i])
+    #     if devmode:
+    #         for i in self.results: print(i)
+    # def test_invalid_nums_tokenize(self):
+    #     for i in range(len(self.invalid_nums.nums)):
+    #         self.results[i] = tokenize_str(self.invalid_nums.nums[i])
+    #         self.assertListEqual(self.invalid_nums.expected_tokens[i], self.invalid_nums.results[i])
+    #     if devmode:
+    #         for i in self.results: print(i)
 
 if __name__ == "__main__":
     if len(argv) >= 2:

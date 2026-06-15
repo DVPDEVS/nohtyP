@@ -238,35 +238,37 @@ class funcs:
 					quote = '"""' if '"""' in token else "'''" if "'''" in token else "'" if "'" in token else '"' if '"' in token else '´' if '´' in token else '`' if '`' in token else ""
 					if not len(quote) == 0:
 						# string token
-						stringtype = token[0:token.index(quote)]
+						stringtype = token.split(quote)[0]
+						print(stringtype)
 						## validate string type
 						if re.match(r"(rf|fr|r|f|u|b|br|rb)", stringtype):
 							token = stringtype + quote
 							# eternal loop of lookahead appends until the quote appears without a \ before it
 							## single quotes
 							if len(quote) == 1:
+								nl_fail = 0
 								counter = 0
-								base_i = i+len(stringtype)+1
 								while True:
-									next_val = base_i+counter
+									next_val = i+len(stringtype)+1+counter
 									if next_val < txtlen:
 										char = text[next_val]
 										if char == "\n": # explicit break on newline (singles dont accept)
-											result.append(token)
+											nl_fail = 1
 											break
-										elif not char == quote: # non-quote
-											token += char
-											counter += 1
-										else:
-											# quote end?
+										elif char == quote:
 											if token[-1] == "\\": # escaped
 												token += char
 												counter += 1
 											else: # valid end quote - break out
 												token += quote
-												skips += counter+len(stringtype)+1 # string length + string decl
-									result.append(token)
+												break
+										else: # non-quote
+											token += char
+											counter += 1
 									break
+								skips += counter+len(stringtype)+2-nl_fail # string length + string decl
+								result.append(token)
+								continue
 							## multiline quotes
 							elif len(quote) == 3:
 								counter = 0
@@ -299,6 +301,7 @@ class funcs:
 										#! break out even with an unclosed string. warn in validation instead, prioritize avoiding errors
 										result.append(token)
 										break
+								continue
 							# invalid quote or empty single quoted string
 							result.append(stringtype + quote)
 							skips += 1
@@ -318,9 +321,10 @@ class funcs:
 								if re.match(r"\w", char):
 									token += char
 									continue
-							result.append(token)
 							break
+						result.append(token)
 						skips += counter-1
+						continue
 				# somehow invalid, skip the minimum amount of chars for now
 				result.append(token)
 				skips += 1
@@ -380,7 +384,7 @@ class funcs:
 										counter += 1
 									else: # valid end quote - break out
 										token += quote
-										skips += counter+2 # string length + string decl
+							skips += counter+2 # string length + string decl
 							result.append(token)
 							break
 					## multiline quotes
