@@ -284,4 +284,4 @@ if __name__ == "__main__":
     v_flag = 1
     if verbmode: v_flag = 2
     if quietmode: v_flag = 0
-    unittest.main(argv=args, verbosity=2 if verbmode else 1)
+    unittest.main(argv=args, verbosity=v_flag)
