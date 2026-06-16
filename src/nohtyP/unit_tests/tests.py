@@ -313,14 +313,14 @@ class Tokenizer(unittest.TestCase):
 if __name__ == "__main__":
     args = argv
     if len(args) >= 2:
-        if argv[1] == "v":
+        if args[1] == "v":
             verbmode = True
             showmode = True
             args.pop(1)
-        if argv[1] == "q":
+        if args[1] == "q":
             quietmode = True
             args.pop(1)
-        if argv[1] == "s":
+        if args[1] == "s":
             showmode = True
             args.pop(1)
         # This does in fact mean you can do `python -m nohtyP.unit_tests.tests v q s Tokenizer.stress` and itll become quiet + show
