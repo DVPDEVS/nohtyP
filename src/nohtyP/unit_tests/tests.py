@@ -232,7 +232,7 @@ class Tokenizer(unittest.TestCase):
             "'single-quoted'",
             '''"mix'ed"''',
             """a""b''c""",
-            # "x=y+z-1*2/3",
+            # "x=y+z-1*2/3", #* incomplete for negative, positive, and floats
             "1,234,567.89",
             "0xFF 0b1010 0o755",
             "3.14159e-10",
