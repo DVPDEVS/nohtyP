@@ -224,6 +224,35 @@ class Tokenizer(unittest.TestCase):
             '1"2"3',
             'f"1"f"2"',
             "@@@$$$%%%^^^&&&",
+            "foo...bar",
+            ".leading . .trailing. ",
+            ",,,;;;:::",
+            "()[]{}<>",
+            "\"quoted\"",
+            "'single-quoted'",
+            '''"mix'ed"''',
+            """a""b''c""",
+            # "x=y+z-1*2/3",
+            "1,234,567.89",
+            "0xFF 0b1010 0o755",
+            "3.14159e-10",
+            "NaN INF -INF",
+            "🙂😂🔥💯",
+            "🏳️‍⚧️🏳️‍🌈🇳🇴",
+            "汉字かなカナ한글",
+            "é é ê ë",
+            "a\u200bb",
+            "a\u00a0b",
+            "word\u2060word",
+            "\u202eabc",
+            "\ufeffbom",
+            "<< >> == != <= >= && || :: -> =>",
+            "---___+++***",
+            "123abc abc123",
+            "_leading trailing_",
+            'f"1"f"2"f"3"',
+            '1"2"3"4"5',
+            '''abc'def"ghi'jkl''',
         ]
         results = [[] for _ in strings]
         expected = [
@@ -232,6 +261,49 @@ class Tokenizer(unittest.TestCase):
             [ '1', '"2"', '3' ],
             [ 'f"1"', 'f"2"' ],
             [ '@', '@', '@', '$', '$', '$', '%', '%', '%', '^', '^', '^', '&', '&', '&' ],
+            [ 'foo', '.', '.', '.', 'bar' ],
+            [ '.', 'leading', '.', '.', 'trailing', '.' ],
+            [ ',', ',', ',', ';', ';', ';', ':', ':', ':' ],
+            [ '()', '[', ']', '{', '}', '<', '>' ],
+            [ '"quoted"' ],
+            [ "'single-quoted'" ],
+            [ '"mix\'ed"' ],
+            [ 'a', '""', "b''", 'c' ],
+            # [],
+            [ '1', ',', '234', ',', '567.89' ],
+            [ '0xFF', '0b1010', '0o755' ],
+            [ '3.14159e-10' ],
+            [ 'NaN', 'INF', '-', 'INF' ],
+            [ '¤__NOHTYP_NOT_TOKENIZABLE__¤(🙂)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(😂)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(🔥)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(💯)' ],
+            [ '¤__NOHTYP_NOT_TOKENIZABLE__¤(🏳)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(\ufe0f)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(\u200d)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(⚧)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(\ufe0f)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(🏳)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(\ufe0f)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(\u200d)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(🌈)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(🇳)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(🇴)' ],
+            #? actually correct for the unicode grapheme cluster. see below:
+            #* | Code point | Unicode name                               |
+            #* | ---------- | ------------------------------------------ |
+            #* | 🏳         | U+1F3F3 WAVING FLAG                        |
+            #* | ️          | U+FE0F VARIATION SELECTOR-16               |
+            #* | \\u200d    | U+200D ZERO WIDTH JOINER                   |
+            #* | ⚧          | U+26A7 TRANSGENDER SYMBOL                  |
+            #* | ️          | U+FE0F VARIATION SELECTOR-16               |
+            #* | 🏳         | U+1F3F3 WAVING FLAG                        |
+            #* | ️          | U+FE0F VARIATION SELECTOR-16               |
+            #* | \\u200d    | U+200D ZERO WIDTH JOINER                   |
+            #* | 🌈         | U+1F308 RAINBOW                            |
+            #* | 🇳         | U+1F1F3 REGIONAL INDICATOR SYMBOL LETTER N |
+            #* | 🇴         | U+1F1F4 REGIONAL INDICATOR SYMBOL LETTER O |
+            [ '¤__NOHTYP_NOT_TOKENIZABLE__¤(汉)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(字)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(か)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(な)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(カ)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(ナ)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(한)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(글)' ],
+            [ 'e', '¤__NOHTYP_NOT_TOKENIZABLE__¤(́)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(é)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(ê)', '¤__NOHTYP_NOT_TOKENIZABLE__¤(ë)' ],
+            [ 'a', '¤__NOHTYP_NOT_TOKENIZABLE__¤(\u200b)', 'b' ],
+            [ 'a', 'b' ], #? \u00a0 is known whitespace.
+            [ 'word', '¤__NOHTYP_NOT_TOKENIZABLE__¤(\u2060)', 'word' ],
+            [ '¤__NOHTYP_NOT_TOKENIZABLE__¤(\u202e)', 'abc' ],
+            [ '¤__NOHTYP_NOT_TOKENIZABLE__¤(\ufeff)', 'bom' ],
+            [ '<<', '>>', '==', '!=', '<=', '>=', '&', '&', '|', '|', ':', ':', '->', '=', '>' ],
+            [ '-', '-', '-', '___', '+', '+', '+', '**', '**', '*' ],
+            [ '123', 'abc', 'abc123' ],
+            [ '_leading', 'trailing_' ],
+            [ 'f"1"', 'f"2"', 'f"3"' ],
+            [ '1', '"2"', '3', '"4"', '5' ],
+            [ 'abc', """'def"ghi'""", 'jkl' ],
         ]
     def basic(self):
         for i in range(len(self.base.strings)):
