@@ -236,20 +236,15 @@ class funcs:
 				if next_val < txtlen:
 					token:str = text[i:next_val] # text[i] to i+6 (5 chars)
 					# new approach to getting the quote here
-					## for each quote, try to get its index in token, then choose the smallest index available.
-					index = 5 # impossible start index is easy to break on (last index in token can at most be 4)
 					quote = ""
-					for j in ['"""', "'''", "'", '"', ]: # also cutting down on valid quotes bc of py version support (`´ invalid in 3.10+)
-						q_index = token.find(j)
-						if q_index != -1 and q_index < index:
-							index = q_index
-							quote = j
-					if index < 5:
-						quote = token[index:]
-						## sanitize
-						qc = quote[0]
-						while quote and quote[-1] != qc:
-							quote = quote.removesuffix(quote[-1])
+					for j in range(len(token)):
+						if token[j] in "'\"":
+							if j < len(token)-3:
+								if token[j] == token[j+1] == token[j+2]:
+									quote = token[j]*3
+									break
+							quote = token[j]
+							break
 					if not len(quote) == 0:
 						# string token
 						stringtype = token.split()[0].split(quote)[0]
@@ -362,8 +357,12 @@ class funcs:
 			elif char in "'\"": #* strings
 				next_val = min(i+4, txtlen-1)
 				if next_val < txtlen:
-					token = text[i:next_val]
-					quote = '"""' if '"""' in token else "'''" if "'''" in token else "'" if "'" in token else '"' if '"' in token else '´' if '´' in token else '`' if '`' in token else "" # wont reach this fallback
+					token:str = text[i:next_val] # text[i] to i+4 (3 chars)
+					# new approach to getting the quote here
+					quote = char
+					if len(token) >= 3:
+						if token[0] == token[1] == token[2] == quote:
+							quote *=3
 					token = quote
 					# eternal loop of lookahead appends until the quote appears without a \ before it
 					## single quotes
@@ -693,7 +692,7 @@ class funcs:
 							token += char
 							continue
 						break
-				skips += counter
+				skips += counter -1
 				result.append(token)
 			# fallback (improve later)
 			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
