@@ -481,15 +481,10 @@ class funcs:
 						skips += 1
 				result.append(token)
 				continue
-			# TODO: safe lookahead (protect over-indexing)
-			elif char == ".": #* . unsigned_floats
-				token = char
-				char = text[i+1]
-				if char not in "0123456789":
-					result.append(token)
-					continue
-			# TODO: safe lookahead (protect over-indexing)
-			elif char in "0123456789": #* unsigned_nums 0 0.0 111_22 1_22.0 0b0 0X0 0o7 1e7 3.5E-7
+			elif char == ".": #* .
+				result.append(char)
+				continue
+			elif char in "0123456789": #* 0 0.0 111_22 1_22.0 0b0 0X0 0o7 1e7 3.5E-7
 				non_decimal = 0
 				hexnum = False
 				octnum = False
@@ -512,11 +507,11 @@ class funcs:
 							elif char in "xX":
 								hexnum = True
 					# define the valid charsets
-					decimal_charset = "0123456789"
+					decimal_charset = "0123456789_"
 					full_charset = ""
-					if binnum: full_charset = "01"
-					elif octnum: full_charset = "01234567"
-					elif hexnum: full_charset = "0123456789abcdef"
+					if binnum: full_charset = "01_"
+					elif octnum: full_charset = "01234567_"
+					elif hexnum: full_charset = "0123456789abcdef_"
 					else: full_charset = decimal_charset
 					## detect initial digits
 					counter = non_decimal
@@ -528,11 +523,6 @@ class funcs:
 							if char.lower() in full_charset:
 								token += char
 								continue
-							next_val = i+counter+1
-							if next_val < txtlen:
-								if char == "_" and text[next_val] in full_charset:
-									token += char
-									continue
 						break
 					## check for .
 					if not non_decimal:
@@ -556,30 +546,26 @@ class funcs:
 							if char in "eE":
 								sci_notation = True
 								token += char
-							counter += 1
-							next_val = i+counter
+							next_val = i+counter+1
 							if next_val < txtlen:
 								char = text[next_val]
 								if char in "-+":
 									token += char
+									counter += 1
 					else: skips += 1
 					### get remaining digits
 					if sci_notation: # inherently depends on non_decimal, is skipped if True
-						# counter += 1
+						counter += 1
 						while True:
-							counter += 1
 							next_val = i+counter
 							if next_val < txtlen:
 								char = text[next_val]
+								counter += 1
 								if char in decimal_charset:
 									token += char
 									continue
-								if next_val+1 < txtlen:
-									if char == "_" and text[next_val+1] in decimal_charset:
-										token += char
-										continue
 							break
-					skips += counter-2
+					skips += counter-1
 					result.append(token)
 				else:
 					result.append(char)
