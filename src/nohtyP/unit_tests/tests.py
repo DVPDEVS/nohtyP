@@ -4,7 +4,9 @@ from nohtyP.global_utilities.decorators import *
 from nohtyP.lexer.tokenizer import *
 from sys import argv
 
-devmode:bool = False
+verbmode:bool = False
+quietmode: bool = False
+showmode: bool = False
 
 # @test
 # class TestLexerVars(unittest.TestCase):
@@ -99,28 +101,28 @@ class Tokenizer(unittest.TestCase):
             [],
         ]
         expected_tokens = [
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
+            [ "0", ],
+            [ "7", ],
+            [ "100_0000000", ],
+            [ "0.0", ],
+            [ ".5", ],
+            [ "5.", ],
+            [ "1_22.0", ],
+            [ "3.5E-7", ],
+            [ "1e7", ],
+            [ "1e+7", ],
+            [ "1e-7", ],
+            [ "0b0", ],
+            [ "0b1010", ],
+            [ "0B1_0_1", ],
+            [ "0o7", ],
+            [ "0o755", ],
+            [ "0O7_7_7", ],
+            [ "0x0", ],
+            [ "0x2e7", ],
+            [ "0XFF", ],
+            [ "0x1_e7", ],
+            [ "0xdeadBEEF", ],
         ]
     class invalid_nums:
         
@@ -235,37 +237,51 @@ class Tokenizer(unittest.TestCase):
             [ 'a', '"b"', 'c', "'d'", 'e' ],
             # [ '1', '"2"', '3' ],
             [ 'f"1"', 'f"2"' ],
-            [ '@', '@', '@', '###$$$%%%^^^&&&'],
+            [ '@', '@', '@', '$', '$', '$', '%', '%', '%', '^', '^', '^', '&', '&', '&' ],
         ]
     def basic(self):
         for i in range(len(self.base.strings)):
             self.base.results[i] = tokenize_str(self.base.strings[i])
             self.assertListEqual(self.base.expected[i], self.base.results[i])
-        if devmode:
+        if showmode:
+            print("\n")
             for i in self.base.results: print(i)
-    # def vnums(self):
-    #     for i in range(len(self.valid_nums.nums)):
-    #         self.results[i] = tokenize_str(self.valid_nums.nums[i])
-    #         self.assertListEqual(self.valid_nums.expected_tokens[i], self.valid_nums.results[i])
-    #     if devmode:
-    #         for i in self.results: print(i)
-    # def inums(self):
-    #     for i in range(len(self.invalid_nums.nums)):
-    #         self.results[i] = tokenize_str(self.invalid_nums.nums[i])
-    #         self.assertListEqual(self.invalid_nums.expected_tokens[i], self.invalid_nums.results[i])
-    #     if devmode:
-    #         for i in self.results: print(i)
+    def vnums(self):
+        for i in range(len(self.valid_nums.nums)):
+            self.results[i] = tokenize_str(self.valid_nums.nums[i])
+            self.assertListEqual(self.valid_nums.expected_tokens[i], self.valid_nums.results[i])
+        if showmode:
+            print("\n")
+            for i in self.valid_nums.results: print(i)
+    def inums(self):
+        for i in range(len(self.invalid_nums.nums)):
+            self.results[i] = tokenize_str(self.invalid_nums.nums[i])
+            self.assertListEqual(self.invalid_nums.expected_tokens[i], self.invalid_nums.results[i])
+        if showmode:
+            print("\n")
+            for i in self.invalid_nums.results: print(i)
     def stress(self):
         for i in range(len(self.stress_test.strings)):
             self.stress_test.results[i] = tokenize_str(self.stress_test.strings[i])
             self.assertListEqual(self.stress_test.expected[i], self.stress_test.results[i])
-        if devmode:
-            for i in self.base.results: print(i)
+        if showmode:
+            print("\n")
+            for i in self.stress_test.results: print(i)
 
 if __name__ == "__main__":
     args = argv
     if len(argv) >= 2:
-        if argv[1] == "dev":
-            devmode = True
+        if argv[1] == "v":
+            verbmode = True
+            showmode = True
             args.pop(1)
-    unittest.main(argv=args)
+        if argv[1] == "q":
+            quietmode = True
+            args.pop(1)
+        if argv[1] == "s":
+            showmode = True
+            args.pop(1)
+    v_flag = 1
+    if verbmode: v_flag = 2
+    if quietmode: v_flag = 0
+    unittest.main(argv=args, verbosity=2 if verbmode else 1)

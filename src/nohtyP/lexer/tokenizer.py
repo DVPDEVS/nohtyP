@@ -152,8 +152,8 @@ class funcs:
 				if next_val < txtlen:
 					char = text[next_val]
 					if re.match(r"[a-zA-Z_]", char):
-						# validate bareword
 						counter = 0
+						# validate bareword
 						while True:
 							counter += 1
 							next_val = i+counter
@@ -164,9 +164,11 @@ class funcs:
 									continue
 							else: counter -= 1
 							break
+						skips += counter - 1
 					result.append(token)
-					skips += counter - 1
 					continue
+				else:
+					result.append(char)
 			# various
 			elif char == "*": #* * *? *: *~ *type: *$variable *= ** **=
 				token = char
