@@ -497,22 +497,21 @@ class funcs:
 					# six segments:
 					## check for hex/binary/octal r"[oOxXbB]"
 					if token == "0":
-						if char in "oObBxX":
+						if char.lower() in "obx":
 							non_decimal = 1
 							token += char
-							if char in "oO":
+							if char.lower() == "o":
 								octnum = True
-							elif char in "bB":
+							elif char.lower() == "b":
 								binnum = True
-							elif char in "xX":
+							elif char.lower() == "x":
 								hexnum = True
 					# define the valid charsets
 					decimal_charset = "0123456789_"
-					full_charset = ""
+					full_charset = decimal_charset
 					if binnum: full_charset = "01_"
 					elif octnum: full_charset = "01234567_"
 					elif hexnum: full_charset = "0123456789abcdef_"
-					else: full_charset = decimal_charset
 					## detect initial digits
 					counter = non_decimal
 					while True:

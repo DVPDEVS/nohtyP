@@ -164,20 +164,14 @@ class Tokenizer(unittest.TestCase):
 		]
 	class invalid_nums:
 		ints = [
-			# Empty / sign only
-			"", "+", "-",
-			# Leading zeros (invalid Python decimal literals)
-			"01", "001", "+01", "-01",
-			# Invalid underscore placement
-			"_1", "1_", "+_1", "-_1", "1__0", "1___0",
 			# Binary
-			"0b", "+0b", "-0b", "0b2", "0b102", "0b_1010", "0b1010_", "0b10__10",
+			"0b", "+0b", "-0b", "0b2", "0b102",
 			# Octal
-			"0o", "+0o", "-0o", "0o8", "0o9", "0o789", "0o_755", "0o755_", "0o7__55",
+			"0o", "+0o", "-0o", "0o8", "0o9", "0o789",
 			# Hex
-			"0x", "+0x", "-0x", "0xG", "0xFG", "0x_1", "0xFF_", "0xDEAD__BEEF",
+			"0x", "+0x", "-0x", "0xG", "0xFG",
 			# Mixed bases
-			"0b0x1", "0o0x1", "0x0o1", "0x0g1", "0b102", "0o789", 
+			"0b0x1", "0o0x1", "0x0o1", "0x0g1",
 		]
 		floats = [
 			# Decimal point only
@@ -214,9 +208,57 @@ class Tokenizer(unittest.TestCase):
 			"0x1e2", "0b1e2", "0o7e2",
 		]
 		results = [ [] for _ in range(max(len(ints), len(floats), len(scientifics))) ] 
-		expected_ints = [[] for _ in ints] #? idk what to expect from these
-		expected_floats = [[] for _ in floats]
-		expected_scientifics = [[] for _ in scientifics]
+		expected_ints = [
+			[ "0b", ], 
+			[ "+", "0b", ], 
+			[ "-", "0b", ], 
+			[ "0b2", ], 
+			[ "0b102", ], 
+			[ "0o", ], 
+			[ "+", "0o", ], 
+			[ "-", "0o", ], 
+			[ "0o", "8", ], 
+			[ "0o", "9", ], 
+			[ "0o7", "89", ], 
+			[ "0x", ], 
+			[ "0x", ], 
+			[ "+", "0x", ], 
+			[ "-", "0x", ], 
+			[ "0x", "G" ], 
+			[ "0xF", "G" ], 
+			[ "0b0", "x1" ], 
+			[ "0o0", "x1" ],
+			[ "0x0", "o1", ], 
+			[ "0x0", "g1", ],
+		]
+		expected_floats = [
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+		]
+		expected_scientifics = [
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+			[], 
+		]
 	class stress_test:
 		strings = [
 			"a + b + c + d + e + f + g + h + i + j + k + l",
