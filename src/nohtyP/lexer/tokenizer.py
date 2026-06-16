@@ -632,70 +632,97 @@ class funcs:
 			elif char in "0123456789": #* unsigned_nums 0 0.0 111_22 1_22.0 0b0 0X0 0o7 1e7 3.5E-7
 				non_decimal = 0
 				hexnum = False
+				octnum = False
+				binnum = False
 				sci_notation = False
 				token = char
-				char = text[i+1]
-				# six segments:
-				## check for hex/binary/octal r"[oOxXbB]"
-				if token == "0":
-					if char in "oObB":
-						non_decimal = 1
-						token += char
-						skips += 1
-					if char in "xX":
-						non_decimal = 1
-						hexnum = True
-						token += char
-						skips += 1
-				## detect initial digits
-				counter = 0
-				while True:
-					counter += 1
-					char = text[i+counter+non_decimal]
-					if char.lower() in f"0123456789{"abcdef" if hexnum else ""}":
-						token += char
-						continue
-					if char == "_" and text[i+counter+non_decimal+1] in f"0123456789{"abcdef" if hexnum else ""}":
-						token += char
-						continue
-					break
-				## check for .
-				if not non_decimal:
-					if char == ".":
-						token += char
-						counter += 1
-					## check subsequent digits
-						while True:
-							counter += 1
-							char = text[i+counter+non_decimal]
-							if char in "0123456789":
-								token += char
-								continue
-							break
-					## check if sci notation
-					char = text[i+counter+non_decimal]
-					if char in "eE":
-						sci_notation = True
-						token += char
-					counter += 1
-					char = text[i+counter+non_decimal]
-					if char in "-+":
-						token += char
-				### get remaining digits
-				if sci_notation:
-					counter += 1
+				next_val = i+1
+				if next_val < txtlen:
+					char = text[next_val]
+					# six segments:
+					## check for hex/binary/octal r"[oOxXbB]"
+					if token == "0":
+						if char in "oObBxX":
+							non_decimal = 1
+							token += char
+							skips += 1
+							if char in "oO":
+								octnum = True
+							elif char in "bB":
+								binnum = True
+							elif char in "xX":
+								hexnum = True
+					# define the valid charsets
+					decimal_charset = "0123456789"
+					full_charset = ""
+					if binnum: full_charset = "01"
+					elif octnum: full_charset = "01234567"
+					elif hexnum: full_charset = "0123456789abcdef"
+					else: full_charset = decimal_charset
+					## detect initial digits
+					counter = 0
 					while True:
 						counter += 1
-						char = text[i+counter+non_decimal]
-						if char in "0123456789":
-							token += char
-							continue
-						if char == "_" and text[i+counter+non_decimal+1] in "0123456789":
-							token += char
-							continue
+						next_val = i+counter+non_decimal
+						if next_val < txtlen:
+							char = text[next_val]
+							if char.lower() in full_charset:
+								token += char
+								continue
+							next_val = i+counter+non_decimal+1
+							if next_val < txtlen:
+								if char == "_" and text[next_val] in full_charset:
+									token += char
+									continue
 						break
-				skips += counter -1
-				result.append(token)
+					## check for .
+					if not non_decimal:
+						if char == ".": #? fails anyways if the previous assignment to next_val/char was invalid - thus safe.
+							token += char
+							counter += 1
+							## check subsequent digits
+							while True:
+								counter += 1
+								next_val = i+counter+non_decimal
+								if next_val < txtlen:
+									char = text[next_val]
+									if char in decimal_charset:
+										token += char
+										continue
+								break
+						## check if sci notation
+						next_val = i+counter+non_decimal
+						if next_val < txtlen:
+							char = text[next_val]
+							if char in "eE":
+								sci_notation = True
+								token += char
+							counter += 1
+							next_val = i+counter+non_decimal
+							if next_val < txtlen:
+								char = text[next_val]
+								if char in "-+":
+									token += char
+					### get remaining digits
+					if sci_notation: # inherently depends on non_decimal, is skipped if True
+						# counter += 1
+						while True:
+							counter += 1
+							next_val = i+counter+non_decimal
+							if next_val < txtlen:
+								if char in decimal_charset:
+									token += char
+									continue
+								if next_val+1 < txtlen:
+									if char == "_" and text[next_val+1] in decimal_charset:
+										token += char
+										continue
+							break
+					skips += counter -2
+					result.append(token)
+				else:
+					result.append(char)
+				continue
 			# fallback (improve later)
 			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
 		return result

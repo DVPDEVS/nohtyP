@@ -31,16 +31,7 @@ class Tokenizer(unittest.TestCase):
             "fr'unterminated raw format string",
             "'''string to''''new string''''without space'''",
         ]
-        results = [
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-        ]
+        results = [[] for _ in strings]
         expected = [
             ['sejejfoise', '()', '+', '*?', 'f"ghjkl"', "r'''test2'''", '#?', '|=', ']'],
             ['# comment to newline chars', '(', 'should', 'appear', 'separate', ')'],
@@ -82,7 +73,7 @@ class Tokenizer(unittest.TestCase):
             # Scientific notation with underscores
             "1_000e3", "1.234_567e8", "1_2_3.4_5_6E-7",
         ]
-        results = [ [] for _ in max(len(ints), len(floats), len(scientifics)) ] 
+        results = [ [] for _ in range(max(len(ints), len(floats), len(scientifics))) ] 
         expected_ints = [
             [ "+0", ],
             [ "+1", ],
@@ -222,7 +213,7 @@ class Tokenizer(unittest.TestCase):
             # Hex/bin/oct with exponent
             "0x1e2", "0b1e2", "0o7e2",
         ]
-        results = [ [] for _ in max(len(ints), len(floats), len(scientifics)) ] 
+        results = [ [] for _ in range(max(len(ints), len(floats), len(scientifics))) ] 
         expected_ints = [[] for _ in ints] #? idk what to expect from these
         expected_floats = [[] for _ in floats]
         expected_scientifics = [[] for _ in scientifics]
@@ -230,22 +221,15 @@ class Tokenizer(unittest.TestCase):
         strings = [
             "a + b + c + d + e + f + g + h + i + j + k + l",
             """a"b"c'd'e""",
-            # '''1"2"3''',
+            '1"2"3',
             'f"1"f"2"',
             "@@@$$$%%%^^^&&&",
-
         ]
-        results = [
-            [],
-            [],
-            # [],
-            [],
-            [],
-        ]
+        results = [[] for _ in strings]
         expected = [
             [ 'a', '+', 'b', '+', 'c', '+', 'd', '+', 'e', '+', 'f', '+', 'g', '+', 'h', '+', 'i', '+', 'j', '+', 'k', '+', 'l' ],
             [ 'a', '"b"', 'c', "'d'", 'e' ],
-            # [ '1', '"2"', '3' ],
+            [ '1', '"2"', '3' ],
             [ 'f"1"', 'f"2"' ],
             [ '@', '@', '@', '$', '$', '$', '%', '%', '%', '^', '^', '^', '&', '&', '&' ],
         ]
