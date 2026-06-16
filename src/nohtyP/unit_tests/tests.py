@@ -244,33 +244,33 @@ class Tokenizer(unittest.TestCase):
             self.base.results[i] = tokenize_str(self.base.strings[i])
             self.assertListEqual(self.base.expected[i], self.base.results[i])
         if showmode:
-            print("\n")
+            if verbmode: print("\n")
             for i in self.base.results: print(i)
-    def vnums(self):
-        for i in range(len(self.valid_nums.nums)):
-            self.results[i] = tokenize_str(self.valid_nums.nums[i])
-            self.assertListEqual(self.valid_nums.expected_tokens[i], self.valid_nums.results[i])
-        if showmode:
-            print("\n")
-            for i in self.valid_nums.results: print(i)
-    def inums(self):
-        for i in range(len(self.invalid_nums.nums)):
-            self.results[i] = tokenize_str(self.invalid_nums.nums[i])
-            self.assertListEqual(self.invalid_nums.expected_tokens[i], self.invalid_nums.results[i])
-        if showmode:
-            print("\n")
-            for i in self.invalid_nums.results: print(i)
+    # def vnums(self):
+    #     for i in range(len(self.valid_nums.nums)):
+    #         self.results[i] = tokenize_str(self.valid_nums.nums[i])
+    #         self.assertListEqual(self.valid_nums.expected_tokens[i], self.valid_nums.results[i])
+    #     if showmode:
+    #         if verbmode: print("\n")
+    #         for i in self.valid_nums.results: print(i)
+    # def inums(self):
+    #     for i in range(len(self.invalid_nums.nums)):
+    #         self.results[i] = tokenize_str(self.invalid_nums.nums[i])
+    #         self.assertListEqual(self.invalid_nums.expected_tokens[i], self.invalid_nums.results[i])
+    #     if showmode:
+    #         if verbmode: print("\n")
+    #         for i in self.invalid_nums.results: print(i)
     def stress(self):
         for i in range(len(self.stress_test.strings)):
             self.stress_test.results[i] = tokenize_str(self.stress_test.strings[i])
             self.assertListEqual(self.stress_test.expected[i], self.stress_test.results[i])
         if showmode:
-            print("\n")
+            if verbmode: print("\n")
             for i in self.stress_test.results: print(i)
 
 if __name__ == "__main__":
     args = argv
-    if len(argv) >= 2:
+    if len(args) >= 2:
         if argv[1] == "v":
             verbmode = True
             showmode = True
@@ -281,7 +281,8 @@ if __name__ == "__main__":
         if argv[1] == "s":
             showmode = True
             args.pop(1)
-    v_flag = 1
-    if verbmode: v_flag = 2
-    if quietmode: v_flag = 0
-    unittest.main(argv=args, verbosity=v_flag)
+        # This does in fact mean you can do `python -m nohtyP.unit_tests.tests v q s Tokenizer.stress` and itll become quiet + show
+    v_flag = 0 if quietmode else 2 if verbmode else 1
+    unittest.main(argv=args, verbosity=v_flag, ) # defaultTest=[]
+
+# might make this a bit easier with a higher-level script to call tests with defaults.
