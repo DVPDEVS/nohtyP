@@ -564,7 +564,7 @@ class funcs:
 									token += char
 									continue
 							break
-					skips += counter-1
+					skips += counter-1-non_decimal
 					result.append(token)
 				else:
 					result.append(char)
