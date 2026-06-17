@@ -73,7 +73,9 @@ class Tokenizer(unittest.TestCase):
 			# Scientific notation with underscores
 			"1_000e3", "1.234_567e8", "1_2_3.4_5_6E-7",
 		]
-		results = [ [] for _ in range(max(len(ints), len(floats), len(scientifics))) ] 
+		results_ints = [ [] for _ in ints ] 
+		results_floats = [ [] for _ in floats ] 
+		results_scis = [ [] for _ in scientifics ] 
 		expected_ints = [
 			[ "+", "0", ],
 			[ "+", "1", ],
@@ -207,7 +209,9 @@ class Tokenizer(unittest.TestCase):
 			# Hex/bin/oct with exponent
 			"0x1e2", "0b1e2", "0o7e2",
 		]
-		results = [ [] for _ in range(max(len(ints), len(floats), len(scientifics))) ] 
+		results_ints = [ [] for _ in ints ] 
+		results_floats = [ [] for _ in floats ] 
+		results_scis = [ [] for _ in scientifics ] 
 		expected_ints = [
 			[ "0b", ], 
 			[ "+", "0b", ], 
@@ -231,40 +235,71 @@ class Tokenizer(unittest.TestCase):
 			[ "0x0", "g1", ],
 		]
 		expected_floats = [
-			[ ".", ], 
-			[ "+", ".", ], 
-			[ "-", ".", ], 
-			[ "1.2", ".3", ], 
-			[  ], 
-			[  ], 
-			[  ], 
-			[  ], 
-			[  ], 
-			[  ], 
-			[  ], 
-			[  ], 
-			[  ], 
-			[  ], 
-			[  ], 
-			[  ], 
-			[  ], 
-			[  ], 
-			[  ], 
-			[  ], 
+			[ '.', ], 
+			[ '+', '.', ], 
+			[ '-', '.', ], 
+			[ '1.2', '.', '3', ], 
+			[ '.', '.', '5', ], 
+			[ '1.', '.', ], 
+			[ '.', '.',  ], 
+			[ "_1", ".", "0", ], 
+			[ "1.0_", ], 
+			[ "1_.0", ], 
+			[ "1._0", ], 
+			[ "1._", ], 
+			[ ".", "_5", ], 
+			[ ".", "_0", ], 
+			[ "1__000.0", ], 
+			[ "1.0__0", ], 
+			[ "+", "+", "1.0", ], 
+			[ "-", "-", "1.0", ], 
+			[ "+", "-", "1.0", ], 
+			[ "-", "+", "1.0", ], 
+			[ "0x1", ".", "5", ], 
+			[ "0b1", ".", "0", ], 
+			[ "0o7", ".", "5", ], 
+			[ "1.0", "f", ], 
+			[ "1.0", "d", ], 
+			[ "1.0", "abc", ], 
 		]
 		expected_scientifics = [
-			[], 
-			[], 
-			[], 
-			[], 
-			[], 
-			[], 
-			[], 
-			[], 
-			[], 
-			[], 
-			[], 
-			[], 
+			[ "1e", ],
+            [ "1E", ],
+            [ "+", "1e", ],
+            [ "-", "1e", ],
+			[ "1e+", ],
+            [ "1e-", ],
+            [ "1E+", ],
+            [ "1E-", ],
+			[ "e10", ],
+            [ "E10", ],
+            [ "+", "e10", ],
+            [ "-", "e10", ],
+			[ ".", "e10", ],
+            [ "1.e", ],
+            [ "1.5e+", ],
+            [ "1.5e-", ],
+			[ "1e1", "e2", ],
+            [ "1E1", "E2", ],
+            [ "1e+1", "e2", ],
+			[ "_1e10", ],
+            [ "1_e10", ],
+            [ "1e_10", ],
+            [ "1e10_", ],
+            [ "1__0e10", ],
+            [ "1e1__0", ],
+            [ "1.2_e3", ],
+            [ "1._2e3", ],
+			[ "1e+", "+", "2", ],
+            [ "1e-", "-", "2", ],
+            [ "1e+", "-", "2", ],
+            [ "1e-", "+", "2", ],
+			[ "1e", "A", ],
+            [ "1e1", "A", ],
+            [ "1e2", ".", "3", ],
+			[ "0x1e2", ],
+            [ "0b1", "e2", ],
+            [ "0o7", "e2", ],
 		]
 	class stress_test:
 		strings = [
@@ -364,48 +399,48 @@ class Tokenizer(unittest.TestCase):
 	def vnums(self):
 		def ints():
 			for i in range(len(self.valid_nums.ints)):
-				self.valid_nums.results[i] = tokenize_str(self.valid_nums.ints[i])
-				self.assertListEqual(self.valid_nums.expected_ints[i], self.valid_nums.results[i])
+				self.valid_nums.results_ints[i] = tokenize_str(self.valid_nums.ints[i])
+				self.assertListEqual(self.valid_nums.expected_ints[i], self.valid_nums.results_ints[i])
 			if showmode:
 				if verbmode: print("\n")
-				for i in self.valid_nums.results: print(i)
+				for i in self.valid_nums.results_ints: print(i)
 		def floats():
 			for i in range(len(self.valid_nums.floats)):
-				self.valid_nums.results[i] = tokenize_str(self.valid_nums.floats[i])
-				self.assertListEqual(self.valid_nums.expected_floats[i], self.valid_nums.results[i])
+				self.valid_nums.results_floats[i] = tokenize_str(self.valid_nums.floats[i])
+				self.assertListEqual(self.valid_nums.expected_floats[i], self.valid_nums.results_floats[i])
 			if showmode:
 				if verbmode: print("\n")
-				for i in self.valid_nums.results: print(i)
+				for i in self.valid_nums.results_floats: print(i)
 		def scientifics():
 			for i in range(len(self.valid_nums.scientifics)):
-				self.valid_nums.results[i] = tokenize_str(self.valid_nums.scientifics[i])
-				self.assertListEqual(self.valid_nums.expected_scientifics[i], self.valid_nums.results[i])
+				self.valid_nums.results_scis[i] = tokenize_str(self.valid_nums.scientifics[i])
+				self.assertListEqual(self.valid_nums.expected_scientifics[i], self.valid_nums.results_scis[i])
 			if showmode:
 				if verbmode: print("\n")
-				for i in self.valid_nums.results: print(i)
+				for i in self.valid_nums.results_scis: print(i)
 		ints(); floats(); scientifics() 
 	def inums(self):
 		def ints():
 			for i in range(len(self.invalid_nums.ints)):
-				self.invalid_nums.results[i] = tokenize_str(self.invalid_nums.ints[i])
-				self.assertListEqual(self.invalid_nums.expected_ints[i], self.invalid_nums.results[i])
+				self.invalid_nums.results_ints[i] = tokenize_str(self.invalid_nums.ints[i])
+				self.assertListEqual(self.invalid_nums.expected_ints[i], self.invalid_nums.results_ints[i])
 			if showmode:
 				if verbmode: print("\n")
-				for i in self.invalid_nums.results: print(i)
+				for i in self.invalid_nums.results_ints: print(i)
 		def floats():
 			for i in range(len(self.invalid_nums.floats)):
-				self.invalid_nums.results[i] = tokenize_str(self.invalid_nums.floats[i])
-				self.assertListEqual(self.invalid_nums.expected_floats[i], self.invalid_nums.results[i])
+				self.invalid_nums.results_floats[i] = tokenize_str(self.invalid_nums.floats[i])
+				self.assertListEqual(self.invalid_nums.expected_floats[i], self.invalid_nums.results_floats[i])
 			if showmode:
 				if verbmode: print("\n")
-				for i in self.invalid_nums.results: print(i)
+				for i in self.invalid_nums.results_floats: print(i)
 		def scientifics():
 			for i in range(len(self.invalid_nums.scientifics)):
-				self.invalid_nums.results[i] = tokenize_str(self.invalid_nums.scientifics[i])
-				self.assertListEqual(self.invalid_nums.expected_scientifics[i], self.invalid_nums.results[i])
+				self.invalid_nums.results_scis[i] = tokenize_str(self.invalid_nums.scientifics[i])
+				self.assertListEqual(self.invalid_nums.expected_scientifics[i], self.invalid_nums.results_scis[i])
 			if showmode:
 				if verbmode: print("\n")
-				for i in self.invalid_nums.results: print(i)
+				for i in self.invalid_nums.results_scis: print(i)
 		ints(); floats(); scientifics() 
 	def stress(self):
 		for i in range(len(self.stress_test.strings)):

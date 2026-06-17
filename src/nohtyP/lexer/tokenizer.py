@@ -527,7 +527,7 @@ class funcs:
 					if not non_decimal:
 						if char == ".": #? fails anyways if the previous assignment to next_val/char was invalid - thus safe.
 							token += char
-							skips += 1
+							# skips += 1
 							## check subsequent digits
 							while True:
 								counter += 1
@@ -563,6 +563,8 @@ class funcs:
 								if char in decimal_charset:
 									token += char
 									continue
+								else:
+									skips -= 1
 							break
 					skips += counter-1-non_decimal
 					result.append(token)
