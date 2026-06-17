@@ -6,14 +6,13 @@ from nohtyP.lexer.tokenizer import *
 __all__ = [
 	"unittest",
 	"Tokenizer",
-	"verbmode",
-	"quietmode",
-	"showmode",
+	"modes",
 ]
 
-verbmode:bool = False
-quietmode: bool = False
-showmode: bool = False
+class modes:
+	verbmode:bool = False
+	quietmode: bool = False
+	showmode: bool = False
 
 # @test
 # class TestLexerVars(unittest.TestCase):
@@ -426,30 +425,30 @@ class Tokenizer(unittest.TestCase):
 		for i in range(len(self.base.strings)):
 			self.base.results[i] = tokenize_str(self.base.strings[i])
 			self.assertListEqual(self.base.expected[i], self.base.results[i])
-		if showmode:
-			if verbmode: print("\n")
+		if modes.showmode:
+			if modes.verbmode: print("\n")
 			for i in self.base.results: print(i)
 	def vnums(self):
 		def ints():
 			for i in range(len(self.valid_nums.ints)):
 				self.valid_nums.results_ints[i] = tokenize_str(self.valid_nums.ints[i])
 				self.assertListEqual(self.valid_nums.expected_ints[i], self.valid_nums.results_ints[i])
-			if showmode:
-				if verbmode: print("\n")
+			if modes.showmode:
+				if modes.verbmode: print("\n")
 				for i in self.valid_nums.results_ints: print(i)
 		def floats():
 			for i in range(len(self.valid_nums.floats)):
 				self.valid_nums.results_floats[i] = tokenize_str(self.valid_nums.floats[i])
 				self.assertListEqual(self.valid_nums.expected_floats[i], self.valid_nums.results_floats[i])
-			if showmode:
-				if verbmode: print("\n")
+			if modes.showmode:
+				if modes.verbmode: print("\n")
 				for i in self.valid_nums.results_floats: print(i)
 		def scientifics():
 			for i in range(len(self.valid_nums.scientifics)):
 				self.valid_nums.results_scis[i] = tokenize_str(self.valid_nums.scientifics[i])
 				self.assertListEqual(self.valid_nums.expected_scientifics[i], self.valid_nums.results_scis[i])
-			if showmode:
-				if verbmode: print("\n")
+			if modes.showmode:
+				if modes.verbmode: print("\n")
 				for i in self.valid_nums.results_scis: print(i)
 		ints(); floats(); scientifics() 
 	def inums(self):
@@ -457,30 +456,30 @@ class Tokenizer(unittest.TestCase):
 			for i in range(len(self.invalid_nums.ints)):
 				self.invalid_nums.results_ints[i] = tokenize_str(self.invalid_nums.ints[i])
 				self.assertListEqual(self.invalid_nums.expected_ints[i], self.invalid_nums.results_ints[i])
-			if showmode:
-				if verbmode: print("\n")
+			if modes.showmode:
+				if modes.verbmode: print("\n")
 				for i in self.invalid_nums.results_ints: print(i)
 		def floats():
 			for i in range(len(self.invalid_nums.floats)):
 				self.invalid_nums.results_floats[i] = tokenize_str(self.invalid_nums.floats[i])
 				self.assertListEqual(self.invalid_nums.expected_floats[i], self.invalid_nums.results_floats[i])
-			if showmode:
-				if verbmode: print("\n")
+			if modes.showmode:
+				if modes.verbmode: print("\n")
 				for i in self.invalid_nums.results_floats: print(i)
 		def scientifics():
 			for i in range(len(self.invalid_nums.scientifics)):
 				self.invalid_nums.results_scis[i] = tokenize_str(self.invalid_nums.scientifics[i])
 				self.assertListEqual(self.invalid_nums.expected_scientifics[i], self.invalid_nums.results_scis[i])
-			if showmode:
-				if verbmode: print("\n")
+			if modes.showmode:
+				if modes.verbmode: print("\n")
 				for i in self.invalid_nums.results_scis: print(i)
 		ints(); floats(); scientifics() 
 	def stress(self):
 		for i in range(len(self.stress_test.strings)):
 			self.stress_test.results[i] = tokenize_str(self.stress_test.strings[i])
 			self.assertListEqual(self.stress_test.expected[i], self.stress_test.results[i])
-		if showmode:
-			if verbmode: print("\n")
+		if modes.showmode:
+			if modes.verbmode: print("\n")
 			for i in self.stress_test.results: print(i)
 
 if __name__ == "__main__":
