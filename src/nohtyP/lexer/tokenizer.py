@@ -30,7 +30,7 @@ class funcs:
 			if char in whitespace:
 				continue
 			# begin with simpler tokens starts
-			elif char in ";,~@:": #* ; , ~ @ :
+			elif char in ";,~@:.": #* ; , ~ @ : .
 				result.append(char)
 				continue
 			## brackets
@@ -474,9 +474,6 @@ class funcs:
 						token += char
 						skips += 1
 				result.append(token)
-				continue
-			elif char == ".": #* .
-				result.append(char)
 				continue
 			elif char in "0123456789": #* 0 0.0 111_22 1_22.0 0b0 0X0 0o7 1e7 3.5E-7
 				non_decimal = 0
