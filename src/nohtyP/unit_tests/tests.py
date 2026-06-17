@@ -2,7 +2,14 @@ import unittest
 # from nohtyP.lexer.identifier import TT
 from nohtyP.global_utilities.decorators import *
 from nohtyP.lexer.tokenizer import *
-from sys import argv
+
+__all__ = [
+	"unittest",
+	"Tokenizer",
+	"verbmode",
+	"quietmode",
+	"showmode",
+]
 
 verbmode:bool = False
 quietmode: bool = False
@@ -477,20 +484,4 @@ class Tokenizer(unittest.TestCase):
 			for i in self.stress_test.results: print(i)
 
 if __name__ == "__main__":
-	args = argv
-	if len(args) >= 2:
-		if args[1] == "v":
-			verbmode = True
-			showmode = True
-			args.pop(1)
-		if args[1] == "q":
-			quietmode = True
-			args.pop(1)
-		if args[1] == "s":
-			showmode = True
-			args.pop(1)
-		# This does in fact mean you can do `python -m nohtyP.unit_tests.tests v q s Tokenizer.stress` and itll become quiet + show
-	v_flag = 0 if quietmode else 2 if verbmode else 1
-	unittest.main(argv=args, verbosity=v_flag, ) # defaultTest=[]
-
-# might make this a bit easier with a higher-level script to call tests with defaults.
+	unittest.main()
