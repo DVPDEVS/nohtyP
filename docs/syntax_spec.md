@@ -422,19 +422,19 @@ nohtyP:
 
 Equivalent Python:  
 
-```py  
-class Friendly:  
-    print("init")  
-    def greet(self, name: str):  
-        print(name)  
-        return  
-```  
+```py
+class Friendly:
+    print("init")
+    def greet(self, name: str):
+        print(name)
+        return
+```
 
 Dataclasses:  
 
-```yp  
-int:x int:y ? Point <- class <- @dataclass  
-```  
+```yp
+int:x int:y ? Point <- class <- @dataclass
+```
 
 ## TODO: update
 
