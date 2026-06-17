@@ -44,19 +44,7 @@ class funcs:
 						skips += 1
 				result.append(token)
 				continue
-			elif char == ")": #* )
-				result.append(char)
-				continue
-			elif char == "{": #* {
-				result.append(char)
-				continue
-			elif char == "}": #* }
-				result.append(char)
-				continue
-			elif char == "[": #* [
-				result.append(char)
-				continue
-			elif char == "]": #* ]
+			elif char in "){}[]": #* ) { } [ ]
 				result.append(char)
 				continue
 			## ops
