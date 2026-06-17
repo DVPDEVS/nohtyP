@@ -232,16 +232,15 @@ class funcs:
 							token += char
 				result.append(token)
 				continue
-			#! mostly guarded.
 			elif re.match(r"[a-zA-Z_]", char): #* barewords strings
 				next_val = min(i+6, txtlen-1)
 				if next_val < txtlen:
-					token:str = text[i:next_val] # text[i] to i+6 (5 chars)
+					token:str = text[i:next_val+1] # text[i] to i+6 (5 chars)
 					# new approach to getting the quote here
 					quote = ""
 					for j in range(len(token)):
 						if token[j] in "'\"":
-							if j < len(token)-3:
+							if j+2 < len(token):
 								if token[j] == token[j+1] == token[j+2]:
 									quote = token[j]*3
 									break
@@ -293,10 +292,8 @@ class funcs:
 													if text[next_val:next_val+3] == quote: # valid end quote
 														token += quote
 														break
-													else: # invalid length
-														token += char
-														counter += 1
-												else: break
+												token += char
+												counter += 1
 										else: # non-quote
 											token += char
 											counter += 1
@@ -355,7 +352,6 @@ class funcs:
 				result.append(token)
 				skips += counter+1
 				continue
-			#! mostly guarded.
 			elif char in "'\"": #* strings
 				next_val = min(i+4, txtlen-1)
 				if next_val < txtlen:
@@ -406,10 +402,8 @@ class funcs:
 											if text[next_val:next_val+3] == quote: # valid end quote
 												token += quote
 												break
-											else: # invalid length
-												token += char
-												counter += 1
-										else: break
+										token += char
+										counter += 1
 								else: # non-quote
 									token += char
 									counter += 1
