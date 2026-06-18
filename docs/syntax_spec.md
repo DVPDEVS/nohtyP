@@ -438,85 +438,118 @@ int:x int:y ? Point <- class <- @dataclass
 
 ## TODO: update
 
-### ERROR HANDLING (* family) - Frame-local  
+### Scope, Frames, & Error handling (* family)  
 
-Frame scope = all operations left of *? up to the nearest semicolon (;) which is not within a block contained inside the current frame or block. Each semicolon boundary creates a new exception frame. Exception state does not cross semicolon delimiters unless explicitly passed via variable.  
+#### Frame scope  
 
-Examples of scope:  
-`'e' -> ltr ; { ... } ; smn() *$e *? $e ? print()` - Scope includes `smn()`  
-`{ { 0 -> truth ; truth ? print() } *? woag ? print() }` - Scope includes the entire inner block `{}` including the assignment `0 -> truth` and not the rightwards `woag ? print()` call  
+Exception actions only apply to their frame. This frame is defined by semicolon ; delimitation and blocks {}  
 
-STORE EXCEPTION:  
+For these operations: `*?` `*$` the frame is everything leftwards until a semicolon on the same level.  
+Example:  
 
-```yp  
-nohtyP: unsafe() *$e  
-Python: try: unsafe() except Exception as e: $e = e  
-```  
+```yp
+safe_action() ; { block ? print() ; 45 -> temp ; some() } *$e *? $e ? print()
+"             ^ ################################                            "
+```
 
-HANDLE w/o STORE:  
+Here the caret `^` marks the leftward same-level delimitation and the pound signs `#` are the frame scope.  
+Note that there are *TWO* frames here; on for each exception action.  
+If i rearrange this:  
 
-```yp  
-nohtyP: unsafe() *? "EXCEPTION" ? print()  
-Python: try: unsafe() except Exception: print("EXCEPTION")  
-```  
+```yp
+safe_action() ; { block ? print() ; 45 -> temp *$e ; some() } *? $e ? print()
+"             ^                     ##########                              "
+"               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%               "
+```
 
-CAPTURE + CONTINUE + HANDLE:  
+Now the pound signs are the frame of the `*$e` operation and the percent signs `%` are the frame of the `*?` operation.  
+Additionally this is showing the passage of an exception store `*$` through the variable `$e`.  
+This allows the printage of the earlier exception state in the later exception catch `*?`  
 
-```yp  
-nohtyP: unsafe() *$e ? safe() *? $e ? print()  
-```  
+#### Operations  
 
-FULL NESTED (3 try/excepts, 68 chars):  
+Store exception
 
-```yp  
-nohtyP: unsafe() *$e *? $e ? print() *? "couldnt print exception!" ? print()  
+```yp
+nohtyP: unsafe() *$e
+Python: try:
+            unsafe()
+        except Exception as e:
+            $e = e
+```
 
-Python:   
-__value = None  
-__exit = None  
-try:  
-    try:  
-        try:  
-            __value = unsafe()  
-        except Exception as e:  
-            __exit = e  
-        safe(__value)  
-    except Exception:  
-        print(__exit)  
-except Exception:  
-    print("couldnt print exception!")  
-```  
+Handle w/o store
+
+```yp
+nohtyP: unsafe() *? "EXCEPTION" ? print()
+Python: try:
+            unsafe()
+        except Exception:
+            print("EXCEPTION")
+```
+
+Capture + continue + handle
+
+```yp
+nohtyP: unsafe() *$e ; safe() ; $e ? print()
+Python: try:
+            unsafe()
+        except Exception as e:
+            $e = e
+        safe()
+        print($e)
+```
+
+Full nested w/ 3 try excepts in 77 chars (v. 262)  
+
+```yp
+nohtyP: unsafe() *$e ? safe() *? $e ? print() *? "couldnt print exception!" ? print()
+
+Python: 
+__value = None
+_e = None
+try:
+    try:
+        try:
+            __value = unsafe()
+        except Exception as e:
+            _e = e
+        safe(__value)
+    except Exception:
+        print(_e)
+except Exception:
+    print("couldnt print exception!")
+```
 
 RULES:  
 
-- *$name captures Exception object into variable  
-- *? triggers ONLY for leftward exceptions in same frame  
-- Handlers can fail (not protected by own *?)  
+- *$name captures Exception object into variable labeled $name  
+- Exception actions trigger ONLY for leftward exceptions in same frame  
+- Handlers can fail (not protected by self)  
 - Variables persist (normal Python scope)  
 
-### GLOBAL ERROR MODE  
+#### Global error mode
 
-```yp  
-nohtyP: *set -e ; risky() ; *set +e  
-```  
+```yp
+nohtyP: *set -e ; risky() ; *set +e
+```
 
-Effect: All expressions auto-wrapped try: expr except: $_setError = e  
+Effect: All expressions auto-wrapped ( try: expr except: $_setError = e )  
 
 *set +e clears $_setError  
 *? needs local exception to trigger, can read $_setError for diagnostics  
 
-### META ACTIONS  
+### Meta actions
 
-```yp  
-Python: import subprocess  
-nohtyP: subprocess ? go fetch  
-```  
+```yp
+Python: import subprocess
+nohtyP: subprocess ? fetch
+```
 
-## INTERCOMPATIBILITY WITH STANDARD PYTHON  
+## Optional intercompatibility with standard python
 
-Standard Python syntax may appear interleaved with nohtyP syntax in .yp source. Mixed-mode parsing is supported; unrecognized constructs are passed through unchanged to the Python compiler.  
-
-ALL THESE WORK VERBATIM IN .yp:  
+Standard Python syntax may appear interleaved with nohtyP syntax in .yp source; however, it is not required to be supported.  
+Unrecognized constructs should be passed through unchanged to the Python compiler.  
 
 ```py  
 import sys  
@@ -527,75 +560,45 @@ for i in x: print(i)
 try: risky() except: pass  
 ```  
 
-## COMPRESSION EXAMPLES  
+## Compression examples
 
-nohtyP (68 chars):  
+! TO BE REWRITTEN !
 
-```yp  
-unsafe() *$e *? $e ? print() *? "couldnt print exception!" ? print()  
-```  
+## Whitespace agnostic parsing example  
 
-Python (262 chars): 3 nested try/except blocks w/ value handling + feedback  
+These should be both be valid and transpiled identically into the third block or equivalent.  
 
-```py  
-__value = None  
-__exit = None  
-try:  
-    try:  
-        try:  
-            __value = unsafe()  
-        except Exception as e:  
-            __exit = e  
-        safe(__value)  
-    except Exception:  
-        print(__exit)  
-except Exception:  
-    print("couldnt print exception!")  
-```  
+```yp
+unsafe()*$e?safe()*?$e?print()
+```
 
-Example function 2:  
+```yp
+            unsafe()
+        *$e
+?
+                                            safe()
+    *?
+$e
+                ?
+                    print()
+```
 
-```py  
-class Genes:  
-    stats = [  
-        "agr"   ,   # Aggression  
-        "str"   ,   # Strength  
-        "mut"   ,   # Mutation  
-        "val"   ,   # Value  
-        "sth"   ]   # Stealth  
-    @staticmethod  
-    def _make_stats_dict(*, values: list[float,] = None):  
-        ret = {}  
-        for i in Genes.stats: # maps values and Genes.stats one-to-one  
-            ret += {Genes.stats[i]: 0.0 if values is None else float(abs(values[i])) if len(values) >= i-1 else 0.0,}  
-        return ret  
-```  
+```py
+__value = None
+_e:Exception = None
+try:
+    try:
+        __value = unsafe()
+    except Exception as e:
+        _e = e
+    safe(__value)
+except Exception:
+    print(_e)
+```
 
-Equivalent in nohtyP:  
-
-```yp  
-{ agr str mut val sth :list #? stats ; { ret :dict[str, float] ; Genes.stats ? ~ { Genes.stats[@] values == None ~ 0.0 *~ values ? len() >= @-1 values[@] ? abs() ? float() *~ 0.0 :dict[str, float] += ret } ; ret ? return } <- (* None ? values :list[float,] ) ? _make_stats_dict <- def <- @staticmethod } <- Genes <- class  
-```  
-
-## WHITESPACE EXAMPLE (identical parsing)  
-
-```yp  
-unsafe() *$e ? safe() *? $e ? print()  
-```  
-
-```yp  
-            unsafe()  
-        *$e  
-?  
-                                            safe()  
-    *?  
-$e  
-                ?  
-                    print()  
-```  
-
-## RUNTIME  
+## Runtime  
 
 Pure Python 3.10+ superset. Transpiles to standard Python AST. No VM changes.  
 
-The translator performs bareword resolution and whitespace normalization before AST translation. It preserves all standard Python semantics during mixed-syntax parsing.  
+The translator performs bareword resolution and whitespace normalization before AST translation.  
+It preserves all standard Python semantics during mixed-syntax parsing.  
