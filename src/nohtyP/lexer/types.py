@@ -20,7 +20,7 @@ class lexer_langs:
 
 @api_level(0)
 class LexType:
-	def __init__(self, name :str, lang :lexer_langs = None):
+	def __init__(self, name :str, lang :lexer_langs = None) -> None:
 		self.__name__ :str = name
 		self.__lang__ :lexer_langs = lang
 	def __repr__(self) -> str:
@@ -30,13 +30,21 @@ class LexType:
 
 @api_level(0)
 class LexObject:
-	def __init__(self, value :str, ltype :LexType):
+	def __init__(self, value :str, ltype :LexType) -> None:
 		self.ltype :LexType = ltype
 		self.__value__ :str = value
+		self.__issue_list__ :tuple[str|Exception] = ()
 	def __repr__(self) -> str:
-		return f"LexObject ({self.__value__}), type={self.ltype}"
+		return f"LexObject ({self.__value__}), type=\{{self.ltype.__repr__()}}"
 	def __str__(self) -> str:
 		return f"{self.ltype}[{self.__value__}]"
+	def __iand__(self, issue:str|Exception) -> None:
+		self.__issue_list__ += issue
+	def add_issue(self, issue:str|Exception) -> None:
+		# forward to iand dunder
+		self &= issue
+	def issues(self) -> tuple[str|Exception]:
+		return self.__issue_list__
 
 @api_level(0)
 class LexObjectSeries:
@@ -64,6 +72,17 @@ class TokenSeries(list[str]):
 	def insert     (self, index: int, item: str                    ) -> Never: raise NotImplementedError
 	def __setitem__(self, key: int|slice, value: str|Iterable[str] ) -> Never: raise NotImplementedError
 	def __iadd__   (self, other: Iterable[str]                     ) -> Never: raise NotImplementedError
+
+@api_level(0)
+class ParseToken:
+	def __init__(self, name:str) -> None:
+		...
+
+@api_level(0)
+class ParseObject:
+	# fully custom implementation i think
+	def __init__(self) -> None:
+		self.__objects__ :dict[ParseToken, str|dict] = {}
 
 #* Cool but not needed anymore
 #// class _example(LexerType):
