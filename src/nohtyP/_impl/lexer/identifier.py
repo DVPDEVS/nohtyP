@@ -1,7 +1,7 @@
 from __future__ import annotations
-from nohtyP.global_utilities.decorators import *
-from nohtyP.lexer.types import *
-from nohtyP.lexer.tt import TT
+from nohtyP._impl.global_utilities.decorators import *
+from nohtyP._impl.lexer.types import *
+from nohtyP._impl.lexer.tt import TT
 import re
 # Identify objects
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
-from nohtyP.lexer.types import TokenSeries
-from nohtyP.global_utilities.decorators import api_level
+from nohtyP._impl.lexer.types import TokenSeries
+from nohtyP._impl.global_utilities.decorators import api_level
 from pathlib import Path
 import re
 

@@ -3,7 +3,7 @@
 from pympler.asizeof import asizeof
 import numpy as np
 # from nohtyP.lexer.identifier import TT
-from nohtyP.global_utilities.decorators import *
+from nohtyP._impl.global_utilities.decorators import *
 
 # @test
 # class memoryUsage():

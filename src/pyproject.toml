@@ -63,10 +63,6 @@ include-package-data = true
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["nohtyP*"]
-exclude = [
-    "nohtyP.integration_tests*",
-    "nohtyP.scripts*",
-]
 
 [tool.setuptools.package-dir]
 "" = "src"

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-from nohtyP.global_utilities.decorators import api_level, license, SPDX_License_Identifers
+from nohtyP._impl.global_utilities.decorators import api_level, license, SPDX_License_Identifers
 
 @license(SPDX_License_Identifers.AGPL3_o)
 @api_level(0)
@@ -11,5 +11,5 @@ class internal:
             # class TT:
             #     from nohtyP.lexer.identifier import TT, TT_CTX, TT_NOHTYP, TT_PYTHON, REGEX_TT
             class types:
-                from nohtyP.lexer.types import lexer_langs, LexType
-            from nohtyP.lexer.utils import file, lex_helpers
+                from nohtyP._impl.lexer.types import lexer_langs, LexType
+            from nohtyP._impl.lexer.utils import file, lex_helpers

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from collections.abc import Iterable
 from typing import Never
-from nohtyP.global_utilities.decorators import *
+from nohtyP._impl.global_utilities.decorators import *
 # Lexer output types
 
 __all__ = [
