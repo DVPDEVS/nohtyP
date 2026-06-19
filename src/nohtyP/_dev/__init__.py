@@ -1,13 +1,7 @@
-import inspect
-import warnings
-
-caller = inspect.currentframe().f_back
-caller_name = caller.f_globals.get("__name__", "")
-
-if not caller_name.startswith("nohtyP"):
+from nohtyP._guards import internal, warnings
+if not internal:
     warnings.warn(
-        "nohtyP._dev is an internal development module and is not a "
-        "supported import path. This should not be available to you.",
+        "nohtyP._dev is a development module and is not a supported import path.",
         FutureWarning,
         stacklevel=2,
     )
