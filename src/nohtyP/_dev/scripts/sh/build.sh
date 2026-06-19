@@ -6,7 +6,7 @@ STARTDIR=$(pwd)
 
 cleanup() {
     #remove prebuild files
-    rm -rf ./LICENSES 2>/dev/null || true
+    # rm -rf ./LICENSES 2>/dev/null || true
     # remove venv
     [ -n "${VIRTUAL_ENV:-}" ] && deactivate || true
     rm -rf "$TEMP_VENV" 2>/dev/null || true
@@ -17,11 +17,11 @@ trap cleanup EXIT
 
 # dir change to src
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR/../../.."
+cd "$SCRIPT_DIR/../../../.."
 
 # prebuild
 ## copy or symlink licenses/docs
-ln -sfn ../LICENSES/ ./LICENSES/
+# ln -sfn ../LICENSES/ ./LICENSES/
 ## clean out dist
 rm -rf ./dist/
 

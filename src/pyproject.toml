@@ -6,9 +6,9 @@ build-backend = "hatchling.build"
 
 # Add custom build hooks
 [tool.hatch.build.hooks]
-rename_wheel = "build_hooks.py"
+rename_wheel = { path = "src.build_hooks" }
 
-[tool.hatch.build.hooks.rename_wheel]
+# [tool.hatch.build.hooks.rename_wheel]
 # No extra options needed for this hook
 
 [project]
@@ -39,7 +39,7 @@ classifiers = [
     "Typing :: Typed",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Interpreters",
-    "Topic :: Software Development :: Language Development",
+    "Topic :: Software Development :: Compilers",
     "Topic :: Software Development :: Code Generators",
     "Topic :: Text Processing :: Linguistic",
 ]

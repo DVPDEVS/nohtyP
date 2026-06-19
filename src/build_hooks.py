@@ -1,5 +1,5 @@
-from hatchling.builders.hooks import BuildHookInterface
-from hatchling.builders.wheel import WheelBuilder
+from hatchling.builders.hooks.plugin.interface import BuildHookInterface
+# hatchling 1.30.1+
 
 class RenameWheelHook(BuildHookInterface):
     """
