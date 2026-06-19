@@ -63,6 +63,9 @@ include-package-data = true
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["nohtyP*"]
+exclude = [
+    "nohtyP._dev*",
+]
 
 [tool.setuptools.package-dir]
 "" = "src"
