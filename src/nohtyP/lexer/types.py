@@ -24,7 +24,7 @@ class LexType:
 		self.__name__ :str = name
 		self.__lang__ :lexer_langs = lang
 	def __repr__(self) -> str:
-		return f"LexType ({self.__name__}), lang={self.__lang__}"
+		return f"LexType({self.__name__}), lang={self.__lang__}"
 	def __str__(self) -> str:
 		return f"{self.__lang__}[{self.__name__}]"
 
@@ -35,9 +35,9 @@ class LexObject:
 		self.__value__ :str = value
 		self.__issue_list__ :tuple[str|Exception] = ()
 	def __repr__(self) -> str:
-		return f"LexObject ({self.__value__}), type=\{{self.ltype.__repr__()}}"
+		return f"LexObject('{self.__value__}'), type=({self.ltype.__repr__()})"
 	def __str__(self) -> str:
-		return f"{self.ltype}[{self.__value__}]"
+		return f"{self.ltype}['{self.__value__}']"
 	def __iand__(self, issue:str|Exception) -> None:
 		self.__issue_list__ += issue
 	def add_issue(self, issue:str|Exception) -> None:
@@ -53,6 +53,16 @@ class LexObjectSeries:
 		pass
 	def append(self, obj :LexObject) -> None:
 		self.objectlist.append(obj)
+	def __str__(self) -> None:
+		string = ""
+		for i in range(len(self.objectlist)):
+			string += f" {i}:\t{self.objectlist[i]}\n"
+		return string[0:-1]
+	def __repr__(self) -> None:
+		string = "LexObjectSeries:\n"
+		for i in range(len(self.objectlist)):
+			string += f" {i}:\t{self.objectlist[i].__repr__()}\n"
+		return string[0:-1]
 
 @api_level(0)
 class TokenSeries(list[str]):

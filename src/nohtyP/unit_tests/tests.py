@@ -2,6 +2,7 @@ import unittest
 # from nohtyP.lexer.identifier import TT
 from nohtyP.global_utilities.decorators import *
 from nohtyP.lexer.tokenizer import *
+from nohtyP.lexer.types import *
 
 __all__ = [
 	"unittest",
@@ -481,6 +482,24 @@ class Tokenizer(unittest.TestCase):
 		if modes.showmode:
 			if modes.verbmode: print("\n")
 			for i in self.stress_test.results: print(i)
+
+@test
+class Display_Types(unittest.TestCase):
+	class lex:
+		lt_name = "test_type"
+		lo_value = "TESTING_TESTING"
+		lt = LexType(lt_name, lexer_langs.NOHTYP)
+		lo = LexObject(lo_value, lt)
+		ls = LexObjectSeries()
+		ls.append(lo)
+	def display_lex(self):
+		print(self.lex.lt)
+		print(self.lex.lo)
+		print(self.lex.ls)
+		print(self.lex.lt.__repr__())
+		print(self.lex.lo.__repr__())
+		print(self.lex.ls.__repr__())
+		self.assertTrue(self.lex.ls != None)
 
 if __name__ == "__main__":
 	unittest.main()
