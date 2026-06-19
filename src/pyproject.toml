@@ -1,8 +1,15 @@
 # package definition
 
 [build-system]
-requires = ["setuptools>=61", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# Add custom build hooks
+[tool.hatch.build.hooks]
+rename_wheel = "build_hooks.py"
+
+[tool.hatch.build.hooks.rename_wheel]
+# No extra options needed for this hook
 
 [project]
 name = "nohtyP"
@@ -57,22 +64,60 @@ dev = [
 Repository = "https://github.com/DVPDEVS/nohtyP"
 Issues = "https://github.com/DVPDEVS/nohtyP/issues"
 
-[tool.setuptools]
-include-package-data = true
-
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["nohtyP*"]
-exclude = [
-    "nohtyP._dev*",
-]
-
-[tool.setuptools.package-dir]
-"" = "src"
-
-[tool.setuptools.package-data]
-nohtyP = ["py.typed"]
-
 [project.scripts]
 nohtyP = "nohtyP.__main__:entry"
 # entry point
+
+
+# === Hatchling build configuration ===
+
+[tool.hatch.build]
+skip-excluded-dirs = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nohtyP"]
+exclude = [
+  "src/nohtyP/_dev*",
+  "src/nohtyP/_dev",
+  # Exclude all __pycache__ directories and their contents
+  "src/nohtyP/**/__pycache__",
+  "src/nohtyP/**/__pycache__/**",
+]
+force-include = { "src/nohtyP/py.typed" = "nohtyP/py.typed" }
+
+[tool.hatch.build.targets.wheel-dev]
+packages = ["src/nohtyP"]
+exclude = [
+  # Exclude all __pycache__ directories and their contents
+  "src/nohtyP/**/__pycache__",
+  "src/nohtyP/**/__pycache__/**",
+]
+artifacts = [
+  "src/nohtyP/_dev/**",
+  "src/nohtyP/_dev",
+]
+force-include = { "src/nohtyP/py.typed" = "nohtyP/py.typed" }
+
+[tool.hatch.build.targets.sdist]
+packages = ["src/nohtyP"]
+exclude = [
+  # Exclude all __pycache__ directories and their contents
+  "src/nohtyP/**/__pycache__",
+  "src/nohtyP/**/__pycache__/**",
+]
+force-include = { "src/nohtyP/py.typed" = "nohtyP/py.typed" }
+
+# === Hatch environment configuration ===
+
+[tool.hatch.envs.default]
+# Default environment (optional customization)
+type = "virtual"
+# Lock Python to 3.10+
+python = ">=3.10"
+
+[tool.hatch.envs.dev]
+# This environment will install the `dev` optional-dependencies group
+type = "virtual"
+features = ["dev"]
+# Lock Python to 3.10+
+python = ">=3.10"

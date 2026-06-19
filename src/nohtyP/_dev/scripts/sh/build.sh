@@ -32,10 +32,13 @@ python -m venv "$TEMP_VENV"
 # shellcheck disable=SC1091
 source "$TEMP_VENV/bin/activate"
 
-# build and update pip
+# update/install deps and then build
 python -m pip install --upgrade pip
-python -m pip install build
-python -m build
+python -m pip install hatch hatchling
+python -m pip install --upgrade hatch hatchling
+hatch build --target wheel
+hatch build --target wheel-dev
+hatch build --target sdist
 
 # find wheel and tarball
 shopt -s nullglob

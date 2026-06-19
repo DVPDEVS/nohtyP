@@ -1,0 +1,16 @@
+hatch env create default
+hatch env create dev
+hatch env show
+
+hatch run python -V
+hatch run dev:pytest
+hatch shell dev
+
+hatch build
+hatch build --target wheel
+hatch build --target wheel-dev
+hatch build --target sdist
+
+hatch clean      # remove build artifacts (dist/, build/, etc.)
+hatch version    # show version
+hatch version --set=0.0.2   # bump version

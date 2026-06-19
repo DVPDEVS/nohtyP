@@ -1,2 +1,2 @@
-python -m src.integration_tests.stats_benchmark
-# Run from the parent directory.
+python -m nohtyP._dev.unit_tests.<test file> [ q | v | s ]
+# Run from the parent directory `src` 
