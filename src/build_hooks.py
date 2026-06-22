@@ -1,48 +1,95 @@
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
-# hatchling 1.30.1+
+import os
+from pathlib import Path
 
-class RenameWheelHook(BuildHookInterface):
+class WheelHook(BuildHookInterface):
     """
-    Custom hook that renames the wheel file based on the target name:
-    - wheel       -> nohtyP-<version>-<metadata>.whl
-    - wheel-dev   -> nohtyP-<version>-dev.<metadata>.whl
+    Custom hook that renames the wheel file based on the target mode:
+    - wheel     -> nohtyP-<version>-<tags>.whl
+    - dev       -> nohtyP-<version>-dev-<tags>.whl
+
+    And modifies included/excluded files based on `_YP_HATCH_BUILD_MODE`.
     """
 
-    PLUGIN_NAME = "rename_wheel"
+    def _load_common_include(self) -> dict:
+        out = {
+            "nohtyP/py.typed": "nohtyP/py.typed",
+            "README.md": "README.md",
+        }
+        # LICENSES
+        ldir = Path("LICENSES")
+        if ldir.exists():
+            for file in ldir.rglob("*"):
+                if file.is_file():
+                    rel = file.as_posix()
+                    out[rel] = rel
+        return out
 
     def initialize(self, version: str, build_data: dict) -> None:
-        # We don't need to change build_data here for renaming.
-        pass
+        mode = os.getenv("_YP_HATCH_BUILD_MODE", "wheel")
+        print(f"YP Build mode: '{mode}'")
+        build_data.setdefault("force_include", {})
+        build_data.setdefault("exclude", [])
+        # IMPORTANT: we stop trusting glob exclusion entirely for correctness
+        build_data["exclude"].clear()
+        # reset-safe include (baseline)
+        build_data["force_include"].clear()
+        build_data["force_include"].update(self._load_common_include())
+        def include_file(path: Path):
+            build_data["force_include"][path.as_posix()] = path.as_posix()
+        def is_allowed(path: Path, allow_dev: bool) -> bool:
+            # hard block bytecode always
+            if "__pycache__" in path.parts:
+                return False
+            # dev isolation rule
+            if "_dev" in path.parts and not allow_dev:
+                return False
+            return True
+        # -------------------------
+        # DEV MODE
+        # -------------------------
+        if mode == "dev":
+            root = Path("nohtyP")
+            for file in root.rglob("*"):
+                if file.is_file() and is_allowed(file, allow_dev=True):
+                    include_file(file)
+            include_file(Path("build_hooks.py"))
+        # -------------------------
+        # SDIST MODE
+        # -------------------------
+        elif mode == "sdist":
+            root = Path("nohtyP")
+            for file in root.rglob("*"):
+                if file.is_file() and is_allowed(file, allow_dev=True):
+                    include_file(file)
+            include_file(Path("build_hooks.py"))
+        # -------------------------
+        # WHEEL (PROD)
+        # -------------------------
+        elif mode == "wheel":
+            root = Path("nohtyP")
+            for file in root.rglob("*"):
+                if file.is_file() and is_allowed(file, allow_dev=False):
+                    include_file(file)
 
     def finalize(self, version: str, build_data: dict, artifact_path: str) -> None:
         """
-        artifact_path is the full path to the generated wheel file.
-        We rename it based on the target name.
+        Modify name of wheel if dev mode
         """
-        import os
-        target_name = self.target_name  # e.g. "wheel" or "wheel-dev"
+        mode = os.getenv("_YP_HATCH_BUILD_MODE", "wheel")
         if not artifact_path.endswith(".whl"):
-            # Not a wheel, skip
             return
-        base, ext = os.path.splitext(artifact_path)
-        # Extract project name and version from the original filename
-        # Original: nohtyP-0.0.1-<tags>.whl
-        # We want to keep the same base but insert "dev" for wheel-dev target.
-        parts = base.split(os.sep)
-        filename = parts[-1]
-        # Split into: name-version-tags.whl
-        # Example: nohtyP-0.0.1-py3-none-any.whl
-        name_ver, tags = filename.rsplit("-", 1)
-        # name_ver is "nohtyP-0.0.1"
-        if target_name == "wheel-dev":
-            # Insert "dev" between version and tags:
-            # nohtyP-0.0.1-py3-none-any -> nohtyP-0.0.1-dev-py3-none-any
+        base = os.path.splitext(artifact_path)[0]
+        filename = os.path.basename(base)
+        try:
+            name_ver, tags = filename.rsplit("-", 1)
+        except ValueError:
+            # fallback safety
+            return
+        if mode == "dev":
             new_filename = f"{name_ver}-dev-{tags}"
         else:
-            # release or sdist wheel: keep original
             new_filename = filename
         new_path = os.path.join(os.path.dirname(base), new_filename)
-        # Rename the file
         os.rename(artifact_path, new_path)
-        # Tell Hatchling the new artifact path
         build_data["artifacts"] = [new_path]

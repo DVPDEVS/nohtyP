@@ -6,7 +6,7 @@ STARTDIR=$(pwd)
 
 cleanup() {
     #remove prebuild files
-    # rm -rf ./LICENSES 2>/dev/null || true
+    rm -rf ./LICENSES 2>/dev/null || true
     # remove venv
     [ -n "${VIRTUAL_ENV:-}" ] && deactivate || true
     rm -rf "$TEMP_VENV" 2>/dev/null || true
@@ -21,7 +21,7 @@ cd "$SCRIPT_DIR/../../../.."
 
 # prebuild
 ## copy or symlink licenses/docs
-# ln -sfn ../LICENSES/ ./LICENSES/
+ln -sfn ../LICENSES LICENSES
 ## clean out dist
 rm -rf ./dist/
 
@@ -36,9 +36,10 @@ source "$TEMP_VENV/bin/activate"
 python -m pip install --upgrade pip
 python -m pip install hatch hatchling
 python -m pip install --upgrade hatch hatchling
-hatch build --target wheel
-hatch build --target wheel-dev
-hatch build --target sdist
+## include an envvar for build hook
+_YP_HATCH_BUILD_MODE=wheel hatch build --target wheel
+_YP_HATCH_BUILD_MODE=sdist hatch build --target sdist
+_YP_HATCH_BUILD_MODE=dev   hatch build --target wheel
 
 # find wheel and tarball
 shopt -s nullglob
