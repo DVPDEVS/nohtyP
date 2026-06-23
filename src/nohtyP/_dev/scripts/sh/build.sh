@@ -37,9 +37,9 @@ python -m pip install --upgrade pip
 python -m pip install hatch hatchling
 python -m pip install --upgrade hatch hatchling
 ## include an envvar for build hook
-_YP_HATCH_BUILD_MODE=wheel hatch build --target wheel
-_YP_HATCH_BUILD_MODE=sdist hatch build --target sdist
-_YP_HATCH_BUILD_MODE=dev   hatch build --target wheel
+_YP_HATCH_BUILD_MODE=release hatch build --target wheel
+_YP_HATCH_BUILD_MODE=sdist   hatch build --target sdist
+_YP_HATCH_BUILD_MODE=dev     hatch build --target wheel
 
 # find wheel and tarball
 shopt -s nullglob

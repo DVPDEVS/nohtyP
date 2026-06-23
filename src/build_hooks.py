@@ -26,7 +26,7 @@ class WheelHook(BuildHookInterface):
         return out
 
     def initialize(self, version: str, build_data: dict) -> None:
-        mode:str = os.getenv("_YP_HATCH_BUILD_MODE", "wheel")
+        mode:str = os.getenv("_YP_HATCH_BUILD_MODE", "release")
         print(f"YP Build mode: '{mode}'")
         build_data.setdefault("force_include", {})
         build_data.setdefault("exclude", [])
@@ -44,11 +44,12 @@ class WheelHook(BuildHookInterface):
             if "__pycache__" in path.parts:
                 return False
             # dev isolation rule
-            if "_dev" in path.parts and not allow_dev:
-                return False
-            # script rule, should only appear in sdist
-            if "scripts" in path.parts and not allow_scripts:
-                return False
+            if "_dev" in path.parts:
+                # script rule, should only appear in sdist
+                if "scripts" in path.parts:
+                    return allow_scripts
+                else:
+                    return allow_dev
             return True
         # -------------------------
         # DEV MODE
@@ -72,7 +73,7 @@ class WheelHook(BuildHookInterface):
         # -------------------------
         # WHEEL (PROD)
         # -------------------------
-        elif mode == "wheel":
+        elif mode == "release":
             root = Path("nohtyP")
             for file in root.rglob("*"):
                 if file.is_file() and is_allowed(file):
@@ -82,7 +83,7 @@ class WheelHook(BuildHookInterface):
         """
         Modify name of wheel if dev mode
         """
-        mode = os.getenv("_YP_HATCH_BUILD_MODE", "wheel")
+        mode = os.getenv("_YP_HATCH_BUILD_MODE", "release")
         if not artifact_path.endswith(".whl"):
             return
         base = os.path.splitext(artifact_path)[0]
@@ -94,6 +95,8 @@ class WheelHook(BuildHookInterface):
             return
         if mode == "dev":
             new_filename = f"{name_ver}-dev-{tags}"
+        elif mode == "release":
+            new_filename = f"{name_ver}-release-{tags}"
         else:
             new_filename = filename
         new_path = os.path.join(os.path.dirname(base), new_filename+".whl")
