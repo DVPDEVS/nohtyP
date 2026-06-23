@@ -8,16 +8,16 @@ class WheelHook(BuildHookInterface):
     - wheel     -> nohtyP-<version>-<tags>.whl
     - dev       -> nohtyP-<version>-dev-<tags>.whl
 
-    And modifies included/excluded files based on `_YP_HATCH_BUILD_MODE`.
+    And modifies included/excluded files based on `_YP_HATCH_BUILD_MODE´.
     """
 
     def _load_common_include(self) -> dict:
-        out = {
+        out:dict[str,str] = {
             "nohtyP/py.typed": "nohtyP/py.typed",
             "README.md": "README.md",
         }
         # LICENSES
-        ldir = Path("LICENSES")
+        ldir:Path = Path("LICENSES")
         if ldir.exists():
             for file in ldir.rglob("*"):
                 if file.is_file():
@@ -26,7 +26,7 @@ class WheelHook(BuildHookInterface):
         return out
 
     def initialize(self, version: str, build_data: dict) -> None:
-        mode = os.getenv("_YP_HATCH_BUILD_MODE", "wheel")
+        mode:str = os.getenv("_YP_HATCH_BUILD_MODE", "wheel")
         print(f"YP Build mode: '{mode}'")
         build_data.setdefault("force_include", {})
         build_data.setdefault("exclude", [])
@@ -35,14 +35,19 @@ class WheelHook(BuildHookInterface):
         # reset-safe include (baseline)
         build_data["force_include"].clear()
         build_data["force_include"].update(self._load_common_include())
+        # include helper
         def include_file(path: Path):
             build_data["force_include"][path.as_posix()] = path.as_posix()
-        def is_allowed(path: Path, allow_dev: bool) -> bool:
+        # allow file helper
+        def is_allowed(path: Path, *, allow_dev: bool = False, allow_scripts: bool = False) -> bool:
             # hard block bytecode always
             if "__pycache__" in path.parts:
                 return False
             # dev isolation rule
             if "_dev" in path.parts and not allow_dev:
+                return False
+            # script rule, should only appear in sdist
+            if "scripts" in path.parts and not allow_scripts:
                 return False
             return True
         # -------------------------
@@ -60,16 +65,17 @@ class WheelHook(BuildHookInterface):
         elif mode == "sdist":
             root = Path("nohtyP")
             for file in root.rglob("*"):
-                if file.is_file() and is_allowed(file, allow_dev=True):
+                if file.is_file() and is_allowed(file, allow_dev=True, allow_scripts=True):
                     include_file(file)
             include_file(Path("build_hooks.py"))
+            include_file(Path("pyproject.toml"))
         # -------------------------
         # WHEEL (PROD)
         # -------------------------
         elif mode == "wheel":
             root = Path("nohtyP")
             for file in root.rglob("*"):
-                if file.is_file() and is_allowed(file, allow_dev=False):
+                if file.is_file() and is_allowed(file):
                     include_file(file)
 
     def finalize(self, version: str, build_data: dict, artifact_path: str) -> None:
