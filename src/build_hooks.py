@@ -96,6 +96,6 @@ class WheelHook(BuildHookInterface):
             new_filename = f"{name_ver}-dev-{tags}"
         else:
             new_filename = filename
-        new_path = os.path.join(os.path.dirname(base), new_filename)
+        new_path = os.path.join(os.path.dirname(base), new_filename+".whl")
         os.rename(artifact_path, new_path)
         build_data["artifacts"] = [new_path]
