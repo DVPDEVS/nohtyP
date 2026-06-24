@@ -15,6 +15,7 @@ exit /b %RC%
 set "STARTDIR=%cd%"
 set "_YP_BUILD_SUCCESS=0"
 call :relocate
+start clean_cache.bat
 call :copy_files
 call :create_venv
 call :build
