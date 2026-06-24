@@ -16,7 +16,7 @@ set "STARTDIR=%cd%"
 set "_YP_BUILD_SUCCESS=0"
 call :relocate
 :: thusly executing from src dir
-cmd /C .\nohtyP\_dev\scripts\bat\clean_cache.bat
+cmd /S /C .\nohtyP\_dev\scripts\bat\clean_cache.bat 2>nul
 call :copy_files
 call :create_venv
 call :build
@@ -137,13 +137,13 @@ goto :eof
 
 :test_install_normal
 python -m pip install --no-cache-dir "!latest_whl!"
-python -c "import nohtyP;print(nohtyP())"
+python -m nohtyP
 goto :eof
 
 :test_install_dev
 python -m pip uninstall -y nohtyP
 python -m pip install --no-cache-dir "!latest_dev!"
-python -c "import nohtyP;print(nohtyP())"
+python -m nohtyP
 goto :eof
 
 :cleanup

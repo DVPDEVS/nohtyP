@@ -77,8 +77,10 @@ nohtyP = "nohtyP.__main__:entry"
 skip-excluded-dirs = true
 
 [tool.hatch.build.targets.wheel]
-only-include = []
 packages = []
+only-include = []
+include = []
+exclude = ["*"]
 #! modified in build hook !
 
 [tool.hatch.build.targets.sdist]
