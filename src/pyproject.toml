@@ -4,16 +4,18 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-# Add custom build hooks
+# Add custom hooks
 [tool.hatch.build.hooks]
 custom = { path = "build_hooks.py" }
 
-# [tool.hatch.build.hooks.rename_wheel]
-# No extra options needed for this hook
+# Verion def
+[tool.hatch.version]
+source = "code"
+path = "nohtyP/__about__.py"
 
 [project]
+dynamic = ["version"]
 name = "nohtyP"
-version = "0.0.1"
 description = "nohtyP language parser and transpiler"
 requires-python = ">=3.10"
 dependencies = [
@@ -75,10 +77,12 @@ nohtyP = "nohtyP.__main__:entry"
 skip-excluded-dirs = true
 
 [tool.hatch.build.targets.wheel]
+only-include = []
 packages = []
 #! modified in build hook !
 
 [tool.hatch.build.targets.sdist]
+only-include = []
 packages = []
 #! modified in build hook !
 

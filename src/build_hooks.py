@@ -2,7 +2,7 @@ from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 import os
 from pathlib import Path
 
-class WheelHook(BuildHookInterface):
+class ContentHook(BuildHookInterface):
     """
     Custom hook that renames the wheel file based on the target mode:
     - wheel     -> nohtyP-<version>-<tags>.whl
@@ -44,12 +44,11 @@ class WheelHook(BuildHookInterface):
             if "__pycache__" in path.parts:
                 return False
             # dev isolation rule
-            if "_dev" in path.parts:
-                # script rule, should only appear in sdist
-                if "scripts" in path.parts:
-                    return allow_scripts
-                else:
-                    return allow_dev
+            if "_dev" in path.parts and not allow_dev:
+                return False
+            # script rule, should only appear in sdist
+            if "scripts" in path.parts and not allow_scripts:
+                return False
             return True
         # -------------------------
         # DEV MODE
@@ -78,27 +77,3 @@ class WheelHook(BuildHookInterface):
             for file in root.rglob("*"):
                 if file.is_file() and is_allowed(file):
                     include_file(file)
-
-    def finalize(self, version: str, build_data: dict, artifact_path: str) -> None:
-        """
-        Modify name of wheel if dev mode
-        """
-        mode = os.getenv("_YP_HATCH_BUILD_MODE", "release")
-        if not artifact_path.endswith(".whl"):
-            return
-        base = os.path.splitext(artifact_path)[0]
-        filename = os.path.basename(base)
-        try:
-            name_ver, tags = filename.rsplit("-", 1)
-        except ValueError:
-            # fallback safety
-            return
-        if mode == "dev":
-            new_filename = f"{name_ver}-dev-{tags}"
-        elif mode == "release":
-            new_filename = f"{name_ver}-release-{tags}"
-        else:
-            new_filename = filename
-        new_path = os.path.join(os.path.dirname(base), new_filename+".whl")
-        os.rename(artifact_path, new_path)
-        build_data["artifacts"] = [new_path]

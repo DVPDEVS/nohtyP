@@ -15,7 +15,8 @@ exit /b %RC%
 set "STARTDIR=%cd%"
 set "_YP_BUILD_SUCCESS=0"
 call :relocate
-start clean_cache.bat
+:: thusly executing from src dir
+cmd /C .\nohtyP\_dev\scripts\bat\clean_cache.bat
 call :copy_files
 call :create_venv
 call :build
@@ -73,33 +74,24 @@ goto :eof
 
 :inspect
 call :find
-call :inspect_whl
-call :inspect_tar
-goto :eof
-
-:inspect_whl
-if not defined latest_whl (
-    echo Wheel not found, stopping inspection. >&2
+if "!_YP_BUILD_SUCCESS!" == "0" (
+    call :inspect_whl
+    call :inspect_dev
+    call :inspect_tar
+    echo.
     goto :eof
 )
-echo === Inspecting production wheel^! ===
-tar.exe -tf "!latest_whl!"
-goto :eof
-
-:inspect_tar
-if not defined latest_tar (
-    echo Tarball not found, stopping inspection. >&2
-    goto :eof
-)
-echo ======== Inspecting sdist^! ========
-tar.exe -tf "!latest_tar!"
+echo Skipping inspection... >&2
 goto :eof
 
 :find
 set "latest_whl="
 set "latest_dev="
 set "latest_tar="
-for %%F in (dist\nohtyP*release*.whl) do if not defined latest_whl set "latest_whl=%%F"
+for %%F in (dist\nohtyP*.whl) do (
+    echo %%~nxF | findstr /i "+dev" >nul
+    if errorlevel 1 if not defined latest_whl set "latest_whl=%%F"
+)
 for %%F in (dist\nohtyP*dev*.whl) do if not defined latest_dev set "latest_dev=%%F"
 for %%F in (dist\nohtyP*.tar.gz) do if not defined latest_tar set "latest_tar=%%F"
 if not defined latest_whl (
@@ -116,24 +108,42 @@ if not defined latest_tar (
 )
 goto :eof
 
+:inspect_whl
+echo.
+echo === Inspecting production wheel^! ===
+tar.exe -tf "!latest_whl!"
+goto :eof
+
+:inspect_dev
+echo.
+echo ====== Inspecting dev wheel^! ======
+tar.exe -tf "!latest_dev!"
+goto :eof
+
+:inspect_tar
+echo.
+echo ======== Inspecting sdist^! ========
+tar.exe -tf "!latest_tar!"
+goto :eof
+
 :test_installs
-if defined latest_whl (
+if "!_YP_BUILD_SUCCESS!" == "0" (
     call :test_install_normal
     call :test_install_dev
     goto :eof
 )
-echo Cannot test installation^! >&2
+echo Skipping installation... >&2
 goto :eof
 
 :test_install_normal
 python -m pip install --no-cache-dir "!latest_whl!"
-python -c "import nohtyP"
+python -c "import nohtyP;print(nohtyP())"
 goto :eof
 
 :test_install_dev
-@REM python -m pip uninstall -y nohtyP
-@REM python -m pip install --no-cache-dir "!latest_whl![dev]"
-@REM python -c "import nohtyP"
+python -m pip uninstall -y nohtyP
+python -m pip install --no-cache-dir "!latest_dev!"
+python -c "import nohtyP;print(nohtyP())"
 goto :eof
 
 :cleanup
