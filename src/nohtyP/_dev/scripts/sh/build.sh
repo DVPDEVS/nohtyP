@@ -25,7 +25,7 @@ ln -sfn ../LICENSES LICENSES
 ## clean out dist
 rm -rf ./dist/
 ## clean out pycache ( rember ´chmod +x clean_cache.sh´)
-./clean_cahche.sh
+./nohtyP/_dev/scripts/clean_cache.sh
 
 # create temporary venv
 TEMP_VENV=$(mktemp -d)
@@ -45,18 +45,27 @@ _YP_HATCH_BUILD_MODE=dev     hatch build --target wheel
 
 # find wheel and tarball
 shopt -s nullglob
+## dev wheels
 dwhls=(dist/nohtyP*dev*.whl)
-rwhls=(dist/nohtyP*release*.whl)
+## release wheels
+rwhls=(dist/nohtyP*.whl) ; tmp=()
+for f in "${rwhls[@]}"; do
+    [[ $f == *dev* ]] || tmp+=("$f")
+done
+rwhls=("${tmp[@]}")
+## tarballs
 tars=(dist/nohtyP*.tar.gz)
+# ensure non-zero count
 if [[ ${#rwhls[@]} -eq 0 || ${#dwhls[@]} -eq 0 || ${#tars[@]} -eq 0 ]]; then
     echo "Build failed: artifacts not found"
     exit 1
 fi
+## pick latest of each
 latest_rel=${rwhls[0]}
 latest_dev=${dwhls[0]}
 latest_tar=${tars[0]}
 
-# inspect latest wheel and tar.gz
+# inspect wheels and tarball
 unzip -l "$latest_rel"
 unzip -l "$latest_dev"
 tar -tf "$latest_tar"
@@ -65,10 +74,10 @@ tar -tf "$latest_tar"
 
 # test install
 python -m pip install --no-cache-dir "$latest_rel"
-python -c "import nohtyP"
+python -m nohtyP
 
 # test dev extra
 python -m pip uninstall -y nohtyP
 python -m pip install --no-cache-dir "$latest_dev"
-python -c "import nohtyP"
+python -m nohtyP
 
