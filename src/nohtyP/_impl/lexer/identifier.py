@@ -10,7 +10,7 @@ import re
 @api_level(0)
 class Identify:
 	"""Identify lexical objects"""
-	def single_element(element :str) -> LexObject:
+	def identify_single(element :str) -> LexObject:
 		"""Try to identify a single lexical object in a `str` container"""
 		for _key, (reg, object) in TT.ELEM.items():
 			if re.match(reg, element):
@@ -25,25 +25,23 @@ class Identify:
 				return LexObject(element, object)
 		# shouldnt be possible to reach this branch. might raise an internal error here bc it just should not happen
 		return LexObject(element, ...)
-	def series(elements :TokenSeries) -> LexObjectSeries:
+	def identify_series(elements :TokenSeries) -> LexObjectSeries:
 		result = LexObjectSeries()
 		for i in elements:
-			result.append(Identify.single_element(i))
+			result.append(Identify.identify_single(i))
 		return result
 	def has_error_lo(element: LexObject) -> tuple[str|AnyNohtyPSyntaxError|None,bool]:
 		"""Check if a `LexObject` has any errors"""
-		if len(element.issues()) != 0:
+		if len(element |0) != 0:
 			return True
 		else: return True
-	def has_error_los(element: LexObjectSeries) -> tuple[tuple[str|AnyNohtyPSyntaxError|None],bool]:
+	def has_error_los(element: LexObjectSeries) -> tuple[tuple[str|AnyNohtyPSyntaxError|None],bool,int]:
 		"""Check if a `LexObjectSeries` has any errors"""
 		res:tuple[str|AnyNohtyPSyntaxError|None] = ()
-		err:bool = False
+		err:int = 0
 		for elem in element:
-			iss = elem.issues()
+			iss = elem |0
 			if len(iss) != 0:
-				res += tuple(None)
-			else:
 				res += tuple([iss])
-				err = True
-		return (res,err)
+				err += 1
+		return (res,False if err == 0 else True, err)

@@ -1,6 +1,7 @@
 import unittest
 # from nohtyP.lexer.identifier import TT
 from nohtyP._impl.global_utilities.decorators import *
+from nohtyP._impl.global_utilities.types import AnyNohtyPSyntaxError
 from nohtyP._impl.lexer.tokenizer import *
 from nohtyP._impl.lexer.types import *
 from nohtyP._impl.lexer.identifier import Identify
@@ -508,16 +509,13 @@ class Lexer(unittest.TestCase):
 		one: list[TokenSeries] = [tokenize_str(s) for s in Tokenizer.stress_test.strings]
 	def one(self):
 		for string in self.input.one:
-			res: LexObjectSeries = Identify.series(string)
-			print(res)
-			# failures:list[str] = []
-			# for i in res.objectlist:
-			# 	ki = i.issues()
-			# 	if len(ki) != 0:
-			# 		failures += [ki]
-			# if len(failures) != 0:
-			# 	print(failures)
-		...
+			res: LexObjectSeries = Identify.identify_series(string)
+			if modes.showmode:
+				if modes.verbmode: print("\n")
+				print(res)
+			fails, failed, fcount = Identify.has_error_los(res)
+			if failed:
+				print(f"Failure observed:\n\tCount: {fcount}\n\t{fails}")
 
 if __name__ == "__main__":
 	unittest.main()

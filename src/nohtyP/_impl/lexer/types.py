@@ -66,8 +66,10 @@ class LexObject:
 	def add_issue(self, issue:str|AnyNohtyPSyntaxError) -> None:
 		# forward to iand dunder
 		self &= issue
-	def issues(self) -> tuple[str|AnyNohtyPSyntaxError]:
+	def __or__(self, *args, **kwargs) -> tuple[str|AnyNohtyPSyntaxError]:
 		return self.__issue_list__
+	def get_issues(self) -> tuple[str|AnyNohtyPSyntaxError]:
+		return self |0
 
 @api_level(0)
 class LexObjectSeries:

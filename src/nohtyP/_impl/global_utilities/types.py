@@ -28,7 +28,7 @@ class SPDX_License_Identifers: # https://spdx.org/licenses/
 #? Should avoid false positive parsing.
 
 #* NohtyP errors
-class NohtyPBaseSyntaxError(SyntaxError):
+class NohtyPBaseSyntaxError(RuntimeError):
 	"""
 	Base SyntaxError class for NohtyP-related errors.
 	"""
