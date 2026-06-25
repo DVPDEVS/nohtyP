@@ -13,7 +13,14 @@ class Identify:
 		"""Try to identify a single lexical object in a `str` container"""
 		for _key, (reg, object) in TT.ELEM.items():
 			if re.match(reg, element):
-				return LexObject(element, object)
+				if element == TT.ELEM["TOKENIZER_FAIL"]:
+					ret = LexObject(element[-2], object)
+					ret &= "Tokenizer failure - unknown object"
+				if element == TT.ELEM["UNKNOWN"]:
+					ret = LexObject(element, object)
+					ret &= "Lexer failure - unknown object"
+				else:
+					return LexObject(element, object)
 		return LexObject(element, ...)
 	def series(elements :TokenSeries) -> LexObjectSeries:
 		result = LexObjectSeries()

@@ -178,7 +178,7 @@ class ParseToken:
 		return self.__issue_list__
 
 @api_level(0)
-class ParseObject:
+class ParseTokenSeries:
 	# fully custom implementation i think
 	def __init__(self) -> None:
 		self.__tokens__ :dict[ParseToken, str|dict] = {}

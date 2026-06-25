@@ -28,6 +28,9 @@ class TT:
 		"BRACKET_RIGHT" :(
 			r"\]",
 			LexType("BRACKET_RIGHT", lexer_langs.NOHTYP) ), #? ]
+		"CALL" :(
+			r"\(\)",
+			LexType("CALL", lexer_langs.PYTHON) ), #? ()
 		"PAREN_LEFT" :(
 			r"\(",
 			LexType("PAREN_LEFT", lexer_langs.NOHTYP) ), #? (
@@ -79,13 +82,6 @@ class TT:
 		"KW_MATCH" :(
 			r"(?<!\.)match(?!\.)", # case sensitive
 			LexType("KW_MATCH", lexer_langs.NOHTYP) ), #? match
-		#! Generic elements
-		"UNKNOWN" :(
-			"",
-			LexType("UNKNOWN", lexer_langs.GENERIC)	),
-		"STAR" :(
-			r"\*",
-			LexType("STAR", lexer_langs.GENERIC) ), #? *
 		#! Python elements
 		# --- literals ---
 		# Native int                 -> 123, 0, -42, 0b1010, 0o77, 0xFF
@@ -211,8 +207,14 @@ class TT:
 		# Indentation increase      -> (whitespace block start)
 		# Indentation decrease      -> (whitespace block end)
 		#! not used
+		#! Generic elements
+		"TOKENIZER_FAIL" :(
+			"¤__NOHTYP_NOT_TOKENIZABLE__¤",
+			LexType("TOKENIZER_FAIL", lexer_langs.GENERIC) ), #? ¤__NOHTYP_NOT_TOKENIZABLE__¤()
+		"UNKNOWN" :(
+			"",
+			LexType("UNKNOWN", lexer_langs.GENERIC)	),
+		"STAR" :(
+			r"\*",
+			LexType("STAR", lexer_langs.GENERIC) ), #? *
 	}
-
-from typing import reveal_type
-
-reveal_type(TT)

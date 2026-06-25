@@ -3,6 +3,7 @@ import unittest
 from nohtyP._impl.global_utilities.decorators import *
 from nohtyP._impl.lexer.tokenizer import *
 from nohtyP._impl.lexer.types import *
+from nohtyP._impl.lexer.identifier import Identify
 
 __all__ = [
 	"unittest",
@@ -500,6 +501,22 @@ class Display_Types(unittest.TestCase):
 		print(self.lex.lo.__repr__())
 		print(self.lex.ls.__repr__())
 		self.assertTrue(self.lex.ls != None)
+
+@test
+class Lexer(unittest.TestCase):
+	class input:
+		one: list[TokenSeries] = [tokenize_str(s) for s in Tokenizer.stress_test.strings]
+	def one(self):
+		for string in self.input.one:
+			res: LexObjectSeries = Identify.series(string)
+			print(res)
+			failures:list[str] = []
+			for i in res.objectlist:
+				if len(i.__issue_list__) != 0:
+					failures += [i]
+			if len(failures) != 0:
+				print(failures)
+		...
 
 if __name__ == "__main__":
 	unittest.main()
