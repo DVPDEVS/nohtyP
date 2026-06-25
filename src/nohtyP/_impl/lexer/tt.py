@@ -201,7 +201,7 @@ class TT:
 		# --- misc ---
 		# Comment                   -> # comment text
 		"COMMENT" :(
-			r"#" , #! only really relevant in parser/lexical validation
+			r"#.*" , #! only really relevant in parser/lexical validation
 			LexType("COMMENT", lexer_langs.PYTHON) ),
 		# Line break                -> \n
 		# Indentation increase      -> (whitespace block start)
@@ -211,10 +211,10 @@ class TT:
 		"TOKENIZER_FAIL" :(
 			"¤__NOHTYP_NOT_TOKENIZABLE__¤",
 			LexType("TOKENIZER_FAIL", lexer_langs.GENERIC) ), #? ¤__NOHTYP_NOT_TOKENIZABLE__¤()
-		"UNKNOWN" :(
-			"",
-			LexType("UNKNOWN", lexer_langs.GENERIC)	),
 		"STAR" :(
 			r"\*",
 			LexType("STAR", lexer_langs.GENERIC) ), #? *
+		"UNKNOWN" :(
+			r".*",
+			LexType("UNKNOWN", lexer_langs.GENERIC)	),
 	}

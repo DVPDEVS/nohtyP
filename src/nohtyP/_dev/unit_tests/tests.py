@@ -512,8 +512,9 @@ class Lexer(unittest.TestCase):
 			print(res)
 			failures:list[str] = []
 			for i in res.objectlist:
-				if len(i.__issue_list__) != 0:
-					failures += [i]
+				if type(i) == LexObject:
+					if len(i.__issue_list__) != 0:
+						failures += [i]
 			if len(failures) != 0:
 				print(failures)
 		...

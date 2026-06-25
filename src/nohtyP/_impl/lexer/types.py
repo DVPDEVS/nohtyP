@@ -39,7 +39,7 @@ class LexObject:
 	def __str__(self) -> str:
 		return f"{self.ltype}['{self.__value__}']"
 	def __iand__(self, issue:str|Exception) -> None:
-		self.__issue_list__ += issue
+		self.__issue_list__ += tuple(issue)
 	def add_issue(self, issue:str|Exception) -> None:
 		# forward to iand dunder
 		self &= issue
@@ -170,7 +170,7 @@ class ParseToken:
 	def __str__(self) -> str:
 		return f"{self.__type__}['{self.__value__}']"
 	def __iand__(self, issue:str|Exception) -> None:
-		self.__issue_list__ += issue
+		self.__issue_list__ += tuple(issue)
 	def add_issue(self, issue:str|Exception) -> None:
 		# forward to iand dunder
 		self &= issue
