@@ -510,13 +510,13 @@ class Lexer(unittest.TestCase):
 		for string in self.input.one:
 			res: LexObjectSeries = Identify.series(string)
 			print(res)
-			failures:list[str] = []
-			for i in res.objectlist:
-				if type(i) == LexObject:
-					if len(i.__issue_list__) != 0:
-						failures += [i]
-			if len(failures) != 0:
-				print(failures)
+			# failures:list[str] = []
+			# for i in res.objectlist:
+			# 	ki = i.issues()
+			# 	if len(ki) != 0:
+			# 		failures += [ki]
+			# if len(failures) != 0:
+			# 	print(failures)
 		...
 
 if __name__ == "__main__":
