@@ -1,6 +1,7 @@
 from __future__ import annotations
 from nohtyP._impl.lexer.types import TokenSeries
 from nohtyP._impl.global_utilities.decorators import api_level
+from nohtyP._impl.global_utilities.types import NohtyPTokenizerInternalFailure
 from pathlib import Path
 import re
 
@@ -557,7 +558,7 @@ class funcs:
 		path = Path(file_path)
 		try:
 			if not path.is_file():
-				raise ValueError("Provided path is not an accessible file")
+				raise FileNotFoundError("Provided path is not an accessible file")
 			with open() as f:
 				return funcs.tokenize(f.read())
 		except Exception as e: # broad but idc the only thing that realistically fails here is Path
@@ -565,6 +566,12 @@ class funcs:
 
 # shadowing with equivalent signature for imports
 def tokenize_str(text :str) -> TokenSeries:
-	return funcs.tokenize_str(text)
+	try:
+		return funcs.tokenize_str(text)
+	except Exception as e:
+		raise NohtyPTokenizerInternalFailure(*e.args)
 def tokenize_file(file_path :str|Path) -> TokenSeries:
-	return funcs.tokenize_file(file_path)
+	try:
+		return funcs.tokenize_file(file_path)
+	except Exception as e:
+		raise NohtyPTokenizerInternalFailure(*e.args)

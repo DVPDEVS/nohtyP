@@ -27,7 +27,7 @@ class SPDX_License_Identifers: # https://spdx.org/licenses/
 #* Single-line comment in any style, eg. `# ` followed by the text `SPDX-License-Identifier`, a colon and whitespace,`: ` then the unquoted ID.
 #? Should avoid false positive parsing.
 
-#* NohtyP errors
+#! NohtyP errors
 class NohtyPBaseSyntaxError(RuntimeError):
 	"""
 	Base SyntaxError class for NohtyP-related errors.

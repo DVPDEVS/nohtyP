@@ -9,6 +9,7 @@ from nohtyP._impl.lexer.identifier import Identify
 __all__ = [
 	"unittest",
 	"Tokenizer",
+	"Lexer",
 	"modes",
 ]
 
@@ -513,9 +514,9 @@ class Lexer(unittest.TestCase):
 			if modes.showmode:
 				if modes.verbmode: print("\n")
 				print(res)
-			fails, failed, fcount = Identify.has_error_los(res)
-			if failed:
-				print(f"Failure observed:\n\tCount: {fcount}\n\t{fails}")
+				(fails, failed, fcount) = Identify.has_error_los(res)
+				if failed:
+					print(f"Failure observed:\n\tCount: {fcount}\n\t{fails}")
 
 if __name__ == "__main__":
 	unittest.main()
