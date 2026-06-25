@@ -205,7 +205,7 @@ nohtyP: "Hello" ? print(); "nem > " ? input()
 Additionally pipes the result of a block out of the block  
 
 ```yp
-; { 1 5 :*list ? range() ?} ? print() ;
+; { *list: 1 5 ? range() ?} ? print() ;
 ```
 
 Non-assignable/non-pipable objects cannot succeed flow operators, eg.:  
@@ -306,8 +306,12 @@ COMPREHENSIONS (? ~ { ? })
 
 ```yp
 Python: list = [x*2 for x in range(10) if x % 2]
-nohtyP: 10 ? range() ? ~ { @ % 2 ~ @ * 2 ?} -> list
+nohtyP: 10 ? range() ? ~ { list: @ % 2 ~ @ * 2 ?} -> list
 ```
+
+Comprehensions depend on type declarations to be translated correctly into python.  
+If none is given, falls back to generator comprehension. `(x*x for x in range(10))`  
+Type should be declared at the very start of the comprehensions statement, as above.  
 
 MATCH:  
 
@@ -382,6 +386,32 @@ Python: async def func() {
         }
 
 nohtyP: {something() ? await} <- func <- def async
+```
+
+#### Function calls and argument passage  
+
+Calling a function with one positional and one keyword argument:  
+
+```yp
+Python: something(23, else=32)
+
+nohtyP: 23 **dict: "else":32 ? something()
+```
+
+Here the dictionary is marked for KEYWORD unpacking - if it werent, itd be passed as a positional literal dict value.  
+
+With implicit types and compacted:  
+
+```yp
+23**:'else':32?something()
+```
+
+This style is applicable in python, too, as:  
+
+```py
+something(23, **{'else':32})
+#* resolves to
+something(23, 'else'=32)
 ```
 
 ### CLASSES (reversed declaration)  

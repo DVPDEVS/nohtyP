@@ -4,8 +4,7 @@
 
 # show the public api surfaces here
 
-from nohtyP._impl.global_utilities import decorators
-from nohtyP._impl.global_utilities import types
+from nohtyP.api.public import *
 from nohtyP.api.internal import internal
 
 __all__ = [
