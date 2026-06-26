@@ -83,7 +83,7 @@ Lexers MAY issue warnings when a bareword string appears in ambiguous positions 
 
 Token separation is supported either through brackets `{}()`, whitespace, commas, or colons.  
 
-Colon is, however, exclusively for type declarations and dictionaries.  
+Colon is, however, exclusively for type declarations, imports and dictionaries.  
 This may change in later specification versions.  
 
 Since python will natively consider values in brackets to be dictionaries or tuples, nohtyP will not assume types for anything.  
@@ -248,8 +248,8 @@ No brackets - type annotation defines container
 Python: ls:dict = {"type": "dict", "val": 8}
 nohtyP: dict:"type":"dict","val":8 #? ls
 
-nohtyP: list: string1 string2 #? print()
-nohtyP: dict[str[int], str[str]]: value1 30 val2 hi #? print()
+nohtyP: list: string1 string2 #? one
+nohtyP: dict[str, str|int]: value1:30 val2:hi #? two
 ```
 
 As a complication, lists and tuples passed into functions like range() need to be unpacked:  
@@ -385,7 +385,7 @@ Python: async def func() {
             await something()
         }
 
-nohtyP: {something() ? await} <- func <- def async
+nohtyP: {something() ? await} <- func <- def <- async
 ```
 
 #### Function calls and argument passage  
@@ -427,7 +427,7 @@ class MyThing(Base1, Base2):
         return
 
 nohtyP:
-{ { "hi" ? print() ; return } <- self ? hi <- def } <- Base1, Base2 ? MyThing <- class
+{ { "hi" ? print() ; return } <- self ? hi <- def } <- Base1, Base2 -> MyThing <- class
 ```
 
 #### Rules for classes  
@@ -474,7 +474,7 @@ int:x int:y ? Point <- class <- @dataclass
 
 Exception actions only apply to their frame. This frame is defined by semicolon ; delimitation and blocks {}  
 
-For these operations: `*?` `*$` the frame is everything leftwards until a semicolon on the same level.  
+For these operations: `*?` `*$`; the frame is everything leftwards until a semicolon on the same level.  
 Example:  
 
 ```yp
@@ -567,13 +567,16 @@ nohtyP: *set -e ; risky() ; *set +e
 Effect: All expressions auto-wrapped ( try: expr except: $_setError = e )  
 
 *set +e clears $_setError  
-*? needs local exception to trigger, can read $_setError for diagnostics  
+*? still needs local exception to trigger, can read $_setError for diagnostics  
 
 ### Meta actions
 
 ```yp
 Python: import subprocess
 nohtyP: subprocess ? fetch
+
+Python: from subprocess import run
+nohtyP: subprocess : run ? fetch
 ```
 
 ## Optional intercompatibility with standard python

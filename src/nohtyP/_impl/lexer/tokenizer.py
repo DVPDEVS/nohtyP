@@ -214,6 +214,7 @@ class funcs:
 					else:
 						if char == "*":
 							token += char
+							skips += 1
 							next_val = i+2
 							if next_val < txtlen:
 								char = text[next_val]

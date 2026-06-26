@@ -425,6 +425,30 @@ class Tokenizer(unittest.TestCase):
 			[ 'r""""a', ],
 			[ "f''''", ],
 		]
+	class realistic:
+		string = """__future__:annotations?fetch;asyncio?fetch;dataclasses:dataclass?fetch;typing:Callable,Optional,TypeAlias?fetch;TypeAlias:Number=int|float;{{{f"calling {fn.__name__}"?print();*args,**kwargs?fn()?return}<-*args,**kwargs<-wrapped<-def;wrapped?return}<-Callable[...,Number]?fn<-tracer->Callable[...,Number]<-def{int:x;None?str|None:name{self.name|anonymous?return}<-self<-method->str<-def{tuple:a,b?match{(a,b)~0=result*~(x,y)~x>y~x-y=result*~(x,y)~x+y=result}{@*2}<-v<-lambda?fn;result?fn()?direct;self.method()?bound;-direct++result?value;value*3//2%5?value;value**2?value;value&7|2^1?value;value<<=1;value~1?value;{bound~value*~0?}?return}*$e*?$e==ZeroDivisionError~-1?return;$e==Exception~-2?return}<-self,int:a,int:b<-calc->Number<-def<-@tracer;{0?asyncio.sleep()?await;self.x,5?self.calc()?return}<-self<-async_calc->int<-def<-async}<-Demo<-class<-@dataclass"""
+		result = []
+		expected = [
+			'__future__', ':', 'annotations', '?', 'fetch', ';', 'asyncio', '?', 'fetch', ';', 'dataclasses', ':', 'dataclass', 
+			'?', 'fetch', ';', 'typing', ':', 'Callable', ',', 'Optional', ',', 'TypeAlias', '?', 'fetch', ';', 'TypeAlias', ':', 
+			'Number', '=', 'int', '|', 'float', ';', '{', '{', '{', 'f"calling {fn.__name__}"', '?', 'print', '()', ';', '*args', 
+			',', '**', 'kwargs', '?', 'fn', '()', '?', 'return', '}', '<-', '*args', ',', '**', 'kwargs', '<-', 'wrapped', '<-', 
+			'def', ';', 'wrapped', '?', 'return', '}', '<-', 'Callable', '[', '.', '.', '.', ',', 'Number', ']', '?', 'fn', '<-', 
+			'tracer', '->', 'Callable', '[', '.', '.', '.', ',', 'Number', ']', '<-', 'def', '{', 'int', ':', 'x', ';', 'None', 
+			'?', 'str', '|', 'None', ':', 'name', '{', 'self', '.', 'name', '|', 'anonymous', '?', 'return', '}', '<-', 'self', 
+			'<-', 'method', '->', 'str', '<-', 'def', '{', 'tuple', ':', 'a', ',', 'b', '?', 'match', '{', '(', 'a', ',', 'b', 
+			')', '~', '0', '=', 'result', '*~', '(', 'x', ',', 'y', ')', '~', 'x', '>', 'y', '~', 'x', '-', 'y', '=', 'result', 
+			'*~', '(', 'x', ',', 'y', ')', '~', 'x', '+', 'y', '=', 'result', '}', '{', '@', '*', '2', '}', '<-', 'v', '<-', 
+			'lambda', '?', 'fn', ';', 'result', '?', 'fn', '()', '?', 'direct', ';', 'self', '.', 'method', '()', '?', 'bound', 
+			';', '-', 'direct', '+', '+', 'result', '?', 'value', ';', 'value', '*', '3', '//', '2', '%', '5', '?', 'value', ';', 
+			'value', '**', '2', '?', 'value', ';', 'value', '&', '7', '|', '2', '^', '1', '?', 'value', ';', 'value', '<<=', '1', 
+			';', 'value', '~', '1', '?', 'value', ';', '{', 'bound', '~', 'value', '*~', '0', '?', '}', '?', 'return', '}', 
+			'*$e', '*?', '$e', '==', 'ZeroDivisionError', '~', '-', '1', '?', 'return', ';', '$e', '==', 'Exception', '~', '-', 
+			'2', '?', 'return', '}', '<-', 'self', ',', 'int', ':', 'a', ',', 'int', ':', 'b', '<-', 'calc', '->', 'Number', 
+			'<-', 'def', '<-', '@', 'tracer', ';', '{', '0', '?', 'asyncio', '.', 'sleep', '()', '?', 'await', ';', 'self', '.', 
+			'x', ',', '5', '?', 'self', '.', 'calc', '()', '?', 'return', '}', '<-', 'self', '<-', 'async_calc', '->', 'int', 
+			'<-', 'def', '<-', 'async', '}', '<-', 'Demo', '<-', 'class', '<-', '@', 'dataclass',
+		]
 	def basic(self):
 		for i in range(len(self.base.strings)):
 			self.base.results[i] = tokenize_str(self.base.strings[i])
@@ -485,6 +509,13 @@ class Tokenizer(unittest.TestCase):
 		if modes.showmode:
 			if modes.verbmode: print("\n")
 			for i in self.stress_test.results: print(i)
+	def realistic_input(self):
+		self.maxDiff = 4000
+		self.realistic.result = tokenize_str(self.realistic.string)
+		self.assertListEqual(self.realistic.expected, self.realistic.result)
+		if modes.showmode:
+			if modes.verbmode: print("\n")
+			print(self.realistic.result)
 
 @test
 class Display_Types(unittest.TestCase):

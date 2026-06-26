@@ -1,19 +1,54 @@
-# Example function grabbed from https://github.com/DVP-F/genelooper/blob/main/creatures.py
+# Example generated using Perplexity @ https://www.perplexity.ai  
 
-# noinspection PyTypeChecker
-class Genes:
-	stats = [
-		"agr"	,	# Aggression
-		"str"	,	# Strength
-		"mut"	,   # Mutation
-		"val"	,	# Value
-		"sth"	]	# Stealth
-    def _make_stats_dict(*, values: list[float,] = None):
-        ret = {}
-        for i in Genes.stats: # maps values and Genes.stats one-to-one
-            ret += {Genes.stats[i]: 0.0 if values is None else float(abs(values[i])) if len(values) >= i-1 else 0.0,}
-        return ret
+#*  from __future__ import annotations
+#*  import asyncio
+#*  from dataclasses import dataclass
+#*  from typing import Callable, Optional, TypeAlias
+#*  
+#*  Number: TypeAlias = int | float
+#*  
+#*  def tracer(fn: Callable[..., Number]) -> Callable[..., Number]:
+#*      def wrapped(*args, **kwargs):
+#*          print(f"calling {fn.__name__}")
+#*          return fn(*args, **kwargs)
+#*      return wrapped
+#*  
+#*  @dataclass
+#*  class Demo:
+#*      x: int
+#*      name: str | None = None
+#*      def method(self) -> str:
+#*          return self.name or "anonymous"
+#*      @tracer
+#*      def calc(self, a: int, b: int) -> Number:
+#*          try:
+#*              match (a, b):
+#*                  case (0, 0):
+#*                      result = 0
+#*                  case (x, y) if x > y:
+#*                      result = x - y
+#*                  case (x, y):
+#*                      result = x + y
+#*              fn = lambda v: v * 2
+#*              direct = fn(result)
+#*              bound = self.method()
+#*              value = -direct + +result
+#*              value = value * 3 // 2 % 5
+#*              value = value ** 2
+#*              value = value & 7 | 2 ^ 1
+#*              value <<= 1
+#*              value = ~value
+#*              return value if bound else 0   # ternary
+#*          except ZeroDivisionError:
+#*              return -1
+#*          except Exception:
+#*              return -2
+#*      async def async_calc(self) -> int:
+#*          await asyncio.sleep(0)
+#*          return self.calc(self.x, 5)
 
-# Function equivalent in nohtyP:
+# in nohtyP
 
-{ agr str mut val sth :list #? stats ; { {} -> ret ; Genes.stats ? ~ { Genes.stats[@] values == None ~ 0.0 *~ values ? len() >= @-1 values[@] ? abs() ? float() *~ 0.0 :dict[str, float] += ret } ; ret ? return } <- (* None ? values :list[float,] ) ? _make_stats_dict <- def <- @staticmethod } <- Genes <- class
+__future__:annotations?fetch;asyncio?fetch;dataclasses:dataclass?fetch;typing:Callable,Optional,TypeAlias?fetch;TypeAlias:Number=int|float;{{{f"calling {fn.__name__}"?print();*args,**kwargs?fn()?return}<-*args,**kwargs<-wrapped<-def;wrapped?return}<-Callable[...,Number]?fn<-tracer->Callable[...,Number]<-def{int:x;None?str|None:name{self.name|anonymous?return}<-self<-method->str<-def{tuple:a,b?match{(a,b)~0=result*~(x,y)~x>y~x-y=result*~(x,y)~x+y=result}{@*2}<-v<-lambda?fn;result?fn()?direct;self.method()?bound;-direct++result?value;value*3//2%5?value;value**2?value;value&7|2^1?value;value<<=1;value~1?value;{bound~value*~0?}?return}*$e*?$e==ZeroDivisionError~-1?return;$e==Exception~-2?return}<-self,int:a,int:b<-calc->Number<-def<-@tracer;{0?asyncio.sleep()?await;self.x,5?self.calc()?return}<-self<-async_calc->int<-def<-async}<-Demo<-class<-@dataclass
+
+
