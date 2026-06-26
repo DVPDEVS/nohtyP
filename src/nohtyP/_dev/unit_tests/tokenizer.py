@@ -7,6 +7,7 @@ test_set = [
 	"Tokenizer.vnums",
 	"Tokenizer.inums",
 	"Tokenizer.stress",
+	"Tokenizer.realistic_input",
 ]
 
 if __name__ == "__main__":

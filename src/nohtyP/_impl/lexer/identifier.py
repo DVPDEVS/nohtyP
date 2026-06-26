@@ -37,7 +37,16 @@ class Identify:
 		except Exception as e:
 			raise NohtyPLexerInternalFailure(*e.args)
 	def has_error_lo(element: LexObject) -> tuple[str|AnyNohtyPSyntaxError|None,bool]:
-		"""Check if a `LexObject` has any errors"""
+		"""
+		Check if a `LexObject` has any errors  \n
+		Return:
+		```
+		tuple(
+			errorlist :str|AnyNohtyPSyntaxError|None,
+			has_error :bool
+		)
+		```
+		"""
 		try:
 			if len(element |0) != 0:
 				return True
@@ -45,7 +54,17 @@ class Identify:
 		except Exception as e:
 			raise NohtyPLexerInternalFailure(*e.args)
 	def has_error_los(element: LexObjectSeries) -> tuple[tuple[str|AnyNohtyPSyntaxError|None],bool,int]:
-		"""Check if a `LexObjectSeries` has any errors"""
+		"""
+		Check if a `LexObjectSeries` has any errors  \n
+		Return:  
+		```
+		tuple(
+			errorlist :tuple[str|AnyNohtyPSyntaxError|None],
+			has_error :bool,
+			error_count :int
+		)
+		```
+		"""
 		try:
 			res:tuple[str|AnyNohtyPSyntaxError|None] = ()
 			err:int = 0

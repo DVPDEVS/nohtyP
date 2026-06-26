@@ -466,37 +466,46 @@ Dataclasses:
 int:x int:y ? Point <- class <- @dataclass
 ```
 
-## TODO: update
+### Scope, Frames, and Error handling (* family)  
 
-### Scope, Frames, & Error handling (* family)  
+#### Scope and frame definition  
 
-#### Frame scope  
+Normal Python scope is maintained for all but error handling.  
 
-Exception actions only apply to their frame. This frame is defined by semicolon ; delimitation and blocks {}  
+Error handling operations use a frame given by semicolon ; delimitation and blocks {}  
+This frame is their scope both for handling errors and for implicit variable storage.  
 
-For these operations: `*?` `*$`; the frame is everything leftwards until a semicolon on the same level.  
-Example:  
+There are two main kinds of frame used: semicolon and block.  
+These depend on their level - that is, how far in, equivalent to indentation in regular python, do they appear?  
+This level is measured in blocks, the second kind of frame
 
-```yp
-safe_action() ; { block ? print() ; 45 -> temp ; some() } *$e *? $e ? print()
-"             ^ ################################                            "
-```
-
-Here the caret `^` marks the leftward same-level delimitation and the pound signs `#` are the frame scope.  
-Note that there are *TWO* frames here; on for each exception action.  
-If i rearrange this:  
+Semicolon frames are between semicolons on the same level, such as:  
 
 ```yp
-safe_action() ; { block ? print() ; 45 -> temp *$e ; some() } *? $e ? print()
-"             ^                     ##########                              "
-"               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%               "
+smn() ; smn ? smn() ; { smn() ; cool ? print() ; *: 1 2 ? range() ? ass }
+111111 2222222222222 3333333333333333333333333333333333333333333333333333
+                       4444444 5555555555555555 666666666666666666666666
 ```
 
-Now the pound signs are the frame of the `*$e` operation and the percent signs `%` are the frame of the `*?` operation.  
-Additionally this is showing the passage of an exception store `*$` through the variable `$e`.  
-This allows the printage of the earlier exception state in the later exception catch `*?`  
+Here 1 through 6 are valid semicolon frames.  
+1 through 3 are top-level, whilst 4 through 6 are inside a block and on the second level.  
 
-#### Operations  
+Any error handling operations preformed in, say, 4,  
+\- is unavailable to any other frame unless the result is written to a variable - where Python scope is applicable.  
+
+Block frames are given exclusively by block nesting:  
+
+```yp
+{ test() ; 23 ? range() ? ~ { @ / 2.7 ? } ? print() ; { 6 ? range() ? ~ { list: @ % 2 ~ @ * 2 ? } = stored } ; call() }
+ 111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+                             22222222222               3333333333333333333333333333333333333333333333333333
+                                                                         44444444444444444444444
+```
+
+Here 1 through 4 are all the valid block frames in the script.  
+1 is top-level, 2 and 3 are second level, and 4 is third level.  
+
+#### Operation - \*$name and \*?  
 
 Store exception
 
@@ -505,7 +514,7 @@ nohtyP: unsafe() *$e
 Python: try:
             unsafe()
         except Exception as e:
-            $e = e
+            _e = e
 ```
 
 Handle w/o store
@@ -522,41 +531,47 @@ Capture + continue + handle
 
 ```yp
 nohtyP: unsafe() *$e ; safe() ; $e ? print()
-Python: try:
+Python: _e = Exception()
+        try:
             unsafe()
         except Exception as e:
-            $e = e
-        safe()
-        print($e)
-```
-
-Full nested w/ 3 try excepts in 77 chars (v. 262)  
-
-```yp
-nohtyP: unsafe() *$e ? safe() *? $e ? print() *? "couldnt print exception!" ? print()
-
-Python: 
-__value = None
-_e = None
-try:
-    try:
-        try:
-            __value = unsafe()
-        except Exception as e:
             _e = e
-        safe(__value)
-    except Exception:
+        safe()
         print(_e)
-except Exception:
-    print("couldnt print exception!")
 ```
 
 RULES:  
 
-- *$name captures Exception object into variable labeled $name  
-- Exception actions trigger ONLY for leftward exceptions in same frame  
+- *$name captures Exception objects into variable labeled $name  
+- Exception actions only apply within the frame  
 - Handlers can fail (not protected by self)  
 - Variables persist (normal Python scope)  
+
+#### Frame scope  
+
+Exception actions only apply to their frame. This frame is defined by semicolon ; delimitation and blocks {}  
+
+For these operations: `*?` `*$`; the frame is everything leftwards until a semicolon on the same level.  
+Example:  
+
+```yp
+safe_action() ; { block ? print() ; 45 -> temp ; some() } *$e *? $e ? print()
+"             ^ #########################################                   "
+```
+
+Here the caret `^` marks the leftward same-level delimitation and the pound signs `#` are the frame scope.  
+Note that there are *TWO* frames here; on for each exception action.  
+If i rearrange this:  
+
+```yp
+safe_action() ; { block ? print() ; 45 -> temp *$e ; some() } *? $e ? print()
+"             ^                     ##########                              "
+"               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%               "
+```
+
+Now the pound signs are the frame of the `*$e` operation and the percent signs `%` are the frame of the `*?` operation.  
+Additionally this is showing the passage of an exception store `*$` through the variable `$e`.  
+This allows the printage of the earlier exception state in the later exception catch `*?`  
 
 #### Global error mode
 
