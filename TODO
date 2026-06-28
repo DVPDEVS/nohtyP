@@ -1,2 +1,6 @@
-finish identifier
 write pypkg README
+finish v1 spec
+lexical validation
+parser
+translator?
+transpiler
