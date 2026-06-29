@@ -19,6 +19,7 @@ call :relocate
 cmd /S /C .\nohtyP\_dev\scripts\bat\clean_cache.bat 2>nul
 call :copy_files
 call :create_venv
+call :fix_version
 call :build
 call :inspect
 call :test_installs
@@ -58,6 +59,11 @@ python -m venv "%TEMP_VENV%"
 call "%TEMP_VENV%\Scripts\activate.bat"
 goto :eof
 
+:fix_version
+for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format ddMMyyyy"') do set "formatted_date=%%i"
+echo _BUILD_DATE = "%formatted_date%" >> .\nohtyP\__about__.py
+goto :eof
+
 :build
 :: Update venv pip and build, then build
 python -m pip install --upgrade pip
@@ -69,6 +75,7 @@ hatch build --target wheel
 set "_YP_HATCH_BUILD_MODE=sdist"
 hatch build --target sdist
 set "_YP_HATCH_BUILD_MODE=dev"
+echo _BUILD_DEVMODE = True >> .\nohtyP\__about__.py
 hatch build --target wheel
 goto :eof
 

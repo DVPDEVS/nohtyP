@@ -26,6 +26,9 @@ ln -sfn ../LICENSES LICENSES
 rm -rf ./dist/
 ## clean out pycache ( rember ´chmod +x clean_cache.sh´)
 ./nohtyP/_dev/scripts/sh/clean_cache.sh || true
+## fix versions
+formatted_date=$(date '+%d%m%Y')
+echo '_BUILD_DATE = "$formatted_date"' >> ./nohtyP/__about__.py
 
 # create temporary venv
 TEMP_VENV=$(mktemp -d)
@@ -41,6 +44,7 @@ python -m pip install --upgrade hatch hatchling
 ## include an envvar for build hook
 _YP_HATCH_BUILD_MODE=release hatch build --target wheel
 _YP_HATCH_BUILD_MODE=sdist   hatch build --target sdist
+echo "_BUILD_DEVMODE = True" >> ./nohtyP/__about__.py
 _YP_HATCH_BUILD_MODE=dev     hatch build --target wheel
 
 # find wheels and tarball
