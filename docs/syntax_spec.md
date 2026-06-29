@@ -2,6 +2,8 @@
 
 Superset of Python designed to transpile into standard python.  
 
+Spec version: 0.0.1-beta  
+
 File Extension: .yp  
 *nohtyP* source code files.  
 
@@ -547,39 +549,13 @@ RULES:
 - Handlers can fail (not protected by self)  
 - Variables persist (normal Python scope)  
 
-#### Frame scope  
-
-Exception actions only apply to their frame. This frame is defined by semicolon ; delimitation and blocks {}  
-
-For these operations: `*?` `*$`; the frame is everything leftwards until a semicolon on the same level.  
-Example:  
-
-```yp
-safe_action() ; { block ? print() ; 45 -> temp ; some() } *$e *? $e ? print()
-"             ^ #########################################                   "
-```
-
-Here the caret `^` marks the leftward same-level delimitation and the pound signs `#` are the frame scope.  
-Note that there are *TWO* frames here; on for each exception action.  
-If i rearrange this:  
-
-```yp
-safe_action() ; { block ? print() ; 45 -> temp *$e ; some() } *? $e ? print()
-"             ^                     ##########                              "
-"               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%               "
-```
-
-Now the pound signs are the frame of the `*$e` operation and the percent signs `%` are the frame of the `*?` operation.  
-Additionally this is showing the passage of an exception store `*$` through the variable `$e`.  
-This allows the printage of the earlier exception state in the later exception catch `*?`  
-
-#### Global error mode
+#### Global error mode ( `set` )
 
 ```yp
 nohtyP: *set -e ; risky() ; *set +e
 ```
 
-Effect: All expressions auto-wrapped ( try: expr except: $_setError = e )  
+Effect: All expressions auto-wrapped ( `try: expr except: $_setError = e` )  
 
 *set +e clears $_setError  
 *? still needs local exception to trigger, can read $_setError for diagnostics  

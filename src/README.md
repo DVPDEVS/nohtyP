@@ -69,6 +69,8 @@ Where `<operation>` is one of the following:
   - `-L` + syntactically parse and validate the input file
 - -C
   - `-P` + transpile the input file
+- -R
+  - `-C` and run the output file
 
 If `<in-type>` is given, `<operation>` will skip earlier steps based on it.  
 Valid options:  
@@ -78,3 +80,5 @@ Valid options:
 - `parse`
 
 `<in-type>` cannot be the same as or a later step than `<operation>`.  
+
+Already transpiled files should be run directly with python.  
