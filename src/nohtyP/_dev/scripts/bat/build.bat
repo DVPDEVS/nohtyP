@@ -6,7 +6,7 @@ setlocal enabledelayedexpansion
 chcp 65001 >nul
 
 :: Build stage decl
-setlocal "NOHTYP_STAGE=beta"
+set "NOHTYP_STAGE=beta"
 
 call :start
 :: Ignore errors, exit immediately after anyways. best-effort imitation of set -euo pipefail. relies on goto returns and || rem no to ignore fails extra hard
@@ -99,7 +99,7 @@ goto :eof
     echo class BUILD_DATA:
     echo ^    _BUILD_DATE = "!_N_formatted_date!"
     echo ^    _BUILD_DEVMODE = False
-    echo ^    _BUILD_STAGE = "!NOHTYP_STAGE!"
+    echo ^    _BUILD_STAGE = "%NOHTYP_STAGE%"
     echo.
 ) > .\nohtyP\_buildinfo.py
 goto :eof
@@ -109,7 +109,7 @@ goto :eof
     echo class BUILD_DATA:
     echo ^    _BUILD_DATE = "!_N_formatted_date!"
     echo ^    _BUILD_DEVMODE = False
-    echo ^    _BUILD_STAGE = "!NOHTYP_STAGE!"
+    echo ^    _BUILD_STAGE = "%NOHTYP_STAGE%"
 ) > .\nohtyP\_buildinfo.py
 goto :eof
 
@@ -118,7 +118,7 @@ goto :eof
     echo class BUILD_DATA:
     echo ^    _BUILD_DATE = "!_N_formatted_date!"
     echo ^    _BUILD_DEVMODE = True
-    echo ^    _BUILD_STAGE = "!NOHTYP_STAGE!"
+    echo ^    _BUILD_STAGE = "%NOHTYP_STAGE%"
 ) > .\nohtyP\_buildinfo.py
 goto :eof
 
@@ -228,7 +228,7 @@ goto :eof
     echo class BUILD_DATA:
     echo ^    _BUILD_DATE = ""
     echo ^    _BUILD_DEVMODE = False
-    echo ^    _BUILD_STAGE = "!NOHTYP_STAGE!"
+    echo ^    _BUILD_STAGE = ""
     echo.
 ) > ./nohtyP/_buildinfo.py
 goto :eof
