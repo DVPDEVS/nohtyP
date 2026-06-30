@@ -4,12 +4,65 @@
 set -euo pipefail
 STARTDIR=$(pwd)
 
+# build stage def
+NOHTYP_STAGE="beta"
+# formatted date
+_N_formatted_date=$(date '+%d%m%Y')
+
+modify_buildinfo() {
+    case "$1" in
+        dev)
+            cat <<'EOF' > ./nohtyP/_buildinfo.py
+class BUILD_DATA:
+    _BUILD_DATE = "$_N_formatted_date"
+    _BUILD_DEVMODE = True
+    _BUILD_STAGE = "$NOHTYP_STAGE"
+EOF
+            ;;
+        release)
+            cat <<'EOF' > ./nohtyP/_buildinfo.py
+class BUILD_DATA:
+    _BUILD_DATE = "$_N_formatted_date"
+    _BUILD_DEVMODE = False
+    _BUILD_STAGE = "$NOHTYP_STAGE"
+EOF
+            ;;
+        sdist)
+            cat <<'EOF' > ./nohtyP/_buildinfo.py
+# modified by build script
+
+class BUILD_DATA:
+    _BUILD_DATE = "$_N_formatted_date"
+    _BUILD_DEVMODE = False
+    _BUILD_STAGE = "$NOHTYP_STAGE"
+
+EOF
+            ;;
+        source)
+            # source baseline
+            cat <<'EOF' > ./nohtyP/_buildinfo.py
+# modified by build script
+
+class BUILD_DATA:
+    _BUILD_DATE = ""
+    _BUILD_DEVMODE = False
+    _BUILD_STAGE = ""
+
+EOF
+            ;;
+    esac
+}
+
 cleanup() {
     #remove prebuild files
     rm -rf ./LICENSES 2>/dev/null || true
+    # rm pycache
+    ./nohtyP/_dev/scripts/sh/clean_cache.sh
     # remove venv
     [ -n "${VIRTUAL_ENV:-}" ] && deactivate || true
     rm -rf "$TEMP_VENV" 2>/dev/null || true
+    # reset bi
+    modify_buildinfo "source"
     # return to start
     cd "$STARTDIR" || true
 }
@@ -26,9 +79,6 @@ ln -sfn ../LICENSES LICENSES
 rm -rf ./dist/
 ## clean out pycache ( rember ´chmod +x clean_cache.sh´)
 ./nohtyP/_dev/scripts/sh/clean_cache.sh || true
-## fix versions
-formatted_date=$(date '+%d%m%Y')
-echo '_BUILD_DATE = "$formatted_date"' >> ./nohtyP/__about__.py
 
 # create temporary venv
 TEMP_VENV=$(mktemp -d)
