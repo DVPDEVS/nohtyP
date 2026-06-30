@@ -191,8 +191,9 @@ goto :eof
 :test_install_normal
 python -m pip install --no-cache-dir "src\!latest_whl!"
 python -m nohtyP
-echo Pip show status:
-python -m pip show nohtyP
+echo Metadata:
+:: skipping the readme
+python -c "from importlib.metadata import metadata; [print(f'{k}: {v}') for k,v in metadata('nohtyP').items() if not k == 'Description']"
 echo.
 goto :eof
 
@@ -200,8 +201,9 @@ goto :eof
 python -m pip uninstall -y nohtyP
 python -m pip install --no-cache-dir "src\!latest_dev!"
 python -m nohtyP
-echo Pip show status:
-python -m pip show nohtyP
+echo Metadata:
+:: skipping the readme
+python -c "from importlib.metadata import metadata; [print(f'{k}: {v}') for k,v in metadata('nohtyP').items() if not k == 'Description']"
 echo.
 goto :eof
 

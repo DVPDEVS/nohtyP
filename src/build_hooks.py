@@ -8,11 +8,6 @@ from hatchling.metadata.plugin.interface import MetadataHookInterface
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 import os
 
-class CustomMetadataHook(MetadataHookInterface):
-    def update(self, metadata: dict):
-        metadata["dev_optional_dependencies"] = metadata.get("optional-dependencies", {}).get("dev", [])
-        pass
-
 class ContentHook(BuildHookInterface):
     """
     Custom hook that renames the wheel file based on the target mode:
@@ -91,13 +86,11 @@ class ContentHook(BuildHookInterface):
 
     def finalize(self, version, build_data, artifact_path):
         """
-        Modify METADATA if devbuild
+        Modify METADATA
         """
-        mode:str = os.getenv("_YP_HATCH_BUILD_MODE", "release")
-        if mode != "dev":
-            return
+        mode: str = os.getenv("_YP_HATCH_BUILD_MODE", "release")
         dev_deps = build_data.get("dev_optional_dependencies", [])
-        if not dev_deps:
+        if (mode == "dev" and not dev_deps) or mode not in ["dev", "release"]:
             return
         wheel_path = Path(artifact_path)
         tmp_path = wheel_path.with_suffix(".tmp.whl")
@@ -107,11 +100,23 @@ class ContentHook(BuildHookInterface):
             metadata_name = f"{dist_info}/METADATA"
             record_name = f"{dist_info}/RECORD"
             metadata = zin.read(metadata_name).decode("utf-8")
-            if "Provides-Extra: dev" not in metadata:
-                for dep in dev_deps:
-                    line = f"Requires-Dist: {dep}"
-                    if line not in metadata:
-                        metadata += f"\n{line}"
+            # Remove dev optional dependencies
+            metadata_lines = []
+            inserted = False
+            for line in metadata.splitlines():
+                if not inserted and mode == "dev" and line == "":
+                    existing = set(metadata_lines)
+                    for dep in dev_deps:
+                        req = f"Requires-Dist: {dep}"
+                        if req not in existing:
+                            metadata_lines.append(req)
+                            existing.add(req)
+                    inserted = True
+                if (line.startswith("Requires-Dist:") and ("extra == 'dev'" in line or 'extra == "dev"' in line)) or line == "Provides-Extra: dev":
+                    continue
+                metadata_lines.append(line)
+            metadata = "\n".join(metadata_lines) + "\n"
+            # Rewrite wheel, skipping old RECORD
             for name in names:
                 if name == metadata_name:
                     data = metadata.encode("utf-8")
@@ -120,6 +125,7 @@ class ContentHook(BuildHookInterface):
                 else:
                     data = zin.read(name)
                 zout.writestr(name, data)
+            # Recreate RECORD
             rows = []
             for name in zout.namelist():
                 if name == record_name:

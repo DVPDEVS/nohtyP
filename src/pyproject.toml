@@ -69,7 +69,7 @@ dev = [
 Repository = "https://github.com/DVPDEVS/nohtyP"
 Issues = "https://github.com/DVPDEVS/nohtyP/issues"
 # future url i expect
-Homepage = "https://pypi.org//project/nohtyP/"
+Homepage = "https://pypi.org/project/nohtyP/"
 
 [project.scripts]
 nohtyP = "nohtyP.__main__:entry"

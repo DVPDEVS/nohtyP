@@ -211,3 +211,7 @@ __marimo__/
 
 # vscode config dir
 .vscode*
+
+# tmp dirs
+*/tmp/*
+*/temp/*
