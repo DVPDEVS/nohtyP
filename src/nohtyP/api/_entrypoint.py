@@ -1,5 +1,5 @@
 from nohtyP._impl.global_utilities.decorators import api_level
-from nohtyP.__about__ import __version__
+from nohtyP.__about__ import *
 import sys
 from pathlib import Path
 
@@ -11,6 +11,14 @@ __all__ = [
 class _entry_funcs:
     help_text = f"""
 NohtyP v{__version__}
+
+NohtyP Superset of Python - Language parser and transpiler.
+See package documentation for more information:
+
+`py3 -m pip show nohtyP`
+
+Internals:
+{"\n".join(f"~ {name:<20} {value}" for name, value in internal_versions.__dict__.items() if name.endswith("_VERSION"))}
 """
     def _print_help() -> None:
         print(_entry_funcs.help_text)
@@ -29,7 +37,7 @@ NohtyP v{__version__}
         if len(sys.argv) > 1:
             args = sys.argv[1:] # rm first arg (path to file called to run)
         else: args = []
-        print(args)
+        # print(args)
         #* help requested?
         if args == [] or "-h" in args or "--help" in args:
             _entry_funcs._print_help()

@@ -1,13 +1,23 @@
+from pathlib import Path
+from zipfile import ZipFile, ZIP_DEFLATED
+from hashlib import sha256
+import base64
+import csv
+import io
+from hatchling.metadata.plugin.interface import MetadataHookInterface
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 import os
-from pathlib import Path
+
+class CustomMetadataHook(MetadataHookInterface):
+    def update(self, metadata: dict):
+        metadata["dev_optional_dependencies"] = metadata.get("optional-dependencies", {}).get("dev", [])
+        pass
 
 class ContentHook(BuildHookInterface):
     """
     Custom hook that renames the wheel file based on the target mode:
-    - wheel     -> nohtyP-<version>-<tags>.whl
-    - dev       -> nohtyP-<version>-dev-<tags>.whl
-
+    - `wheel     -> nohtyP-<version>-<tags>.whl`
+    - `dev       -> nohtyP-<version>-dev-<tags>.whl`  \n
     And modifies included/excluded files based on `_YP_HATCH_BUILD_MODE´.
     """
 
@@ -26,6 +36,7 @@ class ContentHook(BuildHookInterface):
         return out
 
     def initialize(self, version: str, build_data: dict) -> None:
+        build_data["dev_optional_dependencies"] = (self.metadata.config.get("project", {}).get("optional-dependencies", {}).get("dev", []))
         mode:str = os.getenv("_YP_HATCH_BUILD_MODE", "release")
         print(f"YP Build mode: '{mode}'")
         build_data.setdefault("force_include", {})
@@ -77,3 +88,48 @@ class ContentHook(BuildHookInterface):
             for file in root.rglob("*"):
                 if file.is_file() and is_allowed(file):
                     include_file(file)
+
+    def finalize(self, version, build_data, artifact_path):
+        """
+        Modify METADATA if devbuild
+        """
+        mode:str = os.getenv("_YP_HATCH_BUILD_MODE", "release")
+        if mode != "dev":
+            return
+        dev_deps = build_data.get("dev_optional_dependencies", [])
+        if not dev_deps:
+            return
+        wheel_path = Path(artifact_path)
+        tmp_path = wheel_path.with_suffix(".tmp.whl")
+        with ZipFile(wheel_path, "r") as zin, ZipFile(tmp_path, "w", compression=ZIP_DEFLATED) as zout:
+            names = zin.namelist()
+            dist_info = next(n for n in names if n.endswith(".dist-info/METADATA")).rsplit("/", 1)[0]
+            metadata_name = f"{dist_info}/METADATA"
+            record_name = f"{dist_info}/RECORD"
+            metadata = zin.read(metadata_name).decode("utf-8")
+            if "Provides-Extra: dev" not in metadata:
+                for dep in dev_deps:
+                    line = f"Requires-Dist: {dep}"
+                    if line not in metadata:
+                        metadata += f"\n{line}"
+            for name in names:
+                if name == metadata_name:
+                    data = metadata.encode("utf-8")
+                elif name == record_name:
+                    continue
+                else:
+                    data = zin.read(name)
+                zout.writestr(name, data)
+            rows = []
+            for name in zout.namelist():
+                if name == record_name:
+                    continue
+                data = zout.read(name)
+                digest = base64.urlsafe_b64encode(sha256(data).digest()).rstrip(b"=").decode("ascii")
+                rows.append([name, f"sha256={digest}", str(len(data))])
+            rows.append([record_name, "", ""])
+            buf = io.StringIO()
+            writer = csv.writer(buf, lineterminator="\n")
+            writer.writerows(rows)
+            zout.writestr(record_name, buf.getvalue().encode("utf-8"))
+        tmp_path.replace(wheel_path)

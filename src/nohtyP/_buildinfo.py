@@ -3,5 +3,5 @@
 class BUILD_DATA:
     _BUILD_DATE = ""
     _BUILD_DEVMODE = False
-    _BUILD_STAGE = "beta"
+    _BUILD_STAGE = ""
 

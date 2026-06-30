@@ -5,6 +5,9 @@ setlocal enabledelayedexpansion
 :: UTF-8 codepage
 chcp 65001 >nul
 
+:: Build stage decl
+setlocal "NOHTYP_STAGE=beta"
+
 call :start
 :: Ignore errors, exit immediately after anyways. best-effort imitation of set -euo pipefail. relies on goto returns and || rem no to ignore fails extra hard
 set "RC=%ERRORLEVEL%"
@@ -16,6 +19,7 @@ set "STARTDIR=%cd%"
 set "_YP_BUILD_SUCCESS=0"
 call :relocate
 :: thusly executing from src dir
+echo Removing pycache...
 cmd /S /C .\nohtyP\_dev\scripts\bat\clean_cache.bat 2>nul
 call :copy_files
 call :create_venv
@@ -32,9 +36,11 @@ cd /d "%~dp0..\..\..\.."
 goto :eof
 
 :copy_files
+echo Copying in licenses...
 mkdir LICENSES
-copy /Y /L ..\LICENSES\* LICENSES\
+copy /Y /L ..\LICENSES\* LICENSES\ 1>nul
 call :check_copy
+echo Emptying build directory...
 call :clear_dist
 goto :eof
 
@@ -50,7 +56,7 @@ exit /b 1
 goto :eof
 
 :clear_dist
-rmdir /s /q dist
+rmdir /s /q dist 1>nul
 goto :eof
 
 :create_venv
@@ -72,16 +78,30 @@ python -m pip install hatch hatchling
 echo Verifying dependecies...
 :: make it shut up
 python -m pip install --upgrade hatch hatchling 1>nul
+python -m pip check
 echo Building...
 :: include an envvar for build hook
+call :set_sourcish
+set "_YP_HATCH_BUILD_MODE=sdist"
+hatch build --target sdist
 call :set_normal
 set "_YP_HATCH_BUILD_MODE=release"
 hatch build --target wheel
-set "_YP_HATCH_BUILD_MODE=sdist"
-hatch build --target sdist
 call :set_dev
 set "_YP_HATCH_BUILD_MODE=dev"
 hatch build --target wheel
+goto :eof
+
+:set_sourcish
+(
+    echo # modified by build script
+    echo.
+    echo class BUILD_DATA:
+    echo ^    _BUILD_DATE = "!_N_formatted_date!"
+    echo ^    _BUILD_DEVMODE = False
+    echo ^    _BUILD_STAGE = "!NOHTYP_STAGE!"
+    echo.
+) > .\nohtyP\_buildinfo.py
 goto :eof
 
 :set_normal
@@ -89,7 +109,7 @@ goto :eof
     echo class BUILD_DATA:
     echo ^    _BUILD_DATE = "!_N_formatted_date!"
     echo ^    _BUILD_DEVMODE = False
-    echo ^    _BUILD_STAGE = "beta"
+    echo ^    _BUILD_STAGE = "!NOHTYP_STAGE!"
 ) > .\nohtyP\_buildinfo.py
 goto :eof
 
@@ -98,7 +118,7 @@ goto :eof
     echo class BUILD_DATA:
     echo ^    _BUILD_DATE = "!_N_formatted_date!"
     echo ^    _BUILD_DEVMODE = True
-    echo ^    _BUILD_STAGE = "beta"
+    echo ^    _BUILD_STAGE = "!NOHTYP_STAGE!"
 ) > .\nohtyP\_buildinfo.py
 goto :eof
 
@@ -119,7 +139,7 @@ set "latest_whl="
 set "latest_dev="
 set "latest_tar="
 for %%F in (dist\nohtyP*.whl) do (
-    echo %%~nxF | findstr /i "+dev" >nul
+    echo %%~nxF | findstr /i "dev" >nul
     if errorlevel 1 if not defined latest_whl set "latest_whl=%%F"
 )
 for %%F in (dist\nohtyP*dev*.whl) do if not defined latest_dev set "latest_dev=%%F"
@@ -158,6 +178,9 @@ goto :eof
 
 :test_installs
 if "!_YP_BUILD_SUCCESS!" == "0" (
+    :: get out of src
+    cd ..
+    :: necessary to make python use site-packages' nohtyP install
     call :test_install_normal
     call :test_install_dev
     goto :eof
@@ -166,17 +189,28 @@ echo Skipping installation... >&2
 goto :eof
 
 :test_install_normal
-python -m pip install --no-cache-dir "!latest_whl!"
+python -m pip install --no-cache-dir "src\!latest_whl!"
 python -m nohtyP
+echo Pip show status:
+python -m pip show nohtyP
+echo.
 goto :eof
 
 :test_install_dev
 python -m pip uninstall -y nohtyP
-python -m pip install --no-cache-dir "!latest_dev!"
+python -m pip install --no-cache-dir "src\!latest_dev!"
 python -m nohtyP
+echo Pip show status:
+python -m pip show nohtyP
+echo.
 goto :eof
 
 :cleanup
+:: move to src again
+cd .\src || cd /d "%~dp0..\..\..\.."
+echo Cleaning remains...
+:: rm pycache
+cmd /S /C .\nohtyP\_dev\scripts\bat\clean_cache.bat 2>nul
 :: reset buildinfo file
 call :reset_bi
 :: remove the temp licenses
@@ -194,7 +228,7 @@ goto :eof
     echo class BUILD_DATA:
     echo ^    _BUILD_DATE = ""
     echo ^    _BUILD_DEVMODE = False
-    echo ^    _BUILD_STAGE = "beta"
+    echo ^    _BUILD_STAGE = "!NOHTYP_STAGE!"
     echo.
 ) > ./nohtyP/_buildinfo.py
 goto :eof

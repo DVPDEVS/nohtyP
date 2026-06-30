@@ -8,13 +8,16 @@ build-backend = "hatchling.build"
 [tool.hatch.build.hooks]
 custom = { path = "build_hooks.py" }
 
-# Verion def
+# Version def
 [tool.hatch.version]
 source = "code"
 path = "nohtyP/__about__.py"
 
 [project]
-dynamic = ["version"]
+dynamic = [
+    "version",
+    "dev_optional_dependencies",
+]
 name = "nohtyP"
 description = "nohtyP language parser and transpiler"
 requires-python = ">=3.10"
@@ -65,6 +68,8 @@ dev = [
 [project.urls]
 Repository = "https://github.com/DVPDEVS/nohtyP"
 Issues = "https://github.com/DVPDEVS/nohtyP/issues"
+# future url i expect
+Homepage = "https://pypi.org//project/nohtyP/"
 
 [project.scripts]
 nohtyP = "nohtyP.__main__:entry"
