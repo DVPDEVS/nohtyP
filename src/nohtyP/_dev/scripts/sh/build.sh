@@ -42,8 +42,12 @@ python -m pip install --upgrade pip
 python -m pip install hatch hatchling
 python -m pip install --upgrade hatch hatchling
 ## include an envvar for build hook
+### starting with non-dev mode
+echo "_BUILD_DEVMODE = False" >> ./nohtyP/__about__.py
 _YP_HATCH_BUILD_MODE=release hatch build --target wheel
 _YP_HATCH_BUILD_MODE=sdist   hatch build --target sdist
+### switch to dev mode
+head -n -1 ./nohtyP/__about__.py > tmp && mv tmp ./nohtyP/__about__.py
 echo "_BUILD_DEVMODE = True" >> ./nohtyP/__about__.py
 _YP_HATCH_BUILD_MODE=dev     hatch build --target wheel
 

@@ -19,7 +19,7 @@ call :relocate
 cmd /S /C .\nohtyP\_dev\scripts\bat\clean_cache.bat 2>nul
 call :copy_files
 call :create_venv
-call :fix_version
+call :get_date
 call :build
 call :inspect
 call :test_installs
@@ -54,29 +54,52 @@ rmdir /s /q dist
 goto :eof
 
 :create_venv
+echo Creating venv...
 set "TEMP_VENV=%TEMP%\venv_%RANDOM%"
 python -m venv "%TEMP_VENV%"
 call "%TEMP_VENV%\Scripts\activate.bat"
 goto :eof
 
-:fix_version
-for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format ddMMyyyy"') do set "formatted_date=%%i"
-echo _BUILD_DATE = "%formatted_date%" >> .\nohtyP\__about__.py
+:get_date
+for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format ddMMyyyy"') do set "_N_formatted_date=%%i"
 goto :eof
 
 :build
+echo Installing build dependencies...
 :: Update venv pip and build, then build
 python -m pip install --upgrade pip
 python -m pip install hatch hatchling
-python -m pip install --upgrade hatch hatchling
+echo Verifying dependecies...
+:: make it shut up
+python -m pip install --upgrade hatch hatchling 1>nul
+echo Building...
 :: include an envvar for build hook
+call :set_normal
 set "_YP_HATCH_BUILD_MODE=release"
 hatch build --target wheel
 set "_YP_HATCH_BUILD_MODE=sdist"
 hatch build --target sdist
+call :set_dev
 set "_YP_HATCH_BUILD_MODE=dev"
-echo _BUILD_DEVMODE = True >> .\nohtyP\__about__.py
 hatch build --target wheel
+goto :eof
+
+:set_normal
+(
+    echo class BUILD_DATA:
+    echo ^    _BUILD_DATE = "!_N_formatted_date!"
+    echo ^    _BUILD_DEVMODE = False
+    echo ^    _BUILD_STAGE = "beta"
+) > .\nohtyP\_buildinfo.py
+goto :eof
+
+:set_dev
+(
+    echo class BUILD_DATA:
+    echo ^    _BUILD_DATE = "!_N_formatted_date!"
+    echo ^    _BUILD_DEVMODE = True
+    echo ^    _BUILD_STAGE = "beta"
+) > .\nohtyP\_buildinfo.py
 goto :eof
 
 :inspect
@@ -154,10 +177,26 @@ python -m nohtyP
 goto :eof
 
 :cleanup
+:: reset buildinfo file
+call :reset_bi
 :: remove the temp licenses
 rmdir /s /q LICENSES
+:: delete the venv
 call :rm_venv
+:: return
 cd "!STARTDIR!"
+goto :eof
+
+:reset_bi
+(
+    echo #! modified by build script
+    echo.
+    echo class BUILD_DATA:
+    echo ^    _BUILD_DATE = ""
+    echo ^    _BUILD_DEVMODE = False
+    echo ^    _BUILD_STAGE = "beta"
+    echo.
+) > ./nohtyP/_buildinfo.py
 goto :eof
 
 :rm_venv
