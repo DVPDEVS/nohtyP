@@ -21,6 +21,30 @@ See [./LICENSES/notice.md](./LICENSES/notice.md)
 
 ...  
 
+## Versioning scheme  
+
+Version numbers follow this scheme:  
+
+```plaintext
+{base_version (eg. 0.0.1)}+r{build_date as ddmmyyyy}[.dev][.{project_stage}]
+```
+
+Should the version number creation fail for any reason this will instead become:  
+
+```plaintext
+{base_version (eg. 0.0.1)}+unknown
+```
+
+Examples:
+
+```plaintext
+0.0.1+r01072026.dev.beta -> package version 0.0.1, packaged 1st of June 2026, developer package, beta stage of development
+0.2.3+r32053072          -> package version 0.2.3, packaged 32nd of May 3072, release package, mature stage of development
+```
+
+This build date acts as a build number and __indicates__ the age of the the package and its internals.  
+For the actual internals' versions, check with the help option or read the `__about__.py` file.  
+
 ## Usage  
 
 ### Python

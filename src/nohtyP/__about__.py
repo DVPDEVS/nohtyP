@@ -18,7 +18,7 @@ try:
     if parts:
         __version__ = _v_base + "+" + ".".join(parts)
     else:
-        __version__ = _v_base
+        __version__ = _v_base + "+unknown"
 except Exception as e:
     print(e)  # useful while debugging
     __version__ = _v_base + "+unknown"
