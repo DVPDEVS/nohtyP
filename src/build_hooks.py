@@ -4,7 +4,6 @@ from hashlib import sha256
 import base64
 import csv
 import io
-from hatchling.metadata.plugin.interface import MetadataHookInterface
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 import os
 
@@ -64,7 +63,7 @@ class ContentHook(BuildHookInterface):
             for file in root.rglob("*"):
                 if file.is_file() and is_allowed(file, allow_dev=True):
                     include_file(file)
-            include_file(Path("build_hooks.py"))
+            #? include_file(Path("build_hooks.py"))
         # -------------------------
         # SDIST MODE
         # -------------------------
