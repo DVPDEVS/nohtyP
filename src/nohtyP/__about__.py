@@ -10,7 +10,7 @@ _v_base = "0.0.1"
 try:
     parts = []
     if BUILD_DATA._BUILD_DATE:
-        parts.append(BUILD_DATA._BUILD_DATE)
+        parts.append("r" + BUILD_DATA._BUILD_DATE)
     if BUILD_DATA._BUILD_DEVMODE == True:
         parts.append("dev")
     if BUILD_DATA._BUILD_STAGE:
