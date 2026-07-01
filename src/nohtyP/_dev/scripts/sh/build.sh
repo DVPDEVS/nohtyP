@@ -54,6 +54,9 @@ EOF
 }
 
 cleanup() {
+    echo "Cleaning remains..."
+    # back to src
+    cd ./src || cd "$SCRIPT_DIR/../../../.."
     #remove prebuild files
     rm -rf ./LICENSES 2>/dev/null || true
     # rm pycache
@@ -74,13 +77,17 @@ cd "$SCRIPT_DIR/../../../.."
 
 # prebuild
 ## copy or symlink licenses/docs
+echo "Copying in files..."
 ln -sfn ../LICENSES LICENSES
 ## clean out dist
+echo "Emptying build directory..."
 rm -rf ./dist/
 ## clean out pycache ( rember ´chmod +x clean_cache.sh´)
+echo "Removing pycache..."
 ./nohtyP/_dev/scripts/sh/clean_cache.sh || true
 
 # create temporary venv
+echo "Creating venv..."
 TEMP_VENV=$(mktemp -d)
 python -m venv "$TEMP_VENV"
 
@@ -88,17 +95,20 @@ python -m venv "$TEMP_VENV"
 source "$TEMP_VENV/bin/activate"
 
 # update/install deps and then build
+echo "Installing build dependencies..."
 python -m pip install --upgrade pip
 python -m pip install hatch hatchling
-python -m pip install --upgrade hatch hatchling
+echo "Verifying dependencies..."
+python -m pip install --upgrade hatch hatchling 1>/dev/null
+python -m pip check
 ## include an envvar for build hook
 ### starting with non-dev mode
-echo "_BUILD_DEVMODE = False" >> ./nohtyP/__about__.py
+echo "Building..."
+modify_buildinfo "release"
 _YP_HATCH_BUILD_MODE=release hatch build --target wheel
+modify_buildinfo "sdist"
 _YP_HATCH_BUILD_MODE=sdist   hatch build --target sdist
-### switch to dev mode
-head -n -1 ./nohtyP/__about__.py > tmp && mv tmp ./nohtyP/__about__.py
-echo "_BUILD_DEVMODE = True" >> ./nohtyP/__about__.py
+modify_buildinfo "dev"
 _YP_HATCH_BUILD_MODE=dev     hatch build --target wheel
 
 # find wheels and tarball
@@ -141,12 +151,22 @@ tar -tf "$latest_tar"
 
 # TODO: add smoke test
 
+# cd back so python pulls modules from site-packages instead
+cd ..
+
+# bc of set -euo pipefail i dont need to check for errors.
+# this script just exits immediately if anything goes wrong
+# and then immediately hits the cleanup() trap on EXIT
+
 # test install
 echo
 echo Testing release install
 python -m pip install --no-cache-dir "$latest_rel"
 echo Executing...
 python -m nohtyP
+echo "Metadata:"
+python -c "from importlib.metadata import metadata; [print(f'{k}: {v}') for k,v in metadata('nohtyP').items() if not k == 'Description']"
+echo
 
 # test dev extra
 echo
@@ -155,4 +175,7 @@ python -m pip uninstall -y nohtyP
 python -m pip install --no-cache-dir "$latest_dev"
 echo Executing...
 python -m nohtyP
+echo "Metadata:"
+python -c "from importlib.metadata import metadata; [print(f'{k}: {v}') for k,v in metadata('nohtyP').items() if not k == 'Description']"
+echo
 

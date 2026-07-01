@@ -36,7 +36,7 @@ cd /d "%~dp0..\..\..\.."
 goto :eof
 
 :copy_files
-echo Copying in licenses...
+echo Copying in files...
 mkdir LICENSES
 copy /Y /L ..\LICENSES\* LICENSES\ 1>nul
 call :check_copy
