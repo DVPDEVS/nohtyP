@@ -161,7 +161,7 @@ cd ..
 # test install
 echo
 echo Testing release install
-python -m pip install --no-cache-dir "$latest_rel"
+python -m pip install --no-cache-dir "src/$latest_rel"
 echo Executing...
 python -m nohtyP
 echo "Metadata:"
@@ -172,7 +172,7 @@ echo
 echo
 echo Testing dev install
 python -m pip uninstall -y nohtyP
-python -m pip install --no-cache-dir "$latest_dev"
+python -m pip install --no-cache-dir "src/$latest_dev"
 echo Executing...
 python -m nohtyP
 echo "Metadata:"
