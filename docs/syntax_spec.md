@@ -2,7 +2,7 @@
 
 Superset of Python designed to transpile into standard python.  
 
-Spec version: 0.0.1-beta  
+Version: 0.0.1-beta  
 
 File Extension: .yp  
 *nohtyP* source code files.  

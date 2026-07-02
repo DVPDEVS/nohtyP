@@ -42,7 +42,7 @@ Examples:
 0.2.3+r32053072          -> package version 0.2.3, packaged 32nd of May 3072, release package, mature stage of development
 ```
 
-This build date acts as a build number and __indicates__ the age of the the package and its internals.  
+This build date acts as a build number.  
 For the actual internals' versions, check with the help option or read the `__about__.py` file.  
 
 ## Usage  
