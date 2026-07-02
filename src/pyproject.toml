@@ -60,9 +60,9 @@ keywords = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
-    "pympler",
-    "numpy",
+    "pytest>=9.0.0",
+    "pympler>=1.0",
+    "numpy>=2.5.0",
 ]
 
 [project.urls]

@@ -12,7 +12,7 @@ _N_formatted_date=$(date '+%d%m%Y')
 modify_buildinfo() {
     case "$1" in
         dev)
-            cat <<'EOF' > ./nohtyP/_buildinfo.py
+            cat <<EOF > ./nohtyP/_buildinfo.py
 class BUILD_DATA:
     _BUILD_DATE = "$_N_formatted_date"
     _BUILD_DEVMODE = True
@@ -20,7 +20,7 @@ class BUILD_DATA:
 EOF
             ;;
         release)
-            cat <<'EOF' > ./nohtyP/_buildinfo.py
+            cat <<EOF > ./nohtyP/_buildinfo.py
 class BUILD_DATA:
     _BUILD_DATE = "$_N_formatted_date"
     _BUILD_DEVMODE = False
@@ -28,7 +28,7 @@ class BUILD_DATA:
 EOF
             ;;
         sdist)
-            cat <<'EOF' > ./nohtyP/_buildinfo.py
+            cat <<EOF > ./nohtyP/_buildinfo.py
 # modified by build script
 
 class BUILD_DATA:
@@ -40,7 +40,7 @@ EOF
             ;;
         source)
             # source baseline
-            cat <<'EOF' > ./nohtyP/_buildinfo.py
+            cat <<EOF > ./nohtyP/_buildinfo.py
 # modified by build script
 
 class BUILD_DATA:
