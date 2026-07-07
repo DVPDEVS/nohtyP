@@ -4,7 +4,7 @@
 set -euo pipefail
 STARTDIR=$(pwd)
 
-# build stage def
+# build stage def (only 'beta', 'alpha' or nothing)
 NOHTYP_STAGE="beta"
 # formatted date
 _N_formatted_date=$(date '+%d%m%Y')
