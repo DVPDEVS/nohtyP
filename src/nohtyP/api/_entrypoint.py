@@ -18,7 +18,7 @@ See package documentation for more information:
 `py3 -m pip show nohtyP`
 
 Internals:
-{"\n".join(f"~ {name:<20} {value}" for name, value in internal_versions.__dict__.items() if name.endswith("_VERSION"))}
+{"\n".join(f"~ {name:<20} {value}" for name, value in VERSIONS.__dict__.items() if name.endswith("_VERSION"))}
 """
     def _print_help() -> None:
         print(_entry_funcs.help_text)
