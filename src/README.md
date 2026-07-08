@@ -23,23 +23,31 @@ See [./LICENSES/notice.md](./LICENSES/notice.md)
 
 ## Versioning scheme  
 
+Base version (base_version) follows Major.Minor.Micro  
+The encoded build date (build_date) is in yyyyMMdd  
+Project stage (project_stage) is the first character of "alpha" or "beta", or nothing.  
+
 Version numbers follow this scheme:  
 
-```plaintext
-{base_version (eg. 0.0.1)}+r{build_date as ddmmyyyy}[.dev][.{project_stage}]
+```txt
+{build_date}.{base_version}[{project_stage}0][.dev0]
 ```
 
-Should the version number creation fail for any reason this will instead become:  
+No version information is to succeed stage marker or devloper release marker.  
+Therefore they are to be followed by a '0' to comply with PEP440.  
 
-```plaintext
-{base_version (eg. 0.0.1)}+unknown
+Should the version number creation fail for any reason it will instead be marked with an epoch:  
+
+```txt
+1!{base_version}
 ```
 
 Examples:
 
-```plaintext
-0.0.1+r01072026.dev.beta -> package version 0.0.1, packaged 1st of June 2026, developer package, beta stage of development
-0.2.3+r32053072          -> package version 0.2.3, packaged 32nd of May 3072, release package, mature stage of development
+```txt
+08072026.0.0.1b0.dev0 -> package version 0.0.1, packaged 8th of July 2026, developer package, beta stage of development
+32053072.0.2.3        -> package version 0.2.3, packaged 32nd of May 3072, release package, mature stage of development
+1!1.4.2               -> build failure - you should not see this, assumedly unstable
 ```
 
 This build date acts as a build number.  

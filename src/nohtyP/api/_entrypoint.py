@@ -11,13 +11,18 @@ __all__ = [
 class _entry_funcs:
     help_text = f"""
 NohtyP v{__version__}
+Build date: {VERSIONS.BUILD_DATE}{"""
+>> Beta version
+/ Incomplete /""" if "b0" in VERSIONS.PACKAGE_VERSION else ''}{"""
+>> Developer release
+/ Added test files /""" if VERSIONS.PACKAGE_VERSION.endswith(".dev0") else ''}
 
 NohtyP Superset of Python - Language parser and transpiler.
 See package documentation for more information:
 
 `py3 -m pip show nohtyP`
 
-Internals:
+Versions:
 {"\n".join(f"~ {name:<20} {value}" for name, value in VERSIONS.__dict__.items() if name.endswith("_VERSION"))}
 """
     def _print_help() -> None:

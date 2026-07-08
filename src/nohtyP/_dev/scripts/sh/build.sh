@@ -7,7 +7,7 @@ STARTDIR=$(pwd)
 # build stage def (only 'beta', 'alpha' or nothing)
 NOHTYP_STAGE="beta"
 # formatted date
-_N_formatted_date=$(date '+%d%m%Y')
+_N_formatted_date=$(date '+%Y%m%d')
 
 modify_buildinfo() {
     case "$1" in

@@ -23,17 +23,19 @@ _v_base = "0.0.1"
 
 try:
     _parts :list[str] = _v_base.split('.')
-    # reconstruct as {date}.X.X.{stage}X[.dev0]
+    # reconstruct as {date}.X.X.X[{stage}0][.dev0]
     _dm = "dev" if BUILD_DATA._BUILD_DEVMODE == True else ""
     _dm += BUILD_DATA._BUILD_DATE
-    _s = BUILD_DATA._BUILD_STAGE[0] or ''
+    _s = BUILD_DATA._BUILD_STAGE[0] or '.'
     #* recombine and assign
     _partlist = [
         BUILD_DATA._BUILD_DATE,
         _parts[0],
         _parts[1],
-        _s + _parts[2],
+        _parts[2],
     ]
+    if BUILD_DATA._BUILD_STAGE:
+        _partlist[-1] += _s + "0"
     if BUILD_DATA._BUILD_DEVMODE:
         _partlist.append("dev0")
     __version__ = '.'.join(_partlist)
@@ -42,10 +44,13 @@ except Exception as e:
     #? mark with an epoch in case of error. i dont plan to change this scheme so it should be fine
     __version__ = "1!" + _v_base
 
+_split = __version__.split('.')
+
 class VERSIONS:
     # static singleton versions. follow X.X.X+stage
     #* tbu with versions embedded in the actual modules
-    PACKAGE_VERSION      :str|None = __version__
+    BUILD_DATE           :str|None = f"{_split[0][6:]}.{_split[0][4:6]}.{_split[0][0:4]} (ddMMyyyy)"
+    PACKAGE_VERSION      :str|None = __version__[9:]
     SYNTAX_VERSION       :str|None = "0.0.1+beta"
     TOKENIZER_VERSION    :str|None = "0.0.1+beta"
     LEXER_IDENT_VERSION  :str|None = "0.0.1+beta"
