@@ -4,8 +4,8 @@ A superset of Python 3.10+
 
 ## License
 
-See [./LICENSES/notice.md](./LICENSES/notice.md)  
-... To be updated post-beta  
+In source - `./docs/LICENSE`  
+In repo - [DVPDEVS/nohtyP](https://github.com/DVPDEVS/nohtyP/blob/master/LICENSE)  
 
 ## Table of Contents  
 
@@ -45,8 +45,8 @@ Should the version number creation fail for any reason it will instead be marked
 Examples:
 
 ```txt
-08072026.0.0.1b0.dev0 -> package version 0.0.1, packaged 8th of July 2026, developer package, beta stage of development
-32053072.0.2.3        -> package version 0.2.3, packaged 32nd of May 3072, release package, mature stage of development
+20260708.0.0.1b0.dev0 -> package version 0.0.1, packaged 8th of July 2026, developer package, beta stage of development
+30720532.0.2.3        -> package version 0.2.3, packaged 32nd of May 3072, release package, mature stage of development
 1!1.4.2               -> build failure - you should not see this, assumedly unstable
 ```
 

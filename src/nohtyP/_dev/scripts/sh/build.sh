@@ -179,3 +179,5 @@ echo "Metadata:"
 python -c "from importlib.metadata import metadata; [print(f'{k}: {v}') for k,v in metadata('nohtyP').items() if not k == 'Description']"
 echo
 
+cd "$STARTDIR"
+

@@ -17,8 +17,11 @@ class ContentHook(BuildHookInterface):
 
     def _load_common_include(self) -> dict:
         out:dict[str,str] = {
+            # src/file.txt : dest/file.md
             "nohtyP/py.typed": "nohtyP/py.typed",
             "README.md": "README.md",
+            "../LICENSE": "docs/LICENSE",
+            "../docs/licensing.md": "docs/licensing.md",
         }
         # LICENSES
         ldir:Path = Path("LICENSES")
