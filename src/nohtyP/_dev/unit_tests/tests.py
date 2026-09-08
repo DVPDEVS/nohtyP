@@ -1,4 +1,5 @@
 import unittest
+from sys import argv
 # from nohtyP.lexer.identifier import TT
 from nohtyP._impl.global_utilities.decorators import *
 from nohtyP._impl.global_utilities.types import AnyNohtyPSyntaxError
@@ -405,7 +406,7 @@ class Tokenizer(unittest.TestCase):
 			[ '¤__NOHTYP_NOT_TOKENIZABLE__¤(\u202e)', 'abc' ],
 			[ '¤__NOHTYP_NOT_TOKENIZABLE__¤(\ufeff)', 'bom' ],
 			[ '<<', '>>', '==', '!=', '<=', '>=', '&', '&', '|', '|', ':', ':', '->', '=', '>' ],
-			[ '-', '-', '-', '___', '+', '+', '+', '**', '**', '*' ],
+			[ '-', '-', '-', '___', '+', '+', '+', '**', '*' ],
 			[ '123', 'abc', 'abc123' ],
 			[ '_leading', 'trailing_' ],
 			[ 'f"1"', 'f"2"', 'f"3"' ],
@@ -527,12 +528,13 @@ class Display_Types(unittest.TestCase):
 		ls = LexObjectSeries()
 		ls.append(lo)
 	def display_lex(self):
-		print(self.lex.lt)
-		print(self.lex.lo)
-		print(self.lex.ls)
-		print(self.lex.lt.__repr__())
-		print(self.lex.lo.__repr__())
-		print(self.lex.ls.__repr__())
+		if modes.showmode or not modes.quietmode:
+			print(self.lex.lt)
+			print(self.lex.lo)
+			print(self.lex.ls)
+			print(self.lex.lt.__repr__())
+			print(self.lex.lo.__repr__())
+			print(self.lex.ls.__repr__())
 		self.assertTrue(self.lex.ls != None)
 
 @test
@@ -550,4 +552,28 @@ class Lexer(unittest.TestCase):
 					print(f"Failure observed:\n\tCount: {fcount}\n\t{fails}")
 
 if __name__ == "__main__":
-	unittest.main()
+	args = argv
+	if len(args) >= 2:
+		if args[1] == "v":
+			modes.verbmode = True
+			args.pop(1)
+		elif args[1] == "q":
+			modes.quietmode = True
+			args.pop(1)
+	if len(args) >= 2:
+		if args[1] == "s":
+			modes.showmode = True
+			args.pop(1)
+	unittest.main(
+		argv=args,
+		verbosity = 0 if modes.quietmode else 2 if modes.verbmode else 1,
+		defaultTest=[
+			"Lexer.one",
+			"Tokenizer.basic",
+			"Tokenizer.vnums",
+			"Tokenizer.inums",
+			"Tokenizer.stress",
+			"Tokenizer.realistic_input",
+			"Display_Types.display_lex",
+		]
+	)
