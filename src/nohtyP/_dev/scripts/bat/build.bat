@@ -67,14 +67,14 @@ call "%TEMP_VENV%\Scripts\activate.bat"
 goto :eof
 
 :get_date
-for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format ddMMyyyy"') do set "_N_formatted_date=%%i"
+for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd"') do set "_N_formatted_date=%%i"
 goto :eof
 
 :build
 echo Installing build dependencies...
 :: Update venv pip and build, then build
-python -m pip install --upgrade pip
-python -m pip install hatch hatchling
+python -m pip install --upgrade pip 1>nul
+python -m pip install hatch hatchling 1>nul
 echo Verifying dependecies...
 :: make it shut up
 python -m pip install --upgrade hatch hatchling 1>nul
@@ -189,7 +189,7 @@ echo Skipping installation... >&2
 goto :eof
 
 :test_install_normal
-python -m pip install --no-cache-dir "src\!latest_whl!"
+python -m pip install --no-cache-dir "src\!latest_whl!" 1>nul
 python -m nohtyP
 echo Metadata:
 :: skipping the readme
@@ -199,7 +199,7 @@ goto :eof
 
 :test_install_dev
 python -m pip uninstall -y nohtyP
-python -m pip install --no-cache-dir "src\!latest_dev!"
+python -m pip install --no-cache-dir "src\!latest_dev!" 1>nul
 python -m nohtyP
 echo Metadata:
 :: skipping the readme
