@@ -67,14 +67,14 @@ class LexObject:
 	"""
 	NohtyP class for Lexical Objects
 	"""
-	def __init__(self, value :str, ltype :LexType) -> None:
+	def __init__(self, value :tuple[str,int], ltype :LexType) -> None:
 		self.ltype :LexType = ltype
-		self.__value__ :str = value
+		self.__value__ :tuple[str, int] = value
 		self.__issue_list__ :tuple[str|AnyNohtyPSyntaxError] = ()
 	def __repr__(self) -> str:
-		return f"LexObject('{self.__value__}'), type=({self.ltype.__repr__()})"
+		return f"LexObject('{self.__value__[0]}',position={self.__value__[1]}), type=({self.ltype.__repr__()})"
 	def __str__(self) -> str:
-		return f"{self.ltype}['{self.__value__}']"
+		return f"{self.ltype}['{self.__value__[0]}']"
 	def __and__(self, issue:str|AnyNohtyPSyntaxError) -> None:
 		self.__issue_list__ += tuple([issue])
 	def add_issue(self, issue:str|AnyNohtyPSyntaxError) -> None:
@@ -84,6 +84,8 @@ class LexObject:
 		return self.__issue_list__
 	def get_issues(self) -> tuple[str|AnyNohtyPSyntaxError]:
 		return self |0
+	def position(self) -> int:
+		return self.__value__[1]
 
 @api_level(0)
 class LexObjectSeries:

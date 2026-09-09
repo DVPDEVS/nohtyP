@@ -10,6 +10,7 @@ from nohtyP._impl.lexer.identifier import Identify
 __all__ = [
 	"unittest",
 	"Tokenizer",
+	"Display_Types",
 	"Lexer",
 	"modes",
 ]
@@ -522,7 +523,9 @@ class Tokenizer(unittest.TestCase):
 class Display_Types(unittest.TestCase):
 	class lex:
 		lt_name = "test_type"
-		lo_value = "TESTING_TESTING"
+		# would be pulled from a tokenseries, so we emulate that
+		#   (this is the exact expected structure)
+		lo_value = ("TESTING_TESTING", 0)
 		lt = LexType(lt_name, lexer_langs.NOHTYP)
 		lo = LexObject(lo_value, lt)
 		ls = LexObjectSeries()
