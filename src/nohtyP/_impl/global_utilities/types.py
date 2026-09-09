@@ -32,7 +32,7 @@ class NohtyPBaseSyntaxError(RuntimeError):
 	"""
 	Base SyntaxError class for NohtyP-related errors.
 	"""
-	def __init__(self, message: str, cause: str = "Unknown") -> None:
+	def __init__(self, message: str, cause: str|tuple[str,int] = "Unknown") -> None:
 		super().__init__(message, cause)
 
 class NohtyPInternalFailure(SystemError):
@@ -80,7 +80,7 @@ class NohtyPTokenizerSyntaxError(NohtyPBaseSyntaxError):
 	Tokenizer error:  \n
 	Failure to tokenize the input.
 	"""
-	def __init__(self, message: str, cause: str = "Unknown") -> None:
+	def __init__(self, message: str, cause: str|tuple[str,int] = "Unknown") -> None:
 		super().__init__(message, cause)
 
 class NohtyPLexerSyntaxError(NohtyPBaseSyntaxError):
@@ -88,7 +88,7 @@ class NohtyPLexerSyntaxError(NohtyPBaseSyntaxError):
 	Lexer error:  \n
 	Failure to lexically validate or parse the input.
 	"""
-	def __init__(self, message, cause: str = "Unknown") -> None:
+	def __init__(self, message, cause: str|tuple[str,int] = "Unknown") -> None:
 		super().__init__(message, cause)
 
 class NohtyPParserSyntaxError(NohtyPBaseSyntaxError):
@@ -96,7 +96,7 @@ class NohtyPParserSyntaxError(NohtyPBaseSyntaxError):
 	Parser error:  \n
 	Failure to syntactically validate or semantically parse the input.
 	"""
-	def __init__(self, message: str, cause: str = "Unknown") -> None:
+	def __init__(self, message: str, cause: str|tuple[str,int] = "Unknown") -> None:
 		super().__init__(message, cause)
 
 #* syntax error union
