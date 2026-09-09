@@ -76,7 +76,7 @@ class LexObject:
 		self.__issue_list__ :tuple[str|AnyNohtyPSyntaxError] = ()
 	# strings
 	def __repr__(self) -> str: return f"LexObject('{self.value()}',position={self.position()}), type=({self.ltype.__repr__()})"
-	def __str__(self) -> str:  return f"{self.ltype}['{self.__value__[0]}']"
+	def __str__(self) -> str:  return f"{self.ltype}['{self.value()}']"
 	# issues
 	## add
 	def __and__(self, issue:str|AnyNohtyPSyntaxError) ->   None:   self.__issue_list__ += tuple([issue])
@@ -104,7 +104,7 @@ class LexObjectSeries:
 		string = ""
 		for i in range(len(self.objectlist)):
 			string += f"  {i}:\t{self.objectlist[i]}\n"
-		return string[0:-1]
+		return string[:-1]
 	def __repr__(self) -> None:
 		string = "LexObjectSeries:\n"
 		for i in range(len(self.objectlist)):

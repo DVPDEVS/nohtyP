@@ -543,10 +543,10 @@ class Display_Types(unittest.TestCase):
 @test
 class Lexer(unittest.TestCase):
 	class input:
-		one: list[TokenSeries] = [tokenize_str(s)._tokens_only() for s in Tokenizer.stress_test.strings]
+		one: list[TokenSeries] = [tokenize_str(s) for s in Tokenizer.stress_test.strings]
 	def one(self):
-		for string in self.input.one:
-			res: LexObjectSeries = Identify.identify_series(string)
+		for series in self.input.one:
+			res: LexObjectSeries = Identify.identify_series(series)
 			if modes.showmode:
 				if modes.verbmode: print("\n")
 				print(res)
