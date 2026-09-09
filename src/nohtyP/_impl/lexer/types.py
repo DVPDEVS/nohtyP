@@ -40,6 +40,8 @@ class TokenSeries(list[tuple[str,int]]):
 		super().append(item)
 	def _tokens_only(self)->list[str]:
 		return [token for token, _ in self]
+	def _positions_only(self)->list[int]:
+		return [pos for _, pos in self]
 	# Block all other ways to add to the list (besides setattr)
 	def extend     (self, iterable: Any         ) -> Never: raise NotImplementedError
 	def insert     (self, index: Any, item: Any ) -> Never: raise NotImplementedError
@@ -67,47 +69,47 @@ class LexObject:
 	"""
 	NohtyP class for Lexical Objects
 	"""
+	__slots__ = ["ltype", "__value__", "__issue_list__", ]
 	def __init__(self, value :tuple[str,int], ltype :LexType) -> None:
 		self.ltype :LexType = ltype
 		self.__value__ :tuple[str, int] = value
 		self.__issue_list__ :tuple[str|AnyNohtyPSyntaxError] = ()
-	def __repr__(self) -> str:
-		return f"LexObject('{self.__value__[0]}',position={self.__value__[1]}), type=({self.ltype.__repr__()})"
-	def __str__(self) -> str:
-		return f"{self.ltype}['{self.__value__[0]}']"
-	def __and__(self, issue:str|AnyNohtyPSyntaxError) -> None:
-		self.__issue_list__ += tuple([issue])
-	def add_issue(self, issue:str|AnyNohtyPSyntaxError) -> None:
-		# forward to iand dunder
-		self &= issue
-	def __or__(self, *args, **kwargs) -> tuple[str|AnyNohtyPSyntaxError]:
-		return self.__issue_list__
-	def get_issues(self) -> tuple[str|AnyNohtyPSyntaxError]:
-		return self |0
-	def position(self) -> int:
-		return self.__value__[1]
+	# strings
+	def __repr__(self) -> str: return f"LexObject('{self.value()}',position={self.position()}), type=({self.ltype.__repr__()})"
+	def __str__(self) -> str:  return f"{self.ltype}['{self.__value__[0]}']"
+	# issues
+	## add
+	def __and__(self, issue:str|AnyNohtyPSyntaxError) ->   None:   self.__issue_list__ += tuple([issue])
+	def add_issue(self, issue:str|AnyNohtyPSyntaxError) -> None: self & issue # forward to and dunder above
+	## get
+	def __or__(self, *args, **kwargs) -> tuple[str|AnyNohtyPSyntaxError]: return self.__issue_list__
+	def get_issues(self) -> tuple[str|AnyNohtyPSyntaxError]:              return self |0 # call or dunder above
+	# attribs
+	def value(self) -> str: return self.__value__[0]
+	def position(self) -> int: return self.__value__[1]
 
 @api_level(0)
 class LexObjectSeries:
 	"""
 	NohtyP class for holding a series of `Lexobject`
 	"""
+	__slots__ = ["objectlist",]
 	def __init__(self):
 		self.objectlist :tuple[LexObject] = []
 		pass
-	def append(self, obj :LexObject) -> None:
-		self.objectlist.append(obj)
+	# object handling
+	def append(self, obj :LexObject) -> None: self.objectlist.append(obj)
+	# strings
 	def __str__(self) -> None:
 		string = ""
 		for i in range(len(self.objectlist)):
-			string += f" {i}:\t{self.objectlist[i]}\n"
+			string += f"  {i}:\t{self.objectlist[i]}\n"
 		return string[0:-1]
 	def __repr__(self) -> None:
 		string = "LexObjectSeries:\n"
 		for i in range(len(self.objectlist)):
 			string += f" {i}:\t{self.objectlist[i].__repr__()}\n"
 		return string[0:-1]
-	def __getitem__(self, key:int):
-		return self.objectlist[key] # pass on to a tuple
-	def __iter__(self):
-		yield from self.objectlist # pass on to a tuple
+	# iteration support
+	def __getitem__(self, key:int): return self.objectlist[key] # pass on to a tuple
+	def __iter__(self): yield from self.objectlist # pass on to a tuple

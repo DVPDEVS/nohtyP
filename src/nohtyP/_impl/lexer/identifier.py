@@ -4,7 +4,7 @@ from nohtyP._impl.global_utilities.types import *
 from nohtyP._impl.lexer.types import *
 from nohtyP._impl.lexer.tt import TT
 import re
-# Identify objects
+# Identify objects and write into LexObject(Series)
 
 @regex
 @api_level(0)
@@ -40,31 +40,30 @@ class Identify:
 		"""
 		Check if a `LexObject` has any errors  \n
 		Return:
-		```
+		```python
 		tuple(
 			errorlist :str|AnyNohtyPSyntaxError|None,
 			has_error :bool
 		)
-		```
-		"""
+		```"""
 		try:
-			if len(element |0) != 0:
-				return True
-			else: return True
+			err_list = element |0
+			if len(err_list) != 0:
+				return (err_list, True)
+			else: return (err_list, False)
 		except Exception as e:
 			raise NohtyPLexerInternalFailure(*e.args)
 	def has_error_los(element: LexObjectSeries) -> tuple[tuple[str|AnyNohtyPSyntaxError|None],bool,int]:
 		"""
 		Check if a `LexObjectSeries` has any errors  \n
 		Return:  
-		```
+		```python
 		tuple(
 			errorlist :tuple[str|AnyNohtyPSyntaxError|None],
 			has_error :bool,
 			error_count :int
 		)
-		```
-		"""
+		```"""
 		try:
 			res:tuple[str|AnyNohtyPSyntaxError|None] = ()
 			err:int = 0
