@@ -26,7 +26,7 @@ class Identify:
 						return ret
 					return LexObject(element, object)
 			# shouldnt be possible to reach this branch. might raise an internal error here bc it just should not happen
-			raise NohtyPInternalFailure(f"Failed to match object type of element {element.__rep__()}")
+			raise NohtyPInternalFailure(f"Failed to match object type of element {element.__repr__()}")
 		except Exception as e:
 			raise NohtyPLexerInternalFailure from e
 	def identify_series(elements :TokenSeries) -> LexObjectSeries:
