@@ -32,7 +32,7 @@ class funcs:
 				continue
 			# begin with simpler tokens starts
 			elif char in ";,~@:.": #* ; , ~ @ : .
-				result.append(char)
+				result.append((char,i))
 				continue
 			## brackets
 			elif char == "(": #* ( ()
@@ -43,10 +43,10 @@ class funcs:
 					if char == ")":
 						token += char
 						skips += 1
-				result.append(token)
+				result.append((token,i))
 				continue
 			elif char in "){}[]": #* ) { } [ ]
-				result.append(char)
+				result.append((char,i))
 				continue
 			## ops
 			elif char == "/": #* / // /= //=
@@ -63,7 +63,7 @@ class funcs:
 					if char == "=": # fails anyways if next char isnt assigned
 						token += char
 						skips += 1
-				result.append(token)
+				result.append((token,i))
 				continue
 			elif char == "^": #* ^ ^=
 				token = char
@@ -73,7 +73,7 @@ class funcs:
 					if char == "=":
 						token += char
 						skips += 1
-				result.append(token)
+				result.append((token,i))
 				continue
 			elif char == "%": #* % %=
 				token = char
@@ -83,7 +83,7 @@ class funcs:
 					if char == "=":
 						token += char
 						skips += 1
-				result.append(token)
+				result.append((token,i))
 				continue
 			elif char == "&": #* & &=
 				token = char
@@ -93,7 +93,7 @@ class funcs:
 					if char == "=":
 						token += char
 						skips += 1
-				result.append(token)
+				result.append((token,i))
 				continue
 			elif char == "!": #* ! !=
 				token = char
@@ -103,7 +103,7 @@ class funcs:
 					if char == "=":
 						token += char
 						skips += 1
-				result.append(token)
+				result.append((token,i))
 				continue
 			elif char == "|": #* | |=
 				token = char
@@ -113,7 +113,7 @@ class funcs:
 					if char == "=":
 						token += char
 						skips += 1
-				result.append(token)
+				result.append((token,i))
 				continue
 			elif char == "=": #* = ==
 				token = char
@@ -123,7 +123,7 @@ class funcs:
 					if char == "=":
 						token += char
 						skips += 1
-				result.append(token)
+				result.append((token,i))
 				continue
 			elif char == "?": #* ? ?=
 				token = char
@@ -133,7 +133,7 @@ class funcs:
 					if char == "=":
 						token += char
 						skips += 1
-				result.append(token)
+				result.append((token,i))
 				continue
 			elif char == "$": #* $variable
 				token = char
@@ -154,10 +154,10 @@ class funcs:
 							else: counter -= 1
 							break
 						skips += counter - 1
-					result.append(token)
+					result.append((token,i))
 					continue
 				else:
-					result.append(char)
+					result.append((char,i))
 			# various
 			elif char == "*": #* * *? *: *~ *type: *$variable *= ** **=
 				token = char
@@ -168,7 +168,7 @@ class funcs:
 					if char in "?:~":
 						token += char
 						skips += 1
-						result.append(token)
+						result.append((token,i))
 						continue
 					# then error value assignment
 					elif char == "$":
@@ -189,7 +189,7 @@ class funcs:
 											token += char
 											continue
 									break
-						result.append(token)
+						result.append((token,i))
 						skips += counter-1
 						continue
 					# check for type decl
@@ -207,7 +207,7 @@ class funcs:
 									continue
 								else: counter -= 1
 							break
-						result.append(token)
+						result.append((token,i))
 						skips += counter
 						continue
 					# lastly the easiest checks
@@ -220,7 +220,7 @@ class funcs:
 								char = text[next_val]
 						if char == "=": # fails anyways if next char isnt assigned
 							token += char
-				result.append(token)
+				result.append((token,i))
 				continue
 			elif re.match(r"[a-zA-Z_]", char): #* barewords strings
 				next_val = min(i+6, txtlen-1)
@@ -264,7 +264,7 @@ class funcs:
 											counter += 1
 									else: break
 								skips += counter+len(stringtype)+1 # string length + string decl
-								result.append(token)
+								result.append((token,i))
 								continue
 							## multiline quotes
 							elif len(quote) == 3:
@@ -290,13 +290,13 @@ class funcs:
 									else: break
 								#! break out even with an unclosed string. warn in validation instead, prioritize avoiding errors
 								skips += counter+len(stringtype)+5 # string length + string decl
-								result.append(token)
+								result.append((token,i))
 								continue
 							# invalid quote or empty single quoted string
-							result.append(stringtype + quote)
+							result.append((stringtype + quote,i))
 							skips += 1
 						else: # invalid string type, assume it to be a bareword instead
-							result.append(stringtype)
+							result.append((stringtype,i))
 							skips += len(stringtype)-1
 							continue
 					else:
@@ -312,10 +312,10 @@ class funcs:
 									token += char
 									continue
 							break
-						result.append(token)
+						result.append((token,i))
 						skips += counter - 1
 						continue
-				result.append(token)
+				result.append((token,i))
 				# TODO: this may need correction in parsing though. later investigate if this causes issues and nmw add guards
 			elif char == "#": #* comment #?
 				token = char
@@ -324,7 +324,7 @@ class funcs:
 					char = text[next_val]
 					if char == "?":
 						token += char
-						result.append(token)
+						result.append((token,i))
 						skips += 1
 						continue
 					else:
@@ -339,7 +339,7 @@ class funcs:
 									token += char
 									continue
 							break
-				result.append(token)
+				result.append((token,i))
 				skips += counter+1
 				continue
 			elif char in "'\"": #* strings
@@ -374,7 +374,7 @@ class funcs:
 									counter += 1
 							else: break
 						skips += counter+1 # string length + string decl
-						result.append(token)
+						result.append((token,i))
 						continue
 					## multiline quotes
 					elif len(quote) == 3:
@@ -400,10 +400,10 @@ class funcs:
 							else: break
 						#! break out even with an unclosed string. warn in validation instead, prioritize avoiding errors
 						skips += counter+5 # string length + string decl
-						result.append(token)
+						result.append((token,i))
 						continue
 				# invalid quote or empty single quoted string
-				result.append(quote)
+				result.append((quote,i))
 				skips += 1
 				# TODO: this may need correction in parsing though. later investigate if this causes issues and nmw add guards
 			# arrows, numbers and such
@@ -415,7 +415,7 @@ class funcs:
 					if char == "=":
 						token += char
 						skips += 1
-				result.append(token)
+				result.append((token,i))
 				continue
 			elif char == "<": #* < <- << <= <<=
 				token = char
@@ -425,7 +425,7 @@ class funcs:
 					if char == "-":
 						token += char
 						skips += 1
-						result.append(token)
+						result.append((token,i))
 						continue
 					char = text[next_val]
 					if char == "<":
@@ -437,7 +437,7 @@ class funcs:
 					if char == "=": # fails anyways if next char isnt assigned
 						token += char
 						skips += 1
-				result.append(token)
+				result.append((token,i))
 				continue
 			elif char == ">": #* > >> >= >>=
 				token = char
@@ -453,7 +453,7 @@ class funcs:
 					if char == "=": # fails anyways if next char isnt assigned
 						token += char
 						skips += 1
-				result.append(token)
+				result.append((token,i))
 				continue
 			elif char == "-": #* - -> -=
 				token = char
@@ -463,7 +463,7 @@ class funcs:
 					if char in ">=":
 						token += char
 						skips += 1
-				result.append(token)
+				result.append((token,i))
 				continue
 			elif char in "0123456789": #* 0 0.0 111_22 1_22.0 0b0 0X0 0o7 1e7 3.5E-7
 				non_decimal = 0
@@ -548,12 +548,12 @@ class funcs:
 									skips -= 1
 							break
 					skips += counter-1-non_decimal
-					result.append(token)
+					result.append((token,i))
 				else:
-					result.append(char)
+					result.append((char,i))
 				continue
 			# fallback (improve later)
-			result.append(f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})")
+			result.append((f"¤__NOHTYP_NOT_TOKENIZABLE__¤({char})",i))
 		return result
 	def tokenize_file(file_path :str|Path) -> TokenSeries:
 		path = Path(file_path)

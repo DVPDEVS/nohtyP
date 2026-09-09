@@ -452,7 +452,7 @@ class Tokenizer(unittest.TestCase):
 		]
 	def basic(self):
 		for i in range(len(self.base.strings)):
-			self.base.results[i] = tokenize_str(self.base.strings[i])
+			self.base.results[i] = tokenize_str(self.base.strings[i])._tokens_only()
 			self.assertListEqual(self.base.expected[i], self.base.results[i])
 		if modes.showmode:
 			if modes.verbmode: print("\n")
@@ -460,21 +460,21 @@ class Tokenizer(unittest.TestCase):
 	def vnums(self):
 		def ints():
 			for i in range(len(self.valid_nums.ints)):
-				self.valid_nums.results_ints[i] = tokenize_str(self.valid_nums.ints[i])
+				self.valid_nums.results_ints[i] = tokenize_str(self.valid_nums.ints[i])._tokens_only()
 				self.assertListEqual(self.valid_nums.expected_ints[i], self.valid_nums.results_ints[i])
 			if modes.showmode:
 				if modes.verbmode: print("\n")
 				for i in self.valid_nums.results_ints: print(i)
 		def floats():
 			for i in range(len(self.valid_nums.floats)):
-				self.valid_nums.results_floats[i] = tokenize_str(self.valid_nums.floats[i])
+				self.valid_nums.results_floats[i] = tokenize_str(self.valid_nums.floats[i])._tokens_only()
 				self.assertListEqual(self.valid_nums.expected_floats[i], self.valid_nums.results_floats[i])
 			if modes.showmode:
 				if modes.verbmode: print("\n")
 				for i in self.valid_nums.results_floats: print(i)
 		def scientifics():
 			for i in range(len(self.valid_nums.scientifics)):
-				self.valid_nums.results_scis[i] = tokenize_str(self.valid_nums.scientifics[i])
+				self.valid_nums.results_scis[i] = tokenize_str(self.valid_nums.scientifics[i])._tokens_only()
 				self.assertListEqual(self.valid_nums.expected_scientifics[i], self.valid_nums.results_scis[i])
 			if modes.showmode:
 				if modes.verbmode: print("\n")
@@ -483,21 +483,21 @@ class Tokenizer(unittest.TestCase):
 	def inums(self):
 		def ints():
 			for i in range(len(self.invalid_nums.ints)):
-				self.invalid_nums.results_ints[i] = tokenize_str(self.invalid_nums.ints[i])
+				self.invalid_nums.results_ints[i] = tokenize_str(self.invalid_nums.ints[i])._tokens_only()
 				self.assertListEqual(self.invalid_nums.expected_ints[i], self.invalid_nums.results_ints[i])
 			if modes.showmode:
 				if modes.verbmode: print("\n")
 				for i in self.invalid_nums.results_ints: print(i)
 		def floats():
 			for i in range(len(self.invalid_nums.floats)):
-				self.invalid_nums.results_floats[i] = tokenize_str(self.invalid_nums.floats[i])
+				self.invalid_nums.results_floats[i] = tokenize_str(self.invalid_nums.floats[i])._tokens_only()
 				self.assertListEqual(self.invalid_nums.expected_floats[i], self.invalid_nums.results_floats[i])
 			if modes.showmode:
 				if modes.verbmode: print("\n")
 				for i in self.invalid_nums.results_floats: print(i)
 		def scientifics():
 			for i in range(len(self.invalid_nums.scientifics)):
-				self.invalid_nums.results_scis[i] = tokenize_str(self.invalid_nums.scientifics[i])
+				self.invalid_nums.results_scis[i] = tokenize_str(self.invalid_nums.scientifics[i])._tokens_only()
 				self.assertListEqual(self.invalid_nums.expected_scientifics[i], self.invalid_nums.results_scis[i])
 			if modes.showmode:
 				if modes.verbmode: print("\n")
@@ -505,14 +505,14 @@ class Tokenizer(unittest.TestCase):
 		ints(); floats(); scientifics() 
 	def stress(self):
 		for i in range(len(self.stress_test.strings)):
-			self.stress_test.results[i] = tokenize_str(self.stress_test.strings[i])
+			self.stress_test.results[i] = tokenize_str(self.stress_test.strings[i])._tokens_only()
 			self.assertListEqual(self.stress_test.expected[i], self.stress_test.results[i])
 		if modes.showmode:
 			if modes.verbmode: print("\n")
 			for i in self.stress_test.results: print(i)
 	def realistic_input(self):
 		self.maxDiff = 4000
-		self.realistic.result = tokenize_str(self.realistic.string)
+		self.realistic.result = tokenize_str(self.realistic.string)._tokens_only()
 		self.assertListEqual(self.realistic.expected, self.realistic.result)
 		if modes.showmode:
 			if modes.verbmode: print("\n")
@@ -540,7 +540,7 @@ class Display_Types(unittest.TestCase):
 @test
 class Lexer(unittest.TestCase):
 	class input:
-		one: list[TokenSeries] = [tokenize_str(s) for s in Tokenizer.stress_test.strings]
+		one: list[TokenSeries] = [tokenize_str(s)._tokens_only() for s in Tokenizer.stress_test.strings]
 	def one(self):
 		for string in self.input.one:
 			res: LexObjectSeries = Identify.identify_series(string)
