@@ -544,6 +544,255 @@ class Display_Types(unittest.TestCase):
 class Lexer(unittest.TestCase):
 	class input:
 		one: list[TokenSeries] = [tokenize_str(s) for s in Tokenizer.stress_test.strings]
+		expected_one: list[list[list[str]]] = [
+			[
+				["NOHTYP", "BAREWORD", 'a'],
+				["PYTHON", "OP", '+'],
+				["NOHTYP", "BAREWORD", 'b'],
+				["PYTHON", "OP", '+'],
+				["NOHTYP", "BAREWORD", 'c'],
+				["PYTHON", "OP", '+'],
+				["NOHTYP", "BAREWORD", 'd'],
+				["PYTHON", "OP", '+'],
+				["NOHTYP", "BAREWORD", 'e'],
+				["PYTHON", "OP", '+'],
+				["NOHTYP", "BAREWORD", 'f'],
+				["PYTHON", "OP", '+'],
+				["NOHTYP", "BAREWORD", 'g'],
+				["PYTHON", "OP", '+'],
+				["NOHTYP", "BAREWORD", 'h'],
+				["PYTHON", "OP", '+'],
+				["NOHTYP", "BAREWORD", 'i'],
+				["PYTHON", "OP", '+'],
+				["NOHTYP", "BAREWORD", 'j'],
+				["PYTHON", "OP", '+'],
+				["NOHTYP", "BAREWORD", 'k'],
+				["PYTHON", "OP", '+'],
+				["NOHTYP", "BAREWORD", 'l'],
+			],[
+				["NOHTYP", "BAREWORD", 'a'],
+				["PYTHON", "STR", '"b"'],
+				["NOHTYP", "BAREWORD", 'c'],
+				["PYTHON", "STR", "'d'"],
+				["NOHTYP", "BAREWORD", 'e'],
+			],[
+				["PYTHON", "INT", '1'],
+				["PYTHON", "STR", '"2"'],
+				["PYTHON", "INT", '3'],
+			],[
+				["PYTHON", "STR", 'f"1"'],
+				["PYTHON", "STR", 'f"2"'],
+			],[
+				["NOHTYP", "SYMBOL_AT", '@'],
+				["NOHTYP", "SYMBOL_AT", '@'],
+				["NOHTYP", "SYMBOL_AT", '@'],
+				["GENERIC", "UNKNOWN", '$'],
+				["GENERIC", "UNKNOWN", '$'],
+				["GENERIC", "UNKNOWN", '$'],
+				["PYTHON", "OP", '%'],
+				["PYTHON", "OP", '%'],
+				["PYTHON", "OP", '%'],
+				["PYTHON", "BITOP", '^'],
+				["PYTHON", "BITOP", '^'],
+				["PYTHON", "BITOP", '^'],
+				["PYTHON", "BITOP", '&'],
+				["PYTHON", "BITOP", '&'],
+				["PYTHON", "BITOP", '&'],
+			],[
+				["NOHTYP", "BAREWORD", 'foo'],
+				["PYTHON", "DOT", '.'],
+				["PYTHON", "DOT", '.'],
+				["PYTHON", "DOT", '.'],
+				["NOHTYP", "BAREWORD", 'bar'],
+			],[
+				["PYTHON", "DOT", '.'],
+				["NOHTYP", "BAREWORD", 'leading'],
+				["PYTHON", "DOT", '.'],
+				["PYTHON", "DOT", '.'],
+				["NOHTYP", "BAREWORD", 'trailing'],
+				["PYTHON", "DOT", '.'],
+			],[
+				["PYTHON", "COMMA", ','],
+				["PYTHON", "COMMA", ','],
+				["PYTHON", "COMMA", ','],
+				["NOHTYP", "SEMICOLON", ';'],
+				["NOHTYP", "SEMICOLON", ';'],
+				["NOHTYP", "SEMICOLON", ';'],
+				["PYTHON", "COLON", ':'],
+				["PYTHON", "COLON", ':'],
+				["PYTHON", "COLON", ':'],
+			],[
+				["PYTHON", "CALL", '()'],
+				["NOHTYP", "BRACKET_LEFT", '['],
+				["NOHTYP", "BRACKET_RIGHT", ']'],
+				["NOHTYP", "CBRACKET_LEFT", '{'],
+				["NOHTYP", "CBRACKET_RIGHT", '}'],
+				["PYTHON", "OP", '<'],
+				["PYTHON", "OP", '>'],
+			],[
+				["PYTHON", "STR", '"quoted"'],
+			],[
+				["PYTHON", "STR", "single-quoted'"],
+			],[
+				["PYTHON", "STR", '''"mix'ed"'''],
+			],[
+				["NOHTYP", "BAREWORD", 'a'],
+				["PYTHON", "STR", '""'],
+				["PYTHON", "STR", 'b'''],
+				["NOHTYP", "BAREWORD", 'c'],
+			],[
+				["NOHTYP", "BAREWORD", 'x'],
+				["NOHTYP", "ASS_EQ", '='],
+				["NOHTYP", "BAREWORD", 'y'],
+				["PYTHON", "OP", '+'],
+				["NOHTYP", "BAREWORD", 'z'],
+				["PYTHON", "OP", '-'],
+				["PYTHON", "INT", '1'],
+				["PYTHON", "OP", '*'],
+				["PYTHON", "INT", '2'],
+				["PYTHON", "OP", '/'],
+				["PYTHON", "INT", '3'],
+			],[
+				["PYTHON", "INT", '1'],
+				["PYTHON", "COMMA", ','],
+				["PYTHON", "INT", '234'],
+				["PYTHON", "COMMA", ','],
+				["PYTHON", "FLOAT", '567.89'],
+			],[
+				["PYTHON", "INT", '0xFF'],
+				["PYTHON", "INT", '0b1010'],
+				["PYTHON", "INT", '0o755'],
+			],[
+				["PYTHON", "FLOAT", '3.14159e-10'],
+			],[
+				["NOHTYP", "BAREWORD", 'NaN'],
+				["NOHTYP", "BAREWORD", 'INF'],
+				["PYTHON", "OP", '-'],
+				["NOHTYP", "BAREWORD", 'INF'],
+			],[
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(🙂)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(😂)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(🔥)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(💯)'],
+			],[
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(🏳)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(️)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(‍)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(⚧)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(️)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(🏳)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(️)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(‍)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(🌈)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(🇳)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(🇴)'],
+			],[
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(汉)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(字)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(か)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(な)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(カ)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(ナ)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(한)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(글)'],
+			],[
+				["NOHTYP", "BAREWORD", 'e'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(́)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(é)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(ê)'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(ë)'],
+			],[
+				["NOHTYP", "BAREWORD", 'a'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(​)'],
+				["NOHTYP", "BAREWORD", 'b'],
+			],[
+				["NOHTYP", "BAREWORD", 'a'],
+				["NOHTYP", "BAREWORD", 'b'],
+			],[
+				["NOHTYP", "BAREWORD", 'word'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(⁠)'],
+				["NOHTYP", "BAREWORD", 'word'],
+			],[
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(‮)'],
+				["NOHTYP", "BAREWORD", 'abc'],
+			],[
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤()'],
+				["NOHTYP", "BAREWORD", 'bom'],
+			],[
+				["PYTHON", "OP", '<<'],
+				["PYTHON", "OP", '>>'],
+				["NOHTYP", "ASS_EQ", '=='],
+				["PYTHON", "OP", '!='],
+				["PYTHON", "OP", '<='],
+				["PYTHON", "OP", '>='],
+				["PYTHON", "BITOP", '&'],
+				["PYTHON", "BITOP", '&'],
+				["PYTHON", "BITOP", '|'],
+				["PYTHON", "BITOP", '|'],
+				["PYTHON", "COLON", ':'],
+				["PYTHON", "COLON", ':'],
+				["NOHTYP", "ARROW_RIGHT", '->'],
+				["NOHTYP", "ASS_EQ", '='],
+				["PYTHON", "OP", '>'],
+			],[
+				["PYTHON", "OP", '-'],
+				["PYTHON", "OP", '-'],
+				["PYTHON", "OP", '-'],
+				["NOHTYP", "BAREWORD", '___'],
+				["PYTHON", "OP", '+'],
+				["PYTHON", "OP", '+'],
+				["PYTHON", "OP", '+'],
+				["PYTHON", "OP", '**'],
+				["PYTHON", "OP", '*'],
+			],[
+				["PYTHON", "INT", '123'],
+				["NOHTYP", "BAREWORD", 'abc'],
+				["NOHTYP", "BAREWORD", 'abc123'],
+			],[
+				["NOHTYP", "BAREWORD", '_leading'],
+				["NOHTYP", "BAREWORD", 'trailing_'],
+			],[
+				["PYTHON", "STR", 'f"1"'],
+				["PYTHON", "STR", 'f"2"'],
+				["PYTHON", "STR", 'f"3"'],
+			],[
+				["PYTHON", "INT", '1'],
+				["PYTHON", "STR", '"2"'],
+				["PYTHON", "INT", '3'],
+				["PYTHON", "STR", '"4"'],
+				["PYTHON", "INT", '5'],
+			],[
+				["NOHTYP", "BAREWORD", 'abc'],
+				["PYTHON", "STR", """'def"ghi'"""],
+				["NOHTYP", "BAREWORD", 'jkl'],
+			],[
+				["PYTHON", "STR", '""""""'],
+			],[
+				["PYTHON", "STR", ''''''''],
+			],[
+				["PYTHON", "STR", '""""""'],
+				["GENERIC", "UNKNOWN", '"'],
+			],[
+				["PYTHON", "STR", "''''''"],
+				["GENERIC", "UNKNOWN", "'"],
+			],[
+				["GENERIC", "UNKNOWN", 'r"""'],
+			],[
+				["GENERIC", "UNKNOWN", 'r''''],
+			],[
+				["GENERIC", "UNKNOWN", 'fr"""'],
+			],[
+				["GENERIC", "UNKNOWN", 'rf"""'],
+			],[
+				["GENERIC", "UNKNOWN", '""""a'],
+			],[
+				["GENERIC", "UNKNOWN", ''''''],
+			],[
+				["GENERIC", "UNKNOWN", 'r""""a'],
+			],[
+				["GENERIC", "UNKNOWN", 'f'''''],
+				]
+			]
 	def one(self):
 		for series in self.input.one:
 			res: LexObjectSeries = Identify.identify_series(series)
@@ -551,8 +800,8 @@ class Lexer(unittest.TestCase):
 				if modes.verbmode: print("\n")
 				print(res)
 				(fails, failed, fcount) = Identify.has_error_los(res)
-				if failed:
-					print(f"Failure observed:\n\tCount: {fcount}\n\t{fails}")
+				# if failed:
+				# 	print(f"Failure observed:\n\tCount: {fcount}\n\t{fails}")
 
 if __name__ == "__main__":
 	args = argv
