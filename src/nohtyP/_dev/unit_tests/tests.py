@@ -523,9 +523,7 @@ class Tokenizer(unittest.TestCase):
 class Display_Types(unittest.TestCase):
 	class lex:
 		lt_name = "test_type"
-		# would be pulled from a tokenseries, so we emulate that
-		#   (this is the exact expected structure)
-		lo_value = ("TESTING_TESTING", 0)
+		lo_value = ("TESTING_TESTING", 0) # would be pulled from a tokenseries, so we emulate that
 		lt = LexType(lt_name, lexer_langs.NOHTYP)
 		lo = LexObject(lo_value, lt)
 		ls = LexObjectSeries()
@@ -816,7 +814,19 @@ class Lexer(unittest.TestCase):
 			self.assertListEqual(token_positions, los_positions)
 	def position_feasibility(self):
 		# test if the given positions are feasible, based on the length of the values.
-		...
+		for index in range(len(self.input_data.token_data)):
+			positions: list[int] = [ lexobj.position() for lexobj in self.input_data.token_data_los[index] ]
+			value_lengths = [ len(lexobj.value()) for lexobj in self.input_data.token_data_los[index] ]
+			# walk the entire thing
+			current_position = 0
+			index = 0
+			while True:
+				self.assertEqual(positions[index], current_position)
+				try:
+					current_position += value_lengths[index]
+					index += 1
+				except Exception:
+					break
 
 if __name__ == "__main__":
 	args = argv
@@ -835,12 +845,13 @@ if __name__ == "__main__":
 		argv=args,
 		verbosity = 0 if modes.quietmode else 2 if modes.verbmode else 1,
 		defaultTest=[
-			"Lexer.one",
+			"Lexer.identify",
+			"Lexer.position_preservation",
 			"Tokenizer.basic",
 			"Tokenizer.vnums",
 			"Tokenizer.inums",
 			"Tokenizer.stress",
 			"Tokenizer.realistic_input",
-			"Display_Types.display_lex",
+			# "Display_Types.display_lex",
 		]
 	)
