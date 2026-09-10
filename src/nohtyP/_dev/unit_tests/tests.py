@@ -807,7 +807,9 @@ class Lexer(unittest.TestCase):
 			self.assertListEqual(self.input.expected_identify[series], res_ls)
 	def position_preservation(self):
 		# test if positions are preserved when converting from tokenseries to lexobjectseries
-		...
+		token_positions: list[int] = self.input.identify[27]._positions_only()
+		los_positions = [ lexobj.position() for lexobj in Identify.identify_series(self.input.identify[27]) ]
+		self.assertListEqual(token_positions, los_positions)
 	def position_feasibility(self):
 		# test if the given positions are feasible, based on the length of the values.
 		...
