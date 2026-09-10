@@ -1,5 +1,6 @@
 import unittest
 from sys import argv
+from itertools import accumulate
 # from nohtyP.lexer.identifier import TT
 from nohtyP._impl.global_utilities.decorators import *
 from nohtyP._impl.global_utilities.types import AnyNohtyPSyntaxError
@@ -812,21 +813,6 @@ class Lexer(unittest.TestCase):
 			token_positions: list[int] = self.input_data.token_data[index]._positions_only()
 			los_positions: list[int] = [ lexobj.position() for lexobj in self.input_data.token_data_los[index] ]
 			self.assertListEqual(token_positions, los_positions)
-	def position_feasibility(self):
-		# test if the given positions are feasible, based on the length of the values.
-		for index in range(len(self.input_data.token_data)):
-			positions: list[int] = [ lexobj.position() for lexobj in self.input_data.token_data_los[index] ]
-			value_lengths = [ len(lexobj.value()) for lexobj in self.input_data.token_data_los[index] ]
-			# walk the entire thing
-			current_position = 0
-			index = 0
-			while True:
-				self.assertEqual(positions[index], current_position)
-				try:
-					current_position += value_lengths[index]
-					index += 1
-				except Exception:
-					break
 
 if __name__ == "__main__":
 	args = argv
@@ -845,13 +831,13 @@ if __name__ == "__main__":
 		argv=args,
 		verbosity = 0 if modes.quietmode else 2 if modes.verbmode else 1,
 		defaultTest=[
-			"Lexer.identify",
-			"Lexer.position_preservation",
 			"Tokenizer.basic",
 			"Tokenizer.vnums",
 			"Tokenizer.inums",
 			"Tokenizer.stress",
 			"Tokenizer.realistic_input",
 			# "Display_Types.display_lex",
+			"Lexer.identify",
+			"Lexer.position_preservation",
 		]
 	)

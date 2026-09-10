@@ -5,7 +5,6 @@ from sys import argv
 test_set = [
 	"Lexer.identify",
 	"Lexer.position_preservation",
-	# "Lexer.identify",
 ]
 
 if __name__ == "__main__":
