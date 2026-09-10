@@ -545,7 +545,7 @@ class Lexer(unittest.TestCase):
 	class input_data:
 		token_data: list[TokenSeries] = [tokenize_str(s) for s in Tokenizer.stress_test.strings]
 		token_data_los: list[LexObjectSeries] = [] # given data below bc it depends on token_data
-		expected_identify: list[list[list[str]]] = [
+		expected_los_data: list[list[list[str]]] = [
 			[
 				["NOHTYP", "BAREWORD", 'a'],
 				["PYTHON", "OP", '+'],
@@ -807,7 +807,7 @@ class Lexer(unittest.TestCase):
 				(fails, failed, fcount) = Identify.has_error_los(res)
 				if failed:
 					print(f"Failure observed:\n\tCount: {fcount}\n\t{fails}")
-			self.assertListEqual(self.input_data.expected_identify[index], res_ls)
+			self.assertListEqual(self.input_data.expected_los_data[index], res_ls)
 	def position_preservation(self):
 		# test if positions are preserved when converting from tokenseries to lexobjectseries
 		for index in range(len(self.input_data.token_data)):
