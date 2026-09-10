@@ -542,8 +542,9 @@ class Display_Types(unittest.TestCase):
 
 @test
 class Lexer(unittest.TestCase):
-	class input:
-		identify: list[TokenSeries] = [tokenize_str(s) for s in Tokenizer.stress_test.strings]
+	class input_data:
+		token_data: list[TokenSeries] = [tokenize_str(s) for s in Tokenizer.stress_test.strings]
+		token_data_los: list[LexObjectSeries] = [] # given data below bc it depends on token_data
 		expected_identify: list[list[list[str]]] = [
 			[
 				["NOHTYP", "BAREWORD", 'a'],
@@ -793,10 +794,12 @@ class Lexer(unittest.TestCase):
 				["GENERIC", "UNKNOWN", "f''''"],
 				]
 			]
+	#  define token_data_los
+	input_data.token_data_los = [ Identify.identify_series(series) for series in input_data.token_data ]
 	def identify(self):
 		# correct identification of strings
-		for series in range(len(self.input.identify)):
-			res: LexObjectSeries = Identify.identify_series(self.input.identify[series])
+		for index in range(len(self.input_data.token_data_los)):
+			res: LexObjectSeries = self.input_data.token_data_los[index]
 			res_ls: list[list[str, str, str]] = res.format_list(False)
 			if modes.showmode:
 				if modes.verbmode: print("\n")
@@ -804,12 +807,12 @@ class Lexer(unittest.TestCase):
 				(fails, failed, fcount) = Identify.has_error_los(res)
 				if failed:
 					print(f"Failure observed:\n\tCount: {fcount}\n\t{fails}")
-			self.assertListEqual(self.input.expected_identify[series], res_ls)
+			self.assertListEqual(self.input_data.expected_identify[index], res_ls)
 	def position_preservation(self):
 		# test if positions are preserved when converting from tokenseries to lexobjectseries
-		for series in range(len(self.input.identify)):
-			token_positions: list[int] = self.input.identify[series]._positions_only()
-			los_positions: list[int] = [ lexobj.position() for lexobj in Identify.identify_series(self.input.identify[series]) ]
+		for index in range(len(self.input_data.token_data)):
+			token_positions: list[int] = self.input_data.token_data[index]._positions_only()
+			los_positions: list[int] = [ lexobj.position() for lexobj in self.input_data.token_data_los[index] ]
 			self.assertListEqual(token_positions, los_positions)
 	def position_feasibility(self):
 		# test if the given positions are feasible, based on the length of the values.
