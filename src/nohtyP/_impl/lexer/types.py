@@ -57,12 +57,12 @@ class lexer_langs:
 @api_level(0)
 class LexType:
 	def __init__(self, name :str, lang :lexer_langs = None) -> None:
-		self.__name__ :str = name
-		self.__lang__ :lexer_langs = lang
+		self._name :str = name
+		self._lang :lexer_langs = lang
 	def __repr__(self) -> str:
-		return f"LexType({self.__name__}), lang={self.__lang__}"
+		return f"LexType({self._name}), lang={self._lang}"
 	def __str__(self) -> str:
-		return f"{self.__lang__}[{self.__name__}]"
+		return f"{self._lang}[{self._name}]"
 
 @api_level(0)
 class LexObject:
@@ -113,3 +113,12 @@ class LexObjectSeries:
 	# iteration support
 	def __getitem__(self, key:int): return self.objectlist[key] # pass on to a tuple
 	def __iter__(self): yield from self.objectlist # pass on to a tuple
+	# added for testing, might be used more
+	def format_list(self, include_position: bool = False) -> list[list[str, str, str]] | list[tuple[str, str, str, int]]:
+		return [
+			[ str(object.ltype._lang), object.ltype._name, object.value() ]
+			for object in self.objectlist
+		] if not include_position else [
+			( str(object.ltype._lang), object.ltype._name, object.value(), object.position() )
+			for object in self.objectlist
+		]

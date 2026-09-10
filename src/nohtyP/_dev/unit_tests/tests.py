@@ -543,8 +543,8 @@ class Display_Types(unittest.TestCase):
 @test
 class Lexer(unittest.TestCase):
 	class input:
-		one: list[TokenSeries] = [tokenize_str(s) for s in Tokenizer.stress_test.strings]
-		expected_one: list[list[list[str]]] = [
+		identify: list[TokenSeries] = [tokenize_str(s) for s in Tokenizer.stress_test.strings]
+		expected_identify: list[list[list[str]]] = [
 			[
 				["NOHTYP", "BAREWORD", 'a'],
 				["PYTHON", "OP", '+'],
@@ -632,13 +632,13 @@ class Lexer(unittest.TestCase):
 			],[
 				["PYTHON", "STR", '"quoted"'],
 			],[
-				["PYTHON", "STR", "single-quoted'"],
+				["PYTHON", "STR", "'single-quoted'"],
 			],[
 				["PYTHON", "STR", '''"mix'ed"'''],
 			],[
 				["NOHTYP", "BAREWORD", 'a'],
 				["PYTHON", "STR", '""'],
-				["PYTHON", "STR", 'b'''],
+				["PYTHON", "STR", "b''"],
 				["NOHTYP", "BAREWORD", 'c'],
 			],[
 				["NOHTYP", "BAREWORD", 'x'],
@@ -716,7 +716,7 @@ class Lexer(unittest.TestCase):
 				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(‮)'],
 				["NOHTYP", "BAREWORD", 'abc'],
 			],[
-				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤()'],
+				["GENERIC", "TOKENIZER_FAIL", '¤__NOHTYP_NOT_TOKENIZABLE__¤(\ufeff)'],
 				["NOHTYP", "BAREWORD", 'bom'],
 			],[
 				["PYTHON", "OP", '<<'],
@@ -768,7 +768,7 @@ class Lexer(unittest.TestCase):
 			],[
 				["PYTHON", "STR", '""""""'],
 			],[
-				["PYTHON", "STR", ''''''''],
+				["PYTHON", "STR", "''''''"],
 			],[
 				["PYTHON", "STR", '""""""'],
 				["GENERIC", "UNKNOWN", '"'],
@@ -778,7 +778,7 @@ class Lexer(unittest.TestCase):
 			],[
 				["GENERIC", "UNKNOWN", 'r"""'],
 			],[
-				["GENERIC", "UNKNOWN", 'r''''],
+				["GENERIC", "UNKNOWN", "r'''"],
 			],[
 				["GENERIC", "UNKNOWN", 'fr"""'],
 			],[
@@ -786,22 +786,31 @@ class Lexer(unittest.TestCase):
 			],[
 				["GENERIC", "UNKNOWN", '""""a'],
 			],[
-				["GENERIC", "UNKNOWN", ''''''],
+				["GENERIC", "UNKNOWN", "''''"],
 			],[
 				["GENERIC", "UNKNOWN", 'r""""a'],
 			],[
-				["GENERIC", "UNKNOWN", 'f'''''],
+				["GENERIC", "UNKNOWN", "f''''"],
 				]
 			]
-	def one(self):
-		for series in self.input.one:
-			res: LexObjectSeries = Identify.identify_series(series)
+	def identify(self):
+		# correct identification of strings
+		for series in range(len(self.input.identify)):
+			res: LexObjectSeries = Identify.identify_series(self.input.identify[series])
+			res_ls: list[list[str, str, str]] = res.format_list(False)
 			if modes.showmode:
 				if modes.verbmode: print("\n")
 				print(res)
 				(fails, failed, fcount) = Identify.has_error_los(res)
-				# if failed:
-				# 	print(f"Failure observed:\n\tCount: {fcount}\n\t{fails}")
+				if failed:
+					print(f"Failure observed:\n\tCount: {fcount}\n\t{fails}")
+			self.assertListEqual(self.input.expected_identify[series], res_ls)
+	def position_preservation(self):
+		# test if positions are preserved when converting from tokenseries to lexobjectseries
+		...
+	def position_feasibility(self):
+		# test if the given positions are feasible, based on the length of the values.
+		...
 
 if __name__ == "__main__":
 	args = argv

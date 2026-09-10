@@ -3,7 +3,7 @@ from .tests import *
 from sys import argv
 
 test_set = [
-	"Lexer.one",
+	"Lexer.identify",
 ]
 
 if __name__ == "__main__":
