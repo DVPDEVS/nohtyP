@@ -69,17 +69,17 @@ class LexObject:
 	"""
 	NohtyP class for Lexical Objects
 	"""
-	__slots__ = ["ltype", "__value__", "__issue_list__", ]
+	__slots__ = ["_ltype", "__value__", "__issue_list__", ]
 	def __init__(self, value :tuple[str,int], ltype :LexType) -> None:
-		self.ltype :LexType = ltype
+		self._ltype :LexType = ltype
 		self.__value__ :tuple[str, int] = value
 		self.__issue_list__ :tuple[str|AnyNohtyPSyntaxError] = ()
 	# strings
-	def __repr__(self) -> str: return f"LexObject('{self.value()}',position={self.position()}), type=({self.ltype.__repr__()})"
-	def __str__(self) -> str:  return f"{self.ltype}['{self.value()}']"
+	def __repr__(self) -> str: return f"LexObject('{self.value()}',position={self.position()}), type=({self._ltype.__repr__()})"
+	def __str__(self) -> str:  return f"{self._ltype}['{self.value()}']"
 	# issues
 	## add
-	def __and__(self, issue:str|AnyNohtyPSyntaxError) ->   None:   self.__issue_list__ += tuple([issue])
+	def __and__(self, issue:str|AnyNohtyPSyntaxError) ->   None: self.__issue_list__ += tuple([issue])
 	def add_issue(self, issue:str|AnyNohtyPSyntaxError) -> None: self & issue # forward to and dunder above
 	## get
 	def __or__(self, *args, **kwargs) -> tuple[str|AnyNohtyPSyntaxError]: return self.__issue_list__
@@ -116,9 +116,9 @@ class LexObjectSeries:
 	# added for testing, might be used more
 	def format_list(self, include_position: bool = False) -> list[list[str, str, str]] | list[tuple[str, str, str, int]]:
 		return [
-			[ str(object.ltype._lang), object.ltype._name, object.value() ]
+			[ str(object._ltype._lang), object._ltype._name, object.value() ]
 			for object in self.objectlist
 		] if not include_position else [
-			( str(object.ltype._lang), object.ltype._name, object.value(), object.position() )
+			( str(object._ltype._lang), object._ltype._name, object.value(), object.position() )
 			for object in self.objectlist
 		]

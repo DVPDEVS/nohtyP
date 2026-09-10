@@ -1,6 +1,7 @@
 from __future__ import annotations
 from nohtyP._impl.global_utilities.decorators import *
 from nohtyP._impl.global_utilities.types import AnyNohtyPSyntaxError
+from nohtyP._impl.lexer.types import *
 
 @api_level(0)
 class SyntaxObject:
@@ -80,40 +81,61 @@ class SyntaxObjectList:
 
 @api_level(0)
 class ParseToken:
-	def __init__(self, value: str, object_type: SyntaxObjectList) -> None:
-		self.__type__ :SyntaxObjectList = object_type
-		self.__value__ :str = value
-		self.__issue_list__ :tuple[str|AnyNohtyPSyntaxError] = ()
-	def __repr__(self) -> str:
-		return f"ParseToken('{self.__value__}'), type=({self.__type__.__repr__()})"
-	def __str__(self) -> str:
-		return f"{self.__type__}['{self.__value__}']"
-	def __and__(self, issue:str|AnyNohtyPSyntaxError) -> None:
-		self.__issue_list__ += tuple([issue])
-	def add_issue(self, issue:str|AnyNohtyPSyntaxError) -> None:
-		# forward to iand dunder
-		self &= issue
-	def issues(self) -> tuple[str|AnyNohtyPSyntaxError]:
-		return self.__issue_list__
+	"""
+	NohtyP class for Parsed Tokens
+	"""
+	__slots__ = ["_sotype", "__value__", "__issue_list__", ]
+	def __init__(self, value :LexObject, ltype :SyntaxObjectList) -> None:
+		self._sotype :SyntaxObjectList = ltype
+		self.__value__ :LexObject = value
+		self.__issue_list__ :tuple[str|AnyNohtyPSyntaxError] = value |0
+		self.__value__.__issue_list__ = () # reset internal issue list
+	# strings
+	# TODO: update dunders below to reflect actual new data
+	def __repr__(self) -> str: return f"LexObject('{self.value()}',position={self.position()}), type=({self.__value__._ltype.__repr__()})"
+	def __str__(self) -> str:  return f"{self.__value__._ltype}['{self.value()}']"
+	# issues
+	## add
+	def __and__(self, issue:str|AnyNohtyPSyntaxError) ->   None: self.__issue_list__ += tuple([issue])
+	def add_issue(self, issue:str|AnyNohtyPSyntaxError) -> None: self & issue # forward to and dunder above
+	## get
+	def __or__(self, *args, **kwargs) -> tuple[str|AnyNohtyPSyntaxError]: return self.__issue_list__
+	def get_issues(self) -> tuple[str|AnyNohtyPSyntaxError]:              return self |0 # call or dunder above
+	# attribs
+	def value(self) -> str: return self.__value__.value()
+	def position(self) -> int: return self.__value__.position()
 
 @api_level(0)
 class ParseTokenSeries:
-	# fully custom implementation i think
-	def __init__(self) -> None:
-		self.__tokens__ :dict[ParseToken, str|dict] = {}
-	
-	# def __init__(self, value :str, ltype :LexType) -> None:
-	# 	self.ltype :LexType = ltype
-	# 	self.__value__ :str = value
-	# 	self.__issue_list__ :tuple[str|AnyNohtyPSyntaxError] = ()
-	# def __repr__(self) -> str:
-	# 	return f"LexObject('{self.__value__}'), type=({self.ltype.__repr__()})"
-	# def __str__(self) -> str:
-	# 	return f"{self.ltype}['{self.__value__}']"
-	# def __and__(self, issue:str|AnyNohtyPSyntaxError) -> None:
-	# 	self.__issue_list__ += tuple([issue])
-	# def add_issue(self, issue:str|AnyNohtyPSyntaxError) -> None:
-	# 	# forward to iand dunder
-	# 	self &= issue
-	# def issues(self) -> tuple[str|AnyNohtyPSyntaxError]:
-	# 	return self.__issue_list__
+	"""
+	NohtyP class for holding a series of `ParseToken`
+	"""
+	__slots__ = ["tokenlist",]
+	def __init__(self):
+		self.tokenlist :tuple[ParseToken] = []
+		pass
+	# object handling
+	def append(self, obj :ParseToken) -> None: self.tokenlist.append(obj)
+	# strings
+	def __str__(self) -> None:
+		string = ""
+		for i in range(len(self.tokenlist)):
+			string += f"  {i}:\t{self.tokenlist[i]}\n"
+		return string[:-1]
+	def __repr__(self) -> None:
+		string = "LexObjectSeries:\n"
+		for i in range(len(self.tokenlist)):
+			string += f" {i}:\t{self.tokenlist[i].__repr__()}\n"
+		return string[0:-1]
+	# iteration support
+	def __getitem__(self, key:int): return self.tokenlist[key] # pass on to a tuple
+	def __iter__(self): yield from self.tokenlist # pass on to a tuple
+	# added for testing, might be used more
+	def format_list(self, include_position: bool = False) -> list[list[str, str, str]] | list[tuple[str, str, str, int]]:
+		return [
+			[ str(object._sotype._lang), object._sotype._name, object.value() ]
+			for object in self.tokenlist
+		] if not include_position else [
+			( str(object._sotype._lang), object._sotype._name, object.value(), object.position() )
+			for object in self.tokenlist
+		]
