@@ -21,8 +21,7 @@ dynamic = [
 name = "nohtyP"
 description = "nohtyP language parser and transpiler"
 requires-python = ">=3.10"
-dependencies = [
-]
+dependencies = []
 authors = [
     {name = "DVP-F/Carnx", email = "dvpf@duck.com"},
 ]
@@ -60,7 +59,6 @@ keywords = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=9.0.0",
     "pympler>=1.0",
     "numpy>=2.5.0",
 ]

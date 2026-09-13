@@ -1,5 +1,4 @@
 from nohtyP._buildinfo import BUILD_DATA
-from re import search
 """
 Construct version numbers based on _buildinfo.py  
 
@@ -50,9 +49,9 @@ class VERSIONS:
     # static singleton versions. follow X.X.X+stage
     #* tbu with versions embedded in the actual modules
     BUILD_DATE           :str|None = f"{_split[0][6:]}.{_split[0][4:6]}.{_split[0][0:4]} (ddMMyyyy)"
-    PACKAGE_VERSION      :str|None = __version__[9:]
+    PACKAGE_VERSION      :str|None = __version__[9:] if not __version__.startswith("1!") else __version__[2:]
     SYNTAX_VERSION       :str|None = "0.0.1+beta"
-    TOKENIZER_VERSION    :str|None = "0.0.1+beta"
+    TOKENIZER_VERSION    :str|None = "0.0.1"
     LEXER_IDENT_VERSION  :str|None = "0.0.1+beta"
     LEXER_VAL_VERSION    :str|None = None
     PARSER_VERSION       :str|None = None
@@ -60,5 +59,5 @@ class VERSIONS:
     TRANSPILER_VERSION   :str|None = None
     API_INTERNAL_VERSION :str|None = None
     API_PUBLIC_VERSION   :str|None = None
-    BUILD_SCRIPT_VERSION :str|None = "0.0.1+beta"
+    BUILD_SCRIPT_VERSION :str|None = "0.0.1"
 

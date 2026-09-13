@@ -77,6 +77,7 @@ class ContentHook(BuildHookInterface):
                     include_file(file)
             include_file(Path("build_hooks.py"))
             include_file(Path("pyproject.toml"))
+            # TODO: add .vscode/settings.json for test config?
         # -------------------------
         # WHEEL (PROD)
         # -------------------------

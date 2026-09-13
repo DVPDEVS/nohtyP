@@ -80,42 +80,47 @@ class SyntaxObjectList:
 	# add whatever structures here, like comprehensions, dicts, typedecls, classes
 
 @api_level(0)
-class ParseToken:
+class ParseObject:
 	"""
-	NohtyP class for Parsed Tokens
+	NohtyP class for Parsed groups of `LexObjects` matching a given `SyntaxObject` structure
 	"""
 	__slots__ = ["_sotype", "__value__", "__issue_list__", ]
-	def __init__(self, value :LexObject, ltype :SyntaxObjectList) -> None:
-		self._sotype :SyntaxObjectList = ltype
-		self.__value__ :LexObject = value
-		self.__issue_list__ :tuple[str|AnyNohtyPSyntaxError] = value |0
-		self.__value__.__issue_list__ = () # reset internal issue list
+	def __init__(self) -> None:
+		self._sotype :SyntaxObjectList|None = None # NOP string
+		self.objectlist :tuple[LexObject] = () # any non-zero amount
+		self.__issue_list__ :tuple[str|AnyNohtyPSyntaxError] = ()
 	# strings
-	# TODO: update dunders below to reflect actual new data
-	def __repr__(self) -> str: return f"LexObject('{self.value()}',position={self.position()}), type=({self.__value__._ltype.__repr__()})"
-	def __str__(self) -> str:  return f"{self.__value__._ltype}['{self.value()}']"
+	def __str__(self) -> str: return f"{self._sotype}[{self.objectlist}]"
+	def __repr__(self) -> str:
+		string = f"ParseObject: (type={self._sotype.__repr__()})\n"
+		for i in range(len(self.objectlist)): string += f" {i}:\t{self.objectlist[i].__repr__()}\n"
+		return string[0:-1]
+	# iteration support
+	def __getitem__(self, key:int): return self.objectlist[key] # pass on to a tuple
+	def __iter__(self): yield from self.objectlist # pass on to a tuple
 	# issues
 	## add
 	def __and__(self, issue:str|AnyNohtyPSyntaxError) ->   None: self.__issue_list__ += tuple([issue])
 	def add_issue(self, issue:str|AnyNohtyPSyntaxError) -> None: self & issue # forward to and dunder above
 	## get
-	def __or__(self, *args, **kwargs) -> tuple[str|AnyNohtyPSyntaxError]: return self.__issue_list__
-	def get_issues(self) -> tuple[str|AnyNohtyPSyntaxError]:              return self |0 # call or dunder above
+	def __or__(self, *args, **kwargs) -> dict[str|int,tuple[str|AnyNohtyPSyntaxError]]:
+		return {"main":self.__issue_list__}.update({index:self.objectlist[index]|0 for index in range(len(self.objectlist))})
+	def get_issues(self) -> dict[str|int,tuple[str|AnyNohtyPSyntaxError]]: return self |0 # call the above or dunder
 	# attribs
-	def value(self) -> str: return self.__value__.value()
-	def position(self) -> int: return self.__value__.position()
+	...
 
 @api_level(0)
-class ParseTokenSeries:
+class ParseObjectSeries:
 	"""
-	NohtyP class for holding a series of `ParseToken`
+	NohtyP class for holding a series of `ParseObject`
 	"""
+	# TODO: update dunders below to reflect actual new data
 	__slots__ = ["tokenlist",]
 	def __init__(self):
-		self.tokenlist :tuple[ParseToken] = []
+		self.tokenlist :tuple[ParseObject] = []
 		pass
 	# object handling
-	def append(self, obj :ParseToken) -> None: self.tokenlist.append(obj)
+	def append(self, obj :ParseObject) -> None: self.tokenlist.append(obj)
 	# strings
 	def __str__(self) -> None:
 		string = ""

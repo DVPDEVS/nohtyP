@@ -100,12 +100,12 @@ class LexObjectSeries:
 	# object handling
 	def append(self, obj :LexObject) -> None: self.objectlist.append(obj)
 	# strings
-	def __str__(self) -> None:
+	def __str__(self) -> str:
 		string = ""
 		for i in range(len(self.objectlist)):
 			string += f"  {i}:\t{self.objectlist[i]}\n"
 		return string[:-1]
-	def __repr__(self) -> None:
+	def __repr__(self) -> str:
 		string = "LexObjectSeries:\n"
 		for i in range(len(self.objectlist)):
 			string += f" {i}:\t{self.objectlist[i].__repr__()}\n"
