@@ -5,216 +5,57 @@ from nohtyP._impl.lexer.types import *
 @regex
 @api_level(0)
 class TT:
-	ELEM: dict[str, tuple[str, LexType]] = {
+	ELEM: dict[LexTypeList, str] = {
 		#! nohtyP elements
-		"SEMICOLON" :(
-			r";", # shouldnt require boundaries but they wont hurt either
-			LexType("SEMICOLON", lexer_langs.NOHTYP) ), #? ;
-		"BAREWORD" :(
-			r"^(?![0-9])\w+$", #* sauce: https://regex101.com/r/L0MnX3/3 
-			LexType("BAREWORD", lexer_langs.NOHTYP) ), #? <anything>
-		"TYPE_DECLARATION" :(
-			r"^\*?(?![0-9])\w+\:$", #* sauce: https://regex101.com/r/lhwcEL/2 
-			LexType("TYPE_DECLARATION", lexer_langs.NOHTYP) ), #? optional * followed by a bareword and a :
-		"CBRACKET_LEFT" :(
-			r"\{",
-			LexType("CBRACKET_LEFT", lexer_langs.NOHTYP) ), #? {
-		"CBRACKET_RIGHT" :(
-			r"\}",
-			LexType("CBRACKET_RIGHT", lexer_langs.NOHTYP) ), #? }
-		"BRACKET_LEFT" :(
-			r"\[",
-			LexType("BRACKET_LEFT", lexer_langs.NOHTYP) ), #? [
-		"BRACKET_RIGHT" :(
-			r"\]",
-			LexType("BRACKET_RIGHT", lexer_langs.NOHTYP) ), #? ]
-		"CALL" :(
-			r"\(\)",
-			LexType("CALL", lexer_langs.PYTHON) ), #? ()
-		"PAREN_LEFT" :(
-			r"\(",
-			LexType("PAREN_LEFT", lexer_langs.NOHTYP) ), #? (
-		"PAREN_RIGHT" :(
-			r"\)",
-			LexType("PAREN_RIGHT", lexer_langs.NOHTYP) ), #? )
-		"ASS_EQ" :(
-			r"=",
-			LexType("ASS_EQ", lexer_langs.NOHTYP) ), #? =
-		"FLOW_Q" :(
-			r"\?",
-			LexType("FLOW_Q", lexer_langs.NOHTYP) ), #? ?
-		"FLOW_HASH_Q" :(
-			r"#\?",
-			LexType("FLOW_HASH_Q", lexer_langs.NOHTYP) ), #? #?
-		"FLOW_WHILE" :(
-			r"\?=",
-			LexType("FLOW_WHILE", lexer_langs.NOHTYP) ), #? ?=
-		"SYMBOL_AT" :(
-			r"@",
-			LexType("SYMBOL_AT", lexer_langs.NOHTYP) ), #? @
-		"TILDE" :(
-			r"~",
-			LexType("TILDE", lexer_langs.NOHTYP) ), #? ~
-		"CONDITION_AST_TILDE" :(
-			r"\*~",
-			LexType("CONDITION_AST_TILDE", lexer_langs.NOHTYP) ), #? *~
-		"ARROW_LEFT" :(
-			r"<-",
-			LexType("ARROW_LEFT", lexer_langs.NOHTYP) ), #? <-
-		"ARROW_RIGHT" :(
-			r"->",
-			LexType("ARROW_RIGHT", lexer_langs.NOHTYP) ), #? ->
-		"EXCEPT_STORE" :(
-			r"\b(?<!\.)\*\$[\w\.]*(?!\.+)\b",
-			LexType("EXCEPT_STORE", lexer_langs.NOHTYP) ), #? *$<insert var>
-		"EXCEPT_GET" :(
-			r"\b(?<!\.)\$[\w\.]*(?!\.+)\b",
-			LexType("EXCEPT_GET", lexer_langs.NOHTYP) ), #? $<insert var>
-		"EXCEPT_HANDLE" :(
-			r"\*\?",
-			LexType("EXCEPT_HANDLE", lexer_langs.NOHTYP) ), #? *?
-		"EXCEPT_SET" :(
-			r"(?<!\.)\*set\ [-+]e(?!\.)", #* sauce: https://regex101.com/r/3QG7Y0/1 # case sensitive
-			LexType("EXCEPT_SET", lexer_langs.NOHTYP) ), #? *set -e/+e
-		"KW_FETCH" :(
-			r"(?<!\.)fetch(?!\.)", # case sensitive
-			LexType("KW_FETCH", lexer_langs.NOHTYP) ), #? fetch
-		"KW_MATCH" :(
-			r"(?<!\.)match(?!\.)", # case sensitive
-			LexType("KW_MATCH", lexer_langs.NOHTYP) ), #? match
+		LexTypeList.SEMICOLON           : r";", # shouldnt require boundaries but they wont hurt either #? ;
+		LexTypeList.BAREWORD            : r"^(?![0-9])\w+$",                #? <anything>                                #* sauce: https://regex101.com/r/L0MnX3/3 
+		LexTypeList.TYPE_DECLARATION    : r"^\*?(?![0-9])\w+\:$",           #? optional * followed by a bareword and a : #* sauce: https://regex101.com/r/lhwcEL/2 
+		LexTypeList.CBRACKET_LEFT       : r"\{",                            #? {
+		LexTypeList.CBRACKET_RIGHT      : r"\}",                            #? }
+		LexTypeList.BRACKET_LEFT        : r"\[",                            #? [
+		LexTypeList.BRACKET_RIGHT       : r"\]",                            #? ]
+		LexTypeList.CALL                : r"\(\)",                          #? ()
+		LexTypeList.PAREN_LEFT          : r"\(",                            #? (
+		LexTypeList.PAREN_RIGHT         : r"\)",                            #? )
+		LexTypeList.ASS_EQ              : r"=",                             #? =
+		LexTypeList.FLOW_Q              : r"\?",                            #? ?
+		LexTypeList.FLOW_HASH_Q         : r"#\?",                           #? #?
+		LexTypeList.FLOW_WHILE          : r"\?=",                           #? ?=
+		LexTypeList.SYMBOL_AT           : r"@",                             #? @
+		LexTypeList.TILDE               : r"~",                             #? ~
+		LexTypeList.CONDITION_AST_TILDE : r"\*~",                           #? *~
+		LexTypeList.ARROW_LEFT          : r"<-",                            #? <-
+		LexTypeList.ARROW_RIGHT         : r"->",                            #? ->
+		LexTypeList.EXCEPT_STORE        : r"\b(?<!\.)\*\$[\w\.]*(?!\.+)\b", #? *$<insert var>
+		LexTypeList.EXCEPT_GET          : r"\b(?<!\.)\$[\w\.]*(?!\.+)\b",   #? $<insert var>
+		LexTypeList.EXCEPT_HANDLE       : r"\*\?",                          #? *?
+		LexTypeList.EXCEPT_SET          : r"(?<!\.)\*set\ [-+]e(?!\.)",     #? *set -e/+e # case sensitive               #* sauce: https://regex101.com/r/3QG7Y0/1 
+		LexTypeList.KW_FETCH            : r"(?<!\.)fetch(?!\.)",            #? fetch      # case sensitive
+		LexTypeList.KW_MATCH            : r"(?<!\.)match(?!\.)",            #? match      # case sensitive
 		#! Python elements
 		# --- literals ---
-		# Native int                 -> 123, 0, -42, 0b1010, 0o77, 0xFF
-		"INT" :(
-			r"[+-]?(?:0b[01_]+|0o[0-7_]+|0x[\da-fA-F_]+|\d[\d_]*)(?![\w.])" , 
-			LexType("INT", lexer_langs.PYTHON) ),
-		# Native float               -> 1.23, .5, 10., 1e10, -3.4e-2
-		"FLOAT" :(
-			r"[+-]?(?:\d[\d_]*\.\d[\d_]*|\.\d[\d_]*|\d[\d_]*\.)(?:[eE][+-]?\d+)?" , 
-			LexType("FLOAT", lexer_langs.PYTHON) ),
-		# Native bool                -> True, False
-		"BOOL" :(
-			r"\b(?:True|False)\b" , 
-			LexType("BOOL", lexer_langs.PYTHON) ),
-		# NoneType                   -> None
-		"NONE" :(
-			r"\bNone\b" , 
-			LexType("NONE", lexer_langs.PYTHON) ),
-		# Native bytes               -> b"bytes", br"raw"
-		#* Covered by native string
-		# Native bytearray           -> bytearray(b"bytes")
-		#* Just native bytes flowed into bytearray()
-		# Native str                 -> "text", 'text', """text""", r"raw", f"format"
-		"STR" :(
-			'^(rf|fr|r|f|u|b|br|rb)?(\\"\\"\\"|\'\'\'|\\"|\'|´|`)((?!\\2)(.*)\\2|\\2)$' , 
-			#* sauce : https://regex101.com/r/Hhihv5/5 
-			LexType("STR", lexer_langs.PYTHON) ),
+		LexTypeList.INT   : r"[+-]?(?:0b[01_]+|0o[0-7_]+|0x[\da-fA-F_]+|\d[\d_]*)(?![\w.])",             # Native int   -> 123, 0, -42, 0b1010, 0o77, 0xFF
+		LexTypeList.FLOAT : r"[+-]?(?:\d[\d_]*\.\d[\d_]*|\.\d[\d_]*|\d[\d_]*\.)(?:[eE][+-]?\d+)?",       # Native float -> 1.23, .5, 10., 1e10, -3.4e-2
+		LexTypeList.BOOL  : r"\b(?:True|False)\b",                                                       # Native bool  -> True, False
+		LexTypeList.NONE  : r"\bNone\b",                                                                 # NoneType     -> None
+		LexTypeList.STR   : '^(rf|fr|r|f|u|b|br|rb)?(\\"\\"\\"|\'\'\'|\\"|\'|´|`)((?!\\2)(.*)\\2|\\2)$', #* sauce : https://regex101.com/r/Hhihv5/5 
 		# --- identifiers / keywords ---
-		# Known identifiers          -> variable_name, _private, ClassName
-			#! bareword
-		# Python keywords            -> if, else, while, def, class, return, import
-		"KEYWORD" :(
-			r"\b(?:if|else|elif|while|for|def|class|return|import|from|as|pass|break|continue|try|except|finally|raise|with|yield|lambda|async|await|global|nonlocal|assert|del|match|case)\b" , 
-			LexType("KEYWORD", lexer_langs.PYTHON) ),
+		LexTypeList.KEYWORD : r"\b(?:def|class|pass|break|continue|raise|with|yield|lambda|async|await|global|nonlocal|assert|del)\b", # Python keywords -> if, else, while, def, class, return, import
 		# --- operators ---
-		# Operators                  -> +, -, *, /, //, %, **, =, ==, !=, <, >, <=, >=, and, or, not, is, in
-		"OP" :(
-			r"(?:\*\*|//|==|!=|<=|>=|<|>|\+|-|\*|/|%|=)" , 
-			LexType("OP", lexer_langs.PYTHON) ),
-		# Augmented assignment       -> +=, -=, *=, /=, //=, %=, **=, &=, |=, ^=, <<=, >>=
-		"AUGASSIGN" :(
-			r"(?:\+=|-=|\*=|/=|//=|%=|\*\*=|&=|\|=|\^=|<<=|>>=)" , 
-			LexType("AUGASSIGN", lexer_langs.PYTHON) ),
-		# Bitwise operators         -> &, |, ^, ~, <<, >>
-		"BITOP" :(
-			r"(?:&|\||\^|~|<<|>>)" , #! ~ will be consumed by earlier nohtyp lex
-			LexType("BITOP", lexer_langs.PYTHON) ),
-		# Comparison operators      -> ==, !=, <, >, <=, >=, is, is not, in, not in
-		"COMPARE" :(
-			r"(?:==|!=|<=|>=|<|>|is(?:\s+not)?|in|not\s+in)" , 
-			LexType("COMPARE", lexer_langs.PYTHON) ),
-		# Logical operators         -> and, or, not
-		"LOGIC" :(
-			r"\b(?:and|or|not)\b" , 
-			LexType("LOGIC", lexer_langs.PYTHON) ),
+		LexTypeList.OP        : r"(?:\*\*|//|==|!=|<=|>=|<|>|\+|-|\*|/|%|=)",         # Operators            -> +, -, *, /, //, %, **, =, ==, !=, <, >, <=, >=, and, or, not, is, in
+		LexTypeList.AUGASSIGN : r"(?:\+=|-=|\*=|/=|//=|%=|\*\*=|&=|\|=|\^=|<<=|>>=)", # Augmented assignment -> +=, -=, *=, /=, //=, %=, **=, &=, |=, ^=, <<=, >>=
+		LexTypeList.BITOP     : r"(?:&|\||\^|~|<<|>>)",                               # Bitwise operators    -> &, |, ^, ~, <<, >> #! ~ will be consumed by earlier nohtyp lex
+		LexTypeList.COMPARE   : r"(?:==|!=|<=|>=|<|>|is(?:\s+not)?|in|not\s+in)",     # Comparison operators -> ==, !=, <, >, <=, >=, is, is not, in, not in
+		LexTypeList.LOGIC     : r"\b(?:and|or|not)\b",                                # Logical operators    -> and, or, not
 		# --- punctuation ---
-		# General punctuation       -> :, ;, ., @, = (contextual), ->
-		"COMMA" :(
-			r"," , #! ->, ;, :, ., = and @ will be consumed by other lex
-			LexType("COMMA", lexer_langs.PYTHON) ),
-		# Attribute access          -> .
-		"DOT" :(
-			r"\." , 
-			LexType("DOT", lexer_langs.PYTHON) ),
-		# Colon                     -> :
-		"COLON" :(
-			r":" , 
-			LexType("COLON", lexer_langs.PYTHON) ),
-		# Function return annotation -> ->
-			#! -> will be consumed by earlier nohtyp lex
-		# Decorator/operator        -> @
-			#! @ will be consumed by earlier nohtyp lex
-		# --- structures (heuristic, not syntax-perfect) ---
-		# Native list literal       -> [1, 2, 3]
-			#! all new syntax handled in the parser
-		# Native tuple literal      -> (1, 2), ()
-			#! all new syntax handled in the parser
-		# Native set literal        -> {1, 2, 3}
-			#! all new syntax handled in the parser
-		# Native dict literal       -> {"a": 1, "b": 2}
-			#! all new syntax handled in the parser
-		# Slice syntax              -> a:b, a:b:c
-			#! perform in parsing
-		# "SLICE" :(
-		# 	r"^(?![\.])[\w\.]+(?<![\.])*\s*:\s*(?![\.])[\w\.]+(?<![\.])*\s*(?::\s*(?![\.])[\w\.]+(?<![\.])*)?$" , 
-		# 	LexType("SLICE", lexer_langs.PYTHON) ), #* additionally needs validation as it should be in an index block []
-		# Ellipsis object           -> ...
-		"ELLIPSIS" :(
-			r"\.\.\." , 
-			LexType("ELLIPSIS", lexer_langs.PYTHON) ),
-		# --- functions / async / decorators ---
-		# Lambda expression         -> lambda x: x + 1
-		"LAMBDA" :(
-			r"\blambda\b" , 
-			LexType("LAMBDA", lexer_langs.PYTHON) ),
-		# Yield expression          -> yield x, yield from x
-		"YIELD" :(
-			r"\byield(?:\s+from)?\b" , 
-			LexType("YIELD", lexer_langs.PYTHON) ),
-		# Await expression          -> await coro()
-		"AWAIT" :(
-			r"\bawait\b" , 
-			LexType("AWAIT", lexer_langs.PYTHON) ),
-		# Async keyword             -> async def, async for
-		"ASYNC" :(
-			r"\basync\b" , 
-			LexType("ASYNC", lexer_langs.PYTHON) ),
-		# Decorator usage           -> @decorator
-			#! should be considered in lex val or parser.
-		# --- strings / f-strings ---
-		# Formatted string          -> f"{x}", f"text {expr}"
-			#! covered by earlier string def
-		# Format specifier (inside fstr) -> {value:.2f}
-			#! not considered in nohtyp
-		# --- comprehensions / generators (heuristic) ---
-			#! not considered in nohtyp
+		LexTypeList.COMMA    : r",",      # General punctuation -> :, ;, ., @, = (contextual), -> #! ->, ;, :, ., = and @ will be consumed by other lex
+		LexTypeList.DOT      : r"\.",     # Attribute access    -> . 
+		LexTypeList.COLON    : r":",      # Colon               -> : 
+		LexTypeList.ELLIPSIS : r"\.\.\.", # Ellipsis object     -> ... 
 		# --- misc ---
-		# Comment                   -> # comment text
-		"COMMENT" :(
-			r"#.*" , #! only really relevant in parser/lexical validation
-			LexType("COMMENT", lexer_langs.PYTHON) ),
-		# Line break                -> \n
-		# Indentation increase      -> (whitespace block start)
-		# Indentation decrease      -> (whitespace block end)
-		#! not used
+		LexTypeList.COMMENT : r"#.*", # Comment -> # comment text #! only really relevant in parser/lexical validation
 		#! Generic elements
-		"TOKENIZER_FAIL" :(
-			"¤__NOHTYP_NOT_TOKENIZABLE__¤",
-			LexType("TOKENIZER_FAIL", lexer_langs.GENERIC) ), #? ¤__NOHTYP_NOT_TOKENIZABLE__¤()
-		"STAR" :(
-			r"\*",
-			LexType("STAR", lexer_langs.GENERIC) ), #? *
-		"UNKNOWN" :(
-			r".*",
-			LexType("UNKNOWN", lexer_langs.GENERIC)	),
+		LexTypeList.TOKENIZER_FAIL : "¤__NOHTYP_NOT_TOKENIZABLE__¤", #? ¤__NOHTYP_NOT_TOKENIZABLE__¤()
+		LexTypeList.STAR           : r"\*",                          #? *
+		LexTypeList.UNKNOWN        : r".*", 
 	}

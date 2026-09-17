@@ -14,7 +14,7 @@ class Identify:
 		"""Try to identify a single lexical object in a `str` container"""
 		try:
 			elem_string :str = element[0]
-			for _key, (regex_string, object) in TT.ELEM.items():
+			for object, regex_string in TT.ELEM.items():
 				if re.match(regex_string, elem_string):
 					if object == TT.ELEM["TOKENIZER_FAIL"][1]: #? Comparing the `LexType` object
 						ret = LexObject(element, object)

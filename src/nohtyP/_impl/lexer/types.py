@@ -1,5 +1,4 @@
 from __future__ import annotations
-from collections.abc import Iterable
 from typing import Never, Any
 from nohtyP._impl.global_utilities.decorators import *
 from nohtyP._impl.global_utilities.types import AnyNohtyPSyntaxError
@@ -9,6 +8,7 @@ __all__ = [
 	"TokenSeries",
 	"lexer_langs",
 	"LexType",
+	"LexTypeList",
 	"LexObject",
 	"LexObjectSeries",
 ]
@@ -63,6 +63,60 @@ class LexType:
 		return f"LexType({self._name}), lang={self._lang}"
 	def __str__(self) -> str:
 		return f"{self._lang}[{self._name}]"
+
+@api_level(0)
+class LexTypeList:
+	#! nohtyP specific
+	SEMICOLON           :LexType = LexType("SEMICOLON",           lexer_langs.NOHTYP) #? ;
+	BAREWORD            :LexType = LexType("BAREWORD",            lexer_langs.NOHTYP) #? <anything>
+	TYPE_DECLARATION    :LexType = LexType("TYPE_DECLARATION",    lexer_langs.NOHTYP) #? optional * followed by a bareword and a :
+	CBRACKET_LEFT       :LexType = LexType("CBRACKET_LEFT",       lexer_langs.NOHTYP) #? {
+	CBRACKET_RIGHT      :LexType = LexType("CBRACKET_RIGHT",      lexer_langs.NOHTYP) #? }
+	BRACKET_LEFT        :LexType = LexType("BRACKET_LEFT",        lexer_langs.NOHTYP) #? [
+	BRACKET_RIGHT       :LexType = LexType("BRACKET_RIGHT",       lexer_langs.NOHTYP) #? ]
+	CALL                :LexType = LexType("CALL",                lexer_langs.PYTHON) #? ()
+	PAREN_LEFT          :LexType = LexType("PAREN_LEFT",          lexer_langs.NOHTYP) #? (
+	PAREN_RIGHT         :LexType = LexType("PAREN_RIGHT",         lexer_langs.NOHTYP) #? )
+	ASS_EQ              :LexType = LexType("ASS_EQ",              lexer_langs.NOHTYP) #? =
+	FLOW_Q              :LexType = LexType("FLOW_Q",              lexer_langs.NOHTYP) #? ?
+	FLOW_HASH_Q         :LexType = LexType("FLOW_HASH_Q",         lexer_langs.NOHTYP) #? #?
+	FLOW_WHILE          :LexType = LexType("FLOW_WHILE",          lexer_langs.NOHTYP) #? ?=
+	SYMBOL_AT           :LexType = LexType("SYMBOL_AT",           lexer_langs.NOHTYP) #? @
+	TILDE               :LexType = LexType("TILDE",               lexer_langs.NOHTYP) #? ~
+	CONDITION_AST_TILDE :LexType = LexType("CONDITION_AST_TILDE", lexer_langs.NOHTYP) #? *~
+	ARROW_LEFT          :LexType = LexType("ARROW_LEFT",          lexer_langs.NOHTYP) #? <-
+	ARROW_RIGHT         :LexType = LexType("ARROW_RIGHT",         lexer_langs.NOHTYP) #? ->
+	EXCEPT_STORE        :LexType = LexType("EXCEPT_STORE",        lexer_langs.NOHTYP) #? *$<insert var>
+	EXCEPT_GET          :LexType = LexType("EXCEPT_GET",          lexer_langs.NOHTYP) #? $<insert var>
+	EXCEPT_HANDLE       :LexType = LexType("EXCEPT_HANDLE",       lexer_langs.NOHTYP) #? *?
+	EXCEPT_SET          :LexType = LexType("EXCEPT_SET",          lexer_langs.NOHTYP) #? *set -e/+e
+	KW_FETCH            :LexType = LexType("KW_FETCH",            lexer_langs.NOHTYP) #? fetch
+	KW_MATCH            :LexType = LexType("KW_MATCH",            lexer_langs.NOHTYP) #? match
+	#! Python native
+	INT                 :LexType = LexType("INT",                 lexer_langs.PYTHON)
+	FLOAT               :LexType = LexType("FLOAT",               lexer_langs.PYTHON)
+	BOOL                :LexType = LexType("BOOL",                lexer_langs.PYTHON)
+	NONE                :LexType = LexType("NONE",                lexer_langs.PYTHON)
+	STR                 :LexType = LexType("STR",                 lexer_langs.PYTHON)
+	KEYWORD             :LexType = LexType("KEYWORD",             lexer_langs.PYTHON)
+	OP                  :LexType = LexType("OP",                  lexer_langs.PYTHON)
+	AUGASSIGN           :LexType = LexType("AUGASSIGN",           lexer_langs.PYTHON)
+	BITOP               :LexType = LexType("BITOP",               lexer_langs.PYTHON)
+	COMPARE             :LexType = LexType("COMPARE",             lexer_langs.PYTHON)
+	LOGIC               :LexType = LexType("LOGIC",               lexer_langs.PYTHON)
+	COMMA               :LexType = LexType("COMMA",               lexer_langs.PYTHON)
+	DOT                 :LexType = LexType("DOT",                 lexer_langs.PYTHON)
+	COLON               :LexType = LexType("COLON",               lexer_langs.PYTHON)
+	ELLIPSIS            :LexType = LexType("ELLIPSIS",            lexer_langs.PYTHON)
+	LAMBDA              :LexType = LexType("LAMBDA",              lexer_langs.PYTHON)
+	YIELD               :LexType = LexType("YIELD",               lexer_langs.PYTHON)
+	AWAIT               :LexType = LexType("AWAIT",               lexer_langs.PYTHON)
+	ASYNC               :LexType = LexType("ASYNC",               lexer_langs.PYTHON)
+	COMMENT             :LexType = LexType("COMMENT",             lexer_langs.PYTHON)
+	#! Generics
+	TOKENIZER_FAIL      :LexType = LexType("TOKENIZER_FAIL",      lexer_langs.GENERIC) #? ¤__NOHTYP_NOT_TOKENIZABLE__¤()
+	STAR                :LexType = LexType("STAR",                lexer_langs.GENERIC) #? *
+	UNKNOWN             :LexType = LexType("UNKNOWN",             lexer_langs.GENERIC)
 
 @api_level(0)
 class LexObject:

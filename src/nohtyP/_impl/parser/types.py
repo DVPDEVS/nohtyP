@@ -3,14 +3,85 @@ from nohtyP._impl.global_utilities.decorators import *
 from nohtyP._impl.global_utilities.types import AnyNohtyPSyntaxError
 from nohtyP._impl.lexer.types import *
 
+
 @api_level(0)
 class SyntaxObject:
-	def __init__(self, kind :str) -> None:
-		self.__kind__ :str = kind
+	__slots__ = ['_kind', '_struct']
+	def __init__(self, kind :str, structure :tuple[LexTypeList|type]) -> None:
+		self._kind :str = kind
+		self._struct :tuple[LexTypeList|type] = structure
 	def __repr__(self) -> str:
-		return f"SyntaxObject({self.__kind__})"
+		return f"SyntaxObject(kind:'{self._kind}', structure: {self._struct})"
 	def __str__(self) -> str:
-		return self.__kind__
+		return self._kind
+
+@api_level(0)
+class SOLStructs:
+	...
+	#* define structures for instances of SyntaxObject
+	# i really would have preferred rust for this part especially. its perfect for traits, impls, structs, enums and the strong typing.
+	# Names
+	IDENTIFIER: tuple[LexTypeList] = (LexTypeList.BAREWORD)
+	# Literals
+	NUMBER: tuple[LexTypeList|type] = ()
+	STRING: tuple[LexTypeList|type] = ()
+	BOOLEAN: tuple[LexTypeList|type] = ()
+	NONE: tuple[LexTypeList|type] = ()
+	# Collections
+	LIST: tuple[LexTypeList|type] = ()
+	TUPLE: tuple[LexTypeList|type] = ()
+	DICT: tuple[LexTypeList|type] = ()
+	SET: tuple[LexTypeList|type] = ()
+	# Expressions
+	CALL: tuple[LexTypeList] = (LexTypeList.PAREN_LEFT, LexTypeList.PAREN_RIGHT)
+	ATTRIBUTE: tuple[LexTypeList|type] = ()
+	INDEX: tuple[LexTypeList|type] = ()
+	SLICE: tuple[LexTypeList|type] = ()
+	UNARY_OP: tuple[LexTypeList|type] = ()
+	BINARY_OP: tuple[LexTypeList|type] = ()
+	COMPARISON: tuple[LexTypeList|type] = ()
+	LOGICAL_OP: tuple[LexTypeList|type] = ()
+	WALRUS: tuple[LexTypeList|type] = ()
+	TERNARY: tuple[LexTypeList|type] = ()
+	# Comprehensions
+	LIST_COMPREHENSION: tuple[LexTypeList|type] = ()
+	DICT_COMPREHENSION: tuple[LexTypeList|type] = ()
+	SET_COMPREHENSION: tuple[LexTypeList|type] = ()
+	GENERATOR_EXPRESSION: tuple[LexTypeList|type] = ()
+	# Assignment
+	ASSIGNMENT: tuple[LexTypeList|type] = ()
+	COMPOUND_ASSIGNMENT: tuple[LexTypeList|type] = ()
+	# Control Flow
+	IF: tuple[LexTypeList|type] = ()
+	FOR: tuple[LexTypeList|type] = ()
+	WHILE: tuple[LexTypeList|type] = ()
+	MATCH: tuple[LexTypeList|type] = ()
+	TRY: tuple[LexTypeList|type] = ()
+	# Jump Statements
+	RETURN: tuple[LexTypeList|type] = ()
+	YIELD: tuple[LexTypeList|type] = ()
+	RAISE: tuple[LexTypeList|type] = ()
+	BREAK: tuple[LexTypeList|type] = ()
+	CONTINUE: tuple[LexTypeList|type] = ()
+	PASS: tuple[LexTypeList|type] = ()
+	# Definitions
+	FUNCTION: tuple[LexTypeList|type] = ()
+	LAMBDA: tuple[LexTypeList|type] = ()
+	CLASS: tuple[LexTypeList|type] = ()
+	# Imports
+	IMPORT: tuple[LexTypeList|type] = ()
+	FROM_IMPORT: tuple[LexTypeList|type] = ()
+	# Context Management
+	WITH: tuple[LexTypeList|type] = ()
+	# Async
+	ASYNC_FUNCTION: tuple[LexTypeList|type] = ()
+	AWAIT: tuple[LexTypeList|type] = ()
+	ASYNC_FOR: tuple[LexTypeList|type] = ()
+	ASYNC_WITH: tuple[LexTypeList|type] = ()
+	# Decorators
+	DECORATOR: tuple[LexTypeList|type] = ()
+	# Typing
+	TYPE_DECLARATION: tuple[LexTypeList|type] = ()
 
 @api_level(0)
 class SyntaxObjectList:
@@ -84,7 +155,7 @@ class ParseObject:
 	"""
 	NohtyP class for Parsed groups of `LexObjects` matching a given `SyntaxObject` structure
 	"""
-	__slots__ = ["_sotype", "__value__", "__issue_list__", ]
+	__slots__ = ["_sotype", "objectlist", "__issue_list__", ]
 	def __init__(self) -> None:
 		self._sotype :SyntaxObjectList|None = None # NOP string
 		self.objectlist :tuple[LexObject] = () # any non-zero amount
