@@ -2,6 +2,8 @@ from __future__ import annotations
 from nohtyP._impl.global_utilities.decorators import *
 from nohtyP._impl.global_utilities.types import AnyNohtyPSyntaxError
 from nohtyP._impl.lexer.types import *
+from typing import Union
+from types import UnionType
 
 
 @api_level(0)
@@ -23,10 +25,10 @@ class SOLStructs:
 	# Names
 	IDENTIFIER: tuple[LexTypeList] = (LexTypeList.BAREWORD)
 	# Literals
-	NUMBER: tuple[LexTypeList|type] = ()
-	STRING: tuple[LexTypeList|type] = ()
-	BOOLEAN: tuple[LexTypeList|type] = ()
-	NONE: tuple[LexTypeList|type] = ()
+	NUMBER: tuple[UnionType] = (Union[LexTypeList.INT,LexTypeList.FLOAT])
+	STRING: tuple[LexTypeList] = (LexTypeList.STR)
+	BOOLEAN: tuple[LexTypeList] = (LexTypeList.BOOL)
+	NONE: tuple[LexTypeList] = (LexTypeList.NONE)
 	# Collections
 	LIST: tuple[LexTypeList|type] = ()
 	TUPLE: tuple[LexTypeList|type] = ()
