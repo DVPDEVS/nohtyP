@@ -9,114 +9,57 @@ from types import UnionType
 @api_level(0)
 class SyntaxObject:
 	__slots__ = ['_kind', '_struct']
-	def __init__(self, kind :str, structure :tuple[LexTypeList|type]) -> None:
+	def __init__(self, kind :str, structure :tuple[LexTypeList|type|SyntaxObject|UnionType]) -> None:
 		self._kind :str = kind
-		self._struct :tuple[LexTypeList|type] = structure
+		self._struct :tuple[LexTypeList|type|SyntaxObject|UnionType] = structure
 	def __repr__(self) -> str:
+		# any instance of SyntaxObject in structure will have their __str__ dunder called here, not __repr__
 		return f"SyntaxObject(kind:'{self._kind}', structure: {self._struct})"
 	def __str__(self) -> str:
 		return self._kind
 
 @api_level(0)
-class SOLStructs:
-	...
-	#* define structures for instances of SyntaxObject
-	# i really would have preferred rust for this part especially. its perfect for traits, impls, structs, enums and the strong typing.
-	# Names
-	IDENTIFIER: tuple[LexTypeList] = (LexTypeList.BAREWORD)
-	# Literals
-	NUMBER: tuple[UnionType] = (Union[LexTypeList.INT,LexTypeList.FLOAT])
-	STRING: tuple[LexTypeList] = (LexTypeList.STR)
-	BOOLEAN: tuple[LexTypeList] = (LexTypeList.BOOL)
-	NONE: tuple[LexTypeList] = (LexTypeList.NONE)
-	# Collections
-	LIST: tuple[LexTypeList|type] = ()
-	TUPLE: tuple[LexTypeList|type] = ()
-	DICT: tuple[LexTypeList|type] = ()
-	SET: tuple[LexTypeList|type] = ()
-	# Expressions
-	CALL: tuple[LexTypeList] = (LexTypeList.PAREN_LEFT, LexTypeList.PAREN_RIGHT)
-	ATTRIBUTE: tuple[LexTypeList|type] = ()
-	INDEX: tuple[LexTypeList|type] = ()
-	SLICE: tuple[LexTypeList|type] = ()
-	UNARY_OP: tuple[LexTypeList|type] = ()
-	BINARY_OP: tuple[LexTypeList|type] = ()
-	COMPARISON: tuple[LexTypeList|type] = ()
-	LOGICAL_OP: tuple[LexTypeList|type] = ()
-	WALRUS: tuple[LexTypeList|type] = ()
-	TERNARY: tuple[LexTypeList|type] = ()
-	# Comprehensions
-	LIST_COMPREHENSION: tuple[LexTypeList|type] = ()
-	DICT_COMPREHENSION: tuple[LexTypeList|type] = ()
-	SET_COMPREHENSION: tuple[LexTypeList|type] = ()
-	GENERATOR_EXPRESSION: tuple[LexTypeList|type] = ()
-	# Assignment
-	ASSIGNMENT: tuple[LexTypeList|type] = ()
-	COMPOUND_ASSIGNMENT: tuple[LexTypeList|type] = ()
-	# Control Flow
-	IF: tuple[LexTypeList|type] = ()
-	FOR: tuple[LexTypeList|type] = ()
-	WHILE: tuple[LexTypeList|type] = ()
-	MATCH: tuple[LexTypeList|type] = ()
-	TRY: tuple[LexTypeList|type] = ()
-	# Jump Statements
-	RETURN: tuple[LexTypeList|type] = ()
-	YIELD: tuple[LexTypeList|type] = ()
-	RAISE: tuple[LexTypeList|type] = ()
-	BREAK: tuple[LexTypeList|type] = ()
-	CONTINUE: tuple[LexTypeList|type] = ()
-	PASS: tuple[LexTypeList|type] = ()
-	# Definitions
-	FUNCTION: tuple[LexTypeList|type] = ()
-	LAMBDA: tuple[LexTypeList|type] = ()
-	CLASS: tuple[LexTypeList|type] = ()
-	# Imports
-	IMPORT: tuple[LexTypeList|type] = ()
-	FROM_IMPORT: tuple[LexTypeList|type] = ()
-	# Context Management
-	WITH: tuple[LexTypeList|type] = ()
-	# Async
-	ASYNC_FUNCTION: tuple[LexTypeList|type] = ()
-	AWAIT: tuple[LexTypeList|type] = ()
-	ASYNC_FOR: tuple[LexTypeList|type] = ()
-	ASYNC_WITH: tuple[LexTypeList|type] = ()
-	# Decorators
-	DECORATOR: tuple[LexTypeList|type] = ()
-	# Typing
-	TYPE_DECLARATION: tuple[LexTypeList|type] = ()
-
-@api_level(0)
 class SyntaxObjectList:
+	# Meta
+	#* Use before objects
+	META_OPTIONAL = SyntaxObject("META_OPTIONAL", ()) # optional object
+	META_DEPENDENT = SyntaxObject("META_DEPENDENT", ()) # required if last optional in same scope was present, banned if not
+	META_REPEAT = SyntaxObject("META_REPEAT", ()) # repeat token as far as possible
 	# Names
-	IDENTIFIER = SyntaxObject("IDENTIFIER")
+	IDENTIFIER = SyntaxObject("IDENTIFIER", (LexTypeList.BAREWORD))
 	# Literals
-	NUMBER = SyntaxObject("NUMBER")
-	STRING = SyntaxObject("STRING")
-	BOOLEAN = SyntaxObject("BOOLEAN")
-	NONE = SyntaxObject("NONE")
+	NUMBER  = SyntaxObject("NUMBER", (Union[LexTypeList.INT, LexTypeList.FLOAT]))
+	STRING  = SyntaxObject("STRING", (LexTypeList.STR))
+	BOOLEAN = SyntaxObject("BOOLEAN", (LexTypeList.BOOL))
+	NONE    = SyntaxObject("NONE", (LexTypeList.NONE))
+	LITERAL = SyntaxObject("LITERAL", (Union[NUMBER, STRING, BOOLEAN, NONE, LexTypeList.ELLIPSIS, IDENTIFIER]))
 	# Collections
-	LIST = SyntaxObject("LIST")
-	TUPLE = SyntaxObject("TUPLE")
-	DICT = SyntaxObject("DICT")
-	SET = SyntaxObject("SET")
+	CONTAINER = SyntaxObject("CONTAINER", (
+		LexTypeList.TYPE_DECLARATION, META_OPTIONAL, Union[
+			LexTypeList.PAREN_LEFT, LexTypeList.CBRACKET_LEFT, LexTypeList.BRACKET_LEFT
+		], META_REPEAT, Union[
+			LITERAL, META_OPTIONAL, LexTypeList.COMMA
+		], META_DEPENDENT, Union[
+			LexTypeList.PAREN_RIGHT, LexTypeList.CBRACKET_RIGHT, LexTypeList.BRACKET_RIGHT
+		]))
 	# Expressions
-	CALL = SyntaxObject("CALL")
-	ATTRIBUTE = SyntaxObject("ATTRIBUTE")
-	INDEX = SyntaxObject("INDEX")
-	SLICE = SyntaxObject("SLICE")
-	UNARY_OP = SyntaxObject("UNARY_OP")
-	BINARY_OP = SyntaxObject("BINARY_OP")
-	COMPARISON = SyntaxObject("COMPARISON")
-	LOGICAL_OP = SyntaxObject("LOGICAL_OP")
-	WALRUS = SyntaxObject("WALRUS")
-	TERNARY = SyntaxObject("TERNARY")
+	FUNCTION_CALL = SyntaxObject("FUNCTION_CALL", (IDENTIFIER, LexTypeList.PAREN_LEFT, LexTypeList.PAREN_RIGHT))
+	ATTRIBUTE     = SyntaxObject("ATTRIBUTE")
+	INDEX         = SyntaxObject("INDEX")
+	SLICE         = SyntaxObject("SLICE")
+	UNARY_OP      = SyntaxObject("UNARY_OP")
+	BINARY_OP     = SyntaxObject("BINARY_OP")
+	COMPARISON    = SyntaxObject("COMPARISON")
+	LOGICAL_OP    = SyntaxObject("LOGICAL_OP")
+	WALRUS        = SyntaxObject("WALRUS")
+	TERNARY       = SyntaxObject("TERNARY")
 	# Comprehensions
-	LIST_COMPREHENSION = SyntaxObject("LIST_COMPREHENSION")
-	DICT_COMPREHENSION = SyntaxObject("DICT_COMPREHENSION")
-	SET_COMPREHENSION = SyntaxObject("SET_COMPREHENSION")
+	LIST_COMPREHENSION   = SyntaxObject("LIST_COMPREHENSION")
+	DICT_COMPREHENSION   = SyntaxObject("DICT_COMPREHENSION")
+	SET_COMPREHENSION    = SyntaxObject("SET_COMPREHENSION")
 	GENERATOR_EXPRESSION = SyntaxObject("GENERATOR_EXPRESSION")
 	# Assignment
-	ASSIGNMENT = SyntaxObject("ASSIGNMENT")
+	ASSIGNMENT          = SyntaxObject("ASSIGNMENT")
 	COMPOUND_ASSIGNMENT = SyntaxObject("COMPOUND_ASSIGNMENT")
 	# Control Flow
 	IF = SyntaxObject("IF")

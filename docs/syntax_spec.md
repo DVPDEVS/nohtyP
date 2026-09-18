@@ -88,19 +88,29 @@ Token separation is supported either through brackets `{}()`, whitespace, commas
 Colon is, however, exclusively for type declarations, imports and dictionaries.  
 This may change in later specification versions.  
 
-Since python will natively consider values in brackets to be dictionaries or tuples, nohtyP will not assume types for anything.  
-Thus `(1,2)` is the same as `1 2` and dictionaries and tuples need a type declaration like this:  
+Since python will natively consider values in brackets to be dictionaries or tuples, nohtyP will not assume types for containers.  
+Thus `(1,2)` is the same as `1 2` and dictionaries, sets, lists and tuples need a type declaration like this:  
 
 ```yp
 tuple: (1,2) #? nums
 ```
 
 This allows using zero whitespace in scripts :3  
-This also means no operator characters can be used in most contexts:  
+This also means no operator characters can be used in most contexts;  
 But thats a small loss for this being syntactically valid:  
 
 ```yp
 10?range()?~{@%2~@*2?str()?}=*list[str]:res?print()
+```
+
+which is equivalent to this:  
+
+```py
+res: list[str] = [] # no you cannot use a list comprehension for this. try it.
+for num in range(10):
+    if num % 2:
+        res += str( num * 2 )
+print(res)
 ```
 
 ### Supported whitespace  
