@@ -12,7 +12,6 @@ Design Python version: 3.10+
 
 ## Undecided syntax  
 
-- Walrus operator  
 - With/open  
 
 ## Optional features  
@@ -25,7 +24,7 @@ Design Python version: 3.10+
 2. Semicolons (;) separate statements - ONLY hard delimiter  
 3. Strict left-to-right evaluation within statements  
 4. New operators extend flow without breaking Python semantics  
-5. Barewords implicitly evaluate as strings unless shadowed by an in-scope variable, builtin, or known type.  
+5. Barewords implicitly evaluate as strings unless shadowed by an in-scope variable, builtin, known type, or other namespace object.  
 
 ## LEXER RULES  
 
@@ -243,13 +242,21 @@ nohtyP: int: 80085 -> num
 nohtyP: int: 80085 ? num
 ```
 
+The [walrus operator](https://www.w3schools.com/python/python_operators_assign.asp) `:=` is essentially equivalent to this paradigm, which is already suppported by nohtyP:  
+
+```yp
+3=x?print()
+```
+
 Additionally, any Python native augmented assignment is also applicable, such as:  
 
 ```py
-num1, num2 = 0x12
+num1, num2 = [0x12]*2
 num2 |= 3
 num1 *= 4
 ```
+
+Note that listed assignments are performed with the compund assignment below.  
 
 ### COMPOSITE LITERALS (#?)  
 
@@ -286,6 +293,19 @@ Else it's passed wholesale and *will* break.
 This 'unpacking mark' lasts ONLY until the next operation using the object takes place.  
 
 On the upside, this forces type declaring in some capacity and is just good practice :3  
+
+Additionally, assignment of container items to variables can be preformed as such:  
+
+```yp
+*tuple:(69,420) #? set:(item1,item2)
+```
+
+Which is equivalent to this formatted assignment in Python:  
+
+```py
+items :tuple[tuple[int]|int] = ((6, 9), 420)
+((item1, item2), item3) = items
+```
 
 ### CONTROL FLOW  
 
