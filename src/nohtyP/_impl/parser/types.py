@@ -8,10 +8,9 @@ from types import UnionType
 
 @api_level(0)
 class SyntaxObject:
-	__slots__ = ['_kind', '_struct']
-	def __init__(self, kind :str, structure :tuple[LexTypeList|type|SyntaxObject|UnionType]) -> None:
+	__slots__ = ['_kind',]
+	def __init__(self, kind :str) -> None:
 		self._kind :str = kind
-		self._struct :tuple[LexTypeList|type|SyntaxObject|UnionType] = structure
 	def __repr__(self) -> str:
 		# any instance of SyntaxObject in structure will have their __str__ dunder called here, not __repr__
 		return f"SyntaxObject(kind:'{self._kind}', structure: {self._struct})"

@@ -99,16 +99,21 @@ This also means no operator characters can be used in most contexts;
 But thats a small loss for this being syntactically valid:  
 
 ```yp
-10?range()?~{@%2~@*2?str()?}=*list[str]:res?print()
+10?range()?~{@%2~@*2?str()?}=*:res?print()
 ```
 
 which is equivalent to this:  
 
 ```py
-res: list[str] = [] # no you cannot use a list comprehension for this. try it.
+res: list[str] = []
 for num in range(10):
     if num % 2:
         res += str( num * 2 )
+print(res)
+
+#* or:
+
+res :list[str] = [str(num * 2) for num in range(10) if num % 2]
 print(res)
 ```
 
@@ -523,7 +528,7 @@ Here 1 through 6 are valid semicolon frames.
 1 through 3 are top-level, whilst 4 through 6 are inside a block and on the second level.  
 
 Any error handling operations preformed in, say, 4,  
-\- is unavailable to any other frame unless the result is written to a variable - where Python scope is applicable.  
+\- is unavailable to any other frame unless the result is written to a variable - where the Pythonic block scope is applicable.  
 
 Block frames are given exclusively by block nesting:  
 
@@ -613,6 +618,8 @@ x = [1, 2, 3]
 for i in x: print(i)  
 try: risky() except: pass  
 ```  
+
+My official implementation does not support Python, and i cannot be bothered to support passthrough for v1.  
 
 ## Compression examples
 
