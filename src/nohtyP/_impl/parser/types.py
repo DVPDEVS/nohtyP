@@ -19,30 +19,18 @@ class SyntaxObject:
 
 @api_level(0)
 class SyntaxObjectList:
-	# Meta
-	#* Use before objects
-	META_OPTIONAL = SyntaxObject("META_OPTIONAL", ()) # optional object
-	META_DEPENDENT = SyntaxObject("META_DEPENDENT", ()) # required if last optional in same scope was present, banned if not
-	META_REPEAT = SyntaxObject("META_REPEAT", ()) # repeat token as far as possible
 	# Names
-	IDENTIFIER = SyntaxObject("IDENTIFIER", (LexTypeList.BAREWORD))
+	IDENTIFIER = SyntaxObject("IDENTIFIER")
 	# Literals
-	NUMBER  = SyntaxObject("NUMBER", (Union[LexTypeList.INT, LexTypeList.FLOAT]))
-	STRING  = SyntaxObject("STRING", (LexTypeList.STR))
-	BOOLEAN = SyntaxObject("BOOLEAN", (LexTypeList.BOOL))
-	NONE    = SyntaxObject("NONE", (LexTypeList.NONE))
-	LITERAL = SyntaxObject("LITERAL", (Union[NUMBER, STRING, BOOLEAN, NONE, LexTypeList.ELLIPSIS, IDENTIFIER]))
+	NUMBER  = SyntaxObject("NUMBER")
+	STRING  = SyntaxObject("STRING")
+	BOOLEAN = SyntaxObject("BOOLEAN")
+	NONE    = SyntaxObject("NONE")
+	LITERAL = SyntaxObject("LITERAL")
 	# Collections
-	CONTAINER = SyntaxObject("CONTAINER", (
-		LexTypeList.TYPE_DECLARATION, META_OPTIONAL, Union[
-			LexTypeList.PAREN_LEFT, LexTypeList.CBRACKET_LEFT, LexTypeList.BRACKET_LEFT
-		], META_REPEAT, Union[
-			LITERAL, META_OPTIONAL, LexTypeList.COMMA
-		], META_DEPENDENT, Union[
-			LexTypeList.PAREN_RIGHT, LexTypeList.CBRACKET_RIGHT, LexTypeList.BRACKET_RIGHT
-		]))
+	CONTAINER = SyntaxObject("CONTAINER")
 	# Expressions
-	FUNCTION_CALL = SyntaxObject("FUNCTION_CALL", (IDENTIFIER, LexTypeList.PAREN_LEFT, LexTypeList.PAREN_RIGHT))
+	FUNCTION_CALL = SyntaxObject("FUNCTION_CALL")
 	ATTRIBUTE     = SyntaxObject("ATTRIBUTE")
 	INDEX         = SyntaxObject("INDEX")
 	SLICE         = SyntaxObject("SLICE")
@@ -50,7 +38,6 @@ class SyntaxObjectList:
 	BINARY_OP     = SyntaxObject("BINARY_OP")
 	COMPARISON    = SyntaxObject("COMPARISON")
 	LOGICAL_OP    = SyntaxObject("LOGICAL_OP")
-	WALRUS        = SyntaxObject("WALRUS")
 	TERNARY       = SyntaxObject("TERNARY")
 	# Comprehensions
 	LIST_COMPREHENSION   = SyntaxObject("LIST_COMPREHENSION")
@@ -60,13 +47,8 @@ class SyntaxObjectList:
 	# Assignment
 	ASSIGNMENT          = SyntaxObject("ASSIGNMENT")
 	COMPOUND_ASSIGNMENT = SyntaxObject("COMPOUND_ASSIGNMENT")
-	# Control Flow
-	IF = SyntaxObject("IF")
-	FOR = SyntaxObject("FOR")
-	WHILE = SyntaxObject("WHILE")
+	# Keywords
 	MATCH = SyntaxObject("MATCH")
-	TRY = SyntaxObject("TRY")
-	# Jump Statements
 	RETURN = SyntaxObject("RETURN")
 	YIELD = SyntaxObject("YIELD")
 	RAISE = SyntaxObject("RAISE")
@@ -81,12 +63,12 @@ class SyntaxObjectList:
 	IMPORT = SyntaxObject("IMPORT")
 	FROM_IMPORT = SyntaxObject("FROM_IMPORT")
 	# Context Management
-	WITH = SyntaxObject("WITH")
+	WITH = SyntaxObject("WITH") # undecided syntax
 	# Async
 	ASYNC_FUNCTION = SyntaxObject("ASYNC_FUNCTION")
 	AWAIT = SyntaxObject("AWAIT")
-	ASYNC_FOR = SyntaxObject("ASYNC_FOR")
-	ASYNC_WITH = SyntaxObject("ASYNC_WITH")
+	ASYNC_FOR = SyntaxObject("ASYNC_FOR")   # undecided syntax
+	ASYNC_WITH = SyntaxObject("ASYNC_WITH") # undecided syntax
 	# Decorators
 	DECORATOR = SyntaxObject("DECORATOR")
 	# Typing

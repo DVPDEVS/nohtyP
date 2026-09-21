@@ -13,6 +13,7 @@ Design Python version: 3.10+
 ## Undecided syntax  
 
 - With/open  
+- Async (partially)
 
 ## Optional features  
 
@@ -31,11 +32,11 @@ Design Python version: 3.10+
 Whitespace (spaces/tabs/newlines) = token separation only, never syntax  
 
 ```txt
-h h           -> ["h", "h"]
-h, h          -> ["h", "h"]  (comma or whitespace = separator)
-h,h           -> ["h", "h"]
-"h,",h        -> ["h,", "h"]
-"h","h"       -> ["h", "h"]
+h h           -> ("h", "h")
+h, h          -> ("h", "h")  (comma or whitespace = separator)
+h,h           -> ("h", "h")
+"h,",h        -> ("h,", "h")
+"h","h"       -> ("h", "h")
 ```
 
 RULE: Comma separates ONLY if surrounded by whitespace on at least one side  
@@ -51,7 +52,7 @@ Unquoted identifiers (barewords) are parsed as string literals *unless*:
 2. The name matches a builtin or imported type,  
 3. It appears in a syntactic context where a keyword or known symbol is required.  
 
-Otherwise, the bareword is treated as `"bareword"`.  
+If none of these conditions are met, the bareword is treated as `"bareword"`.  
 
 Examples:  
 
@@ -432,6 +433,49 @@ Python: async def func() {
 
 nohtyP: {something() ? await} <- func <- def <- async
 ```
+
+`async with` has not been decided how to handle.  
+`async for` can be done as follows:  
+
+```yp
+async_iterable ? ~ { @ ? do_something() -> await }
+```
+
+Assuming `async_iterable` supports `__aiter__` and `__anext__` dunders as well as `StopAsyncIteration` for async iteration.  
+Its equivalent in python is something like this;  
+
+```py
+async for item in async_iterable:
+    await do_something(item)
+
+# Conceptually doing this:
+iterator = async_iterable.__aiter__()
+while True:
+    try:
+        item = await iterator.__anext__()
+    except StopAsyncIteration:
+        break
+    await do_something(item)
+```
+
+`async with` is usually performed roughly as such:  
+
+```py
+async with AsyncResource() as resource:
+    await resource.do_work()
+
+# Full form is:
+resource = await AsyncResource().__aenter__()
+try:
+    await resource.do_work()
+except Exception as e:
+    if not await AsyncResource().__aexit__(type(e), e, e.__traceback__):
+        raise
+else:
+    await AsyncResource().__aexit__(None, None, None)
+```
+
+As such, i have to decide on how to handle `with` and `open` first.  
 
 #### Function calls and argument passage  
 
