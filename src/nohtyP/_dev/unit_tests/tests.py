@@ -1,9 +1,7 @@
 import unittest
 from sys import argv
-from itertools import accumulate
 # from nohtyP.lexer.identifier import TT
 from nohtyP._impl.global_utilities.decorators import *
-from nohtyP._impl.global_utilities.types import AnyNohtyPSyntaxError
 from nohtyP._impl.lexer.tokenizer import *
 from nohtyP._impl.lexer.types import *
 from nohtyP._impl.lexer.identifier import Identify

@@ -16,11 +16,11 @@ class Identify:
 			elem_string :str = element[0]
 			for object, regex_string in TT.ELEM.items():
 				if re.match(regex_string, elem_string):
-					if object == TT.ELEM["TOKENIZER_FAIL"][1]: #? Comparing the `LexType` object
+					if object == TT.ELEM[LexTypeList.TOKENIZER_FAIL][1]: #? Comparing the `LexType` object
 						ret = LexObject(element, object)
 						ret & NohtyPTokenizerSyntaxError("Unknown object", element)
 						return ret
-					if object == TT.ELEM["UNKNOWN"][1]: #? Comparing the `LexType` object
+					if object == TT.ELEM[LexTypeList.UNKNOWN][1]: #? Comparing the `LexType` object
 						ret = LexObject(element, object)
 						ret & NohtyPLexerSyntaxError("Unknown object", element)
 						return ret
