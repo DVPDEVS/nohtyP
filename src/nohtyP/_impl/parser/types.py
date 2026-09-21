@@ -44,30 +44,31 @@ class SyntaxObjectList:
 	SET_COMPREHENSION    = SyntaxObject("SET_COMPREHENSION")
 	GENERATOR_EXPRESSION = SyntaxObject("GENERATOR_EXPRESSION")
 	# Assignment
+	BINARY_OP     = SyntaxObject("BINARY_OP")
 	ASSIGNMENT          = SyntaxObject("ASSIGNMENT")
 	COMPOUND_ASSIGNMENT = SyntaxObject("COMPOUND_ASSIGNMENT")
 	# Keywords
-	MATCH = SyntaxObject("MATCH")
-	RETURN = SyntaxObject("RETURN")
-	YIELD = SyntaxObject("YIELD")
-	RAISE = SyntaxObject("RAISE")
-	BREAK = SyntaxObject("BREAK")
+	MATCH    = SyntaxObject("MATCH")
+	RETURN   = SyntaxObject("RETURN")
+	YIELD    = SyntaxObject("YIELD")
+	RAISE    = SyntaxObject("RAISE")
+	BREAK    = SyntaxObject("BREAK")
 	CONTINUE = SyntaxObject("CONTINUE")
-	PASS = SyntaxObject("PASS")
+	PASS     = SyntaxObject("PASS")
 	# Definitions
 	FUNCTION = SyntaxObject("FUNCTION")
-	LAMBDA = SyntaxObject("LAMBDA")
-	CLASS = SyntaxObject("CLASS")
+	LAMBDA   = SyntaxObject("LAMBDA")
+	CLASS    = SyntaxObject("CLASS")
 	# Imports
-	IMPORT = SyntaxObject("IMPORT")
+	IMPORT      = SyntaxObject("IMPORT")
 	FROM_IMPORT = SyntaxObject("FROM_IMPORT")
 	# Context Management
 	WITH = SyntaxObject("WITH") # undecided syntax
 	# Async
 	ASYNC_FUNCTION = SyntaxObject("ASYNC_FUNCTION")
-	AWAIT = SyntaxObject("AWAIT")
-	ASYNC_FOR = SyntaxObject("ASYNC_FOR")   # undecided syntax
-	ASYNC_WITH = SyntaxObject("ASYNC_WITH") # undecided syntax
+	AWAIT          = SyntaxObject("AWAIT")
+	ASYNC_FOR      = SyntaxObject("ASYNC_FOR")   # undecided syntax
+	ASYNC_WITH     = SyntaxObject("ASYNC_WITH") # undecided syntax
 	# Decorators
 	DECORATOR = SyntaxObject("DECORATOR")
 	# Typing
