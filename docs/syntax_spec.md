@@ -438,7 +438,7 @@ nohtyP: {something() ? await} <- func <- def <- async
 `async for` can be done as follows:  
 
 ```yp
-async_iterable ? ~ { @ ? do_something() -> await }
+async_iterable ? ~ { @ ? do_something() -> await } <- async
 ```
 
 Assuming `async_iterable` supports `__aiter__` and `__anext__` dunders as well as `StopAsyncIteration` for async iteration.  
