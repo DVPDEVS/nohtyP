@@ -87,11 +87,17 @@ Token separation is supported either through brackets `{}()`, whitespace, commas
 Colon is, however, exclusively for type declarations, imports and dictionaries.  
 This may change in later specification versions.  
 
-Since python will natively consider values in brackets to be dictionaries or tuples, nohtyP will not assume types for containers.  
-Thus `(1,2)` is the same as `1 2` and dictionaries, sets, lists and tuples need a type declaration like this:  
+Since python will natively consider values in brackets to be dictionaries or tuples, nohtyP will assume a tuple-type for unlabeled containers.  
+Thus `(1,2)` is the same as `1 2` and dictionaries, sets, and lists require a type declaration like this:  
 
 ```yp
-tuple: (1,2) #? nums
+set: (1,2) #? nums
+```
+
+whilst tuples can get away with nothing:  
+
+```yp
+6 9 #? nums
 ```
 
 This allows using zero whitespace in scripts :3  
@@ -105,7 +111,7 @@ But thats a small loss for this being syntactically valid:
 which is equivalent to this:  
 
 ```py
-res: list[str] = []
+res: tuple[str] = []
 for num in range(10):
     if num % 2:
         res += str( num * 2 )
@@ -113,7 +119,7 @@ print(res)
 
 #* or:
 
-res :list[str] = [str(num * 2) for num in range(10) if num % 2]
+res :tuple[str] = [str(num * 2) for num in range(10) if num % 2]
 print(res)
 ```
 
@@ -184,8 +190,8 @@ __import__('re').match(f"{"|".join(whitespace.split(''))}", string_token)
 Example:   
 
 ```yp  
-{ x > 0 ~ "pos" *~ "neg" ? } ? print()      # ✓ block yields value -> print  
-{ x > 0 ~ "pos" *~ "neg" } ? print()        # ✗ block yields None -> print(None)  
+{ x > 0 ~ "pos" *~ "neg" ? } ? print()      # V block yields value -> print  
+{ x > 0 ~ "pos" *~ "neg" } ? print()        # X block yields None -> print(None)  
 
 { x == 32 ~ True *~ False ?} -> val         # `val` is assigned a bool through a ternary  
 { risky() *? "fallback" ? } ? process()     # exception-safe value -> process  
@@ -251,6 +257,7 @@ The [walrus operator](https://www.w3schools.com/python/python_operators_assign.a
 
 ```yp
 3=x?print()
+# x remains in block-frame namespace here.
 ```
 
 Additionally, any Python native augmented assignment is also applicable, such as:  
@@ -299,13 +306,13 @@ This 'unpacking mark' lasts ONLY until the next operation using the object takes
 
 On the upside, this forces type declaring in some capacity and is just good practice :3  
 
-Additionally, assignment of container items to variables can be preformed as such:  
+Additionally, assignment of container items to variables can be performed as such:  
 
 ```yp
-*tuple:(69,420) #? set:(item1,item2)
+*:(69,420) #? list:(item1,item2)
 ```
 
-Which is equivalent to this formatted assignment in Python:  
+Which is equivalent to this kind of formatted assignment in Python:  
 
 ```py
 items :tuple[tuple[int]|int] = ((6, 9), 420)
@@ -314,7 +321,7 @@ items :tuple[tuple[int]|int] = ((6, 9), 420)
 
 ### CONTROL FLOW  
 
-WHILE:  
+WHILE (?= { }):  
 
 ```yp
 Python: while(True): print("loop")
@@ -339,7 +346,7 @@ Python: print( "yes" if True == 1 else "no" )
 nohtyP: { True == 1 ~ yes *~ no ? } ? print()
 ```
 
-COMPREHENSIONS (? ~ { ? })  
+COMPREHENSIONS (? ~ { ? }):  
 
 ```yp
 Python: list = [x*2 for x in range(10) if x % 2]
@@ -350,7 +357,7 @@ Comprehensions depend on type declarations to be translated correctly into pytho
 If none is given, falls back to generator comprehension. `(x*x for x in range(10))`  
 Type should be declared at the very start of the comprehensions statement, as above.  
 
-MATCH:  
+MATCH (? match { }):  
 
 ```yp
 Python: test = "";
@@ -360,6 +367,7 @@ Python: test = "";
 nohtyP: "" = test; test ? match { "" ~ ... *~ _ ~ ... }
 
 nohtyP: test ? match { 1, "s", *rest ~ ... }
+# comparing tuple contents to `(1,s,Any*)`
 ```
 
 ### FUNCTIONS (reversed declaration)  
@@ -435,14 +443,7 @@ Python: something(23, else=32)
 nohtyP: 23 **dict: "else":32 ? something()
 ```
 
-Here the dictionary is marked for KEYWORD unpacking - if it werent, itd be passed as a positional literal dict value.  
-
-With implicit types and compacted:  
-
-```yp
-23**:'else':32?something()
-```
-
+Here the dictionary is marked for KEYWORD unpacking - if it werent, itd be passed as a positional literal.  
 This style is applicable in python, too, as:  
 
 ```py
