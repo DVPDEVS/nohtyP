@@ -10,10 +10,10 @@ src/dist/
 # from build scripts
 src/LICENSE*
 
-# exclude vscode config dir but include unittest config in settings.json
+# exclude vscode config dir but include task config
 !.vscode/
 .vscode/*
-!.vscode/settings.json
+!.vscode/tasks.json
 
 # Environments 
 #* shouldnt be used. managed through scripts.
