@@ -1,0 +1,64 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run cacheremoval script (windows)",
+            "type": "shell",
+            "command": ".\\src\\nohtyP\\_dev\\scripts\\bat\\clean_cache.bat",
+            "args": ["1>nul", "2>nul"],
+            "options": {
+                "cwd": "${workspaceFolder}",
+            },
+            "problemMatcher": [],
+            "windows": {}
+        },
+        {
+            "label": "Run cacheremoval script (unix)",
+            "type": "shell",
+            "command": "./src/nohtyP/_dev/scripts/sh/clean_cache.sh",
+            "args": ["&>/dev/null"],
+            "options": {
+                "cwd": "${workspaceFolder}",
+            },
+            "problemMatcher": [],
+            "linux": {},
+            "osx": {}
+        },
+        {
+            "label": "Run all unittests",
+            "type": "shell",
+            // "command": "python -m unittest discover -s ${workspaceFolder}/src/nohtyP/_dev/unit_tests -p tests.py",
+            "command": "python",
+            "args": ["-m", "nohtyP._dev.unit_tests.tests", "${input:unittest_args}"],
+            "options": {
+                "cwd": "${workspaceFolder}/src",
+                "env": {
+                    "PYTHONPATH": "${workspaceFolder}/src"
+                }
+            },
+            "problemMatcher": [],
+        },
+        {
+            "label": "Run lexer unittests",
+            "type": "shell",
+            "command": "python",
+            "args": ["-m", "nohtyP._dev.unit_tests.lexer", "${input:unittest_args}"],
+            "options": {
+                "cwd": "${workspaceFolder}/src",
+                "env": {
+                    "PYTHONPATH": "${workspaceFolder}/src"
+                }
+            },
+            "problemMatcher": [],
+        },
+    ],
+    "inputs": [
+        {
+        "id": "unittest_args",
+        "type": "pickString",
+        "description": "Optional unittest args",
+        "options": ["v", "q", "s", "v s", ""],
+        "default": ""
+        }
+    ]
+}
