@@ -44,7 +44,7 @@ class SyntaxObjectList:
 	SET_COMPREHENSION    = SyntaxObject("SET_COMPREHENSION")
 	GENERATOR_EXPRESSION = SyntaxObject("GENERATOR_EXPRESSION")
 	# Assignment
-	BINARY_OP     = SyntaxObject("BINARY_OP")
+	BINARY_OP           = SyntaxObject("BINARY_OP")
 	ASSIGNMENT          = SyntaxObject("ASSIGNMENT")
 	COMPOUND_ASSIGNMENT = SyntaxObject("COMPOUND_ASSIGNMENT")
 	# Keywords
