@@ -1,17 +1,15 @@
 from __future__ import annotations
 from nohtyP._impl.lexer.types import TokenSeries
+from nohtyP._impl.lexer.utils import lex_helpers
 from nohtyP._impl.global_utilities.decorators import api_level
 from nohtyP._impl.global_utilities.types import NohtyPTokenizerInternalFailure
 from pathlib import Path
 import re
 
 __all__ = [
-	"whitespace",
 	"tokenize_str",
 	"tokenize_file",
 ]
-
-whitespace :str = " \t\n\v\f\r\u001C\u001D\u001E\u001F\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000"
 
 @api_level(0)
 class funcs:
@@ -28,7 +26,7 @@ class funcs:
 				skips -= 1
 				continue
 			char = text[i]
-			if char in whitespace:
+			if lex_helpers.is_whitespace(char):
 				continue
 			# begin with simpler tokens starts
 			elif char in ";,~@:.": #* ; , ~ @ : .
