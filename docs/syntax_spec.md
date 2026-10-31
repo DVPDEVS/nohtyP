@@ -261,12 +261,64 @@ The [walrus operator](https://www.w3schools.com/python/python_operators_assign.a
 # x remains in block-frame namespace here.
 ```
 
+You may consider the following format too:
+
+```yp
+{ text -> var1 ? } ? print()
+```
+
+However, this is assigning a variable inside a new block frame and flowing the result of the operation out,  
+roughly attempting this in python:
+
+```py
+def _block():
+    _t = type("text")
+    var1 = _t.__new__(_t, "text")
+    return var1
+print(_block())
+```
+
+After the _block() function call completes, its local name binding `var1` is discarded.  
+The returned value is consumed by the print() call and is never saved to a variable in the enclosing scope.
+
 Additionally, any Python native augmented assignment is also applicable, such as:  
 
 ```py
 num1, num2 = [0x12]*2
 num2 |= 3
 num1 *= 4
+```
+
+Native inline augmented assignments are statement-like: they update the target but emit `None` - or may not be implemented.  
+Use an explicit operation followed by assignment when the resulting value is needed.  
+Example below:
+
+```yp
+x += 1 ? print()    # prints None
+x + 1 = x ? print() # prints the new x
+```
+
+Official implementation ought to adapt this form:
+
+```py
+def _block():
+    nonlocal x
+    try:
+        x = x.__iadd__(1)
+    except AttributeError: # CPython int doesnt have __iadd__ and falls back to __add__
+        x = None
+    return x
+print(_block())
+
+def _block():
+    nonlocal x
+    try:
+        _t = type(1)
+        x = x.__add__(_t.__new__(_t, 1))
+    except AttributeError:
+        x = None
+    return x
+print(_block())
 ```
 
 Note that listed assignments are performed with the compund assignment below.  
