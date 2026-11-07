@@ -1,6 +1,7 @@
 finish v1 spec
 
 rework types to use one centralized AST type in globals
+reformat version
 
 lexical validation
 parser
