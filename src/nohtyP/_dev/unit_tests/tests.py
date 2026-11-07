@@ -1,7 +1,7 @@
 import unittest
 from sys import argv
 # from nohtyP.lexer.identifier import TT
-from nohtyP._impl.global_utilities.decorators import *
+from nohtyP._impl.globals.decorators import *
 from nohtyP._impl.lexer.tokenizer import *
 from nohtyP._impl.lexer.types import *
 from nohtyP._impl.lexer.identifier import Identify

@@ -1,4 +1,4 @@
-from nohtyP._impl.global_utilities.decorators import *
+from nohtyP._impl.globals.decorators import *
 from typing import Union
 
 __all__ = [

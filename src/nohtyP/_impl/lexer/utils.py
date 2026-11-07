@@ -1,7 +1,7 @@
 from __future__ import annotations
 import os, re, subprocess
 from pathlib import Path
-from nohtyP._impl.global_utilities.decorators import *
+from nohtyP._impl.globals.decorators import *
 
 @api_level(0)
 class lex_helpers:

@@ -1,8 +1,8 @@
 from __future__ import annotations
 from nohtyP._impl.lexer.types import TokenSeries
 from nohtyP._impl.lexer.utils import lex_helpers
-from nohtyP._impl.global_utilities.decorators import api_level
-from nohtyP._impl.global_utilities.types import NohtyPTokenizerInternalFailure
+from nohtyP._impl.globals.decorators import api_level
+from nohtyP._impl.globals.types import NohtyPTokenizerInternalFailure
 from pathlib import Path
 import re
 

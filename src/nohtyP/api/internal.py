@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-from nohtyP._impl.global_utilities.decorators import api_level, license, SPDX_License_Identifers
+from nohtyP._impl.globals.decorators import api_level, license, SPDX_License_Identifers
 
 __all__ = [
     "internal",

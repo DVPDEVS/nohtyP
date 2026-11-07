@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Never, Any
-from nohtyP._impl.global_utilities.decorators import *
-from nohtyP._impl.global_utilities.types import AnyNohtyPSyntaxError
+from nohtyP._impl.globals.decorators import *
+from nohtyP._impl.globals.types import AnyNohtyPSyntaxError
 # Lexer output types
 
 __all__ = [

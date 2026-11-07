@@ -1,6 +1,6 @@
 from __future__ import annotations
-from nohtyP._impl.global_utilities.decorators import *
-from nohtyP._impl.global_utilities.types import *
+from nohtyP._impl.globals.decorators import *
+from nohtyP._impl.globals.types import *
 from nohtyP._impl.lexer.types import *
 from nohtyP._impl.lexer.tt import TT
 import re

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from nohtyP._impl.global_utilities.decorators import regex, api_level
+from nohtyP._impl.globals.decorators import regex, api_level
 from nohtyP._impl.lexer.types import *
 
 @regex

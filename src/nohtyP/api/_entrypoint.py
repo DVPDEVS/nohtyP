@@ -1,4 +1,4 @@
-from nohtyP._impl.global_utilities.decorators import api_level
+from nohtyP._impl.globals.decorators import api_level
 from nohtyP.__about__ import *
 import sys
 from pathlib import Path
