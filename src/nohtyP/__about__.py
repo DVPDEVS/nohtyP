@@ -22,16 +22,17 @@ _v_base = "0.0.1"
 
 try:
     _parts :list[str] = _v_base.split('.')
-    # reconstruct as {date}.X.X.X[{stage}0][.dev0]
+    # reconstruct as X.X.X.{date}.{build_id}[{stage}0][.dev0]
     _dm = "dev" if BUILD_DATA._BUILD_DEVMODE == True else ""
     _dm += BUILD_DATA._BUILD_DATE
     _s = BUILD_DATA._BUILD_STAGE[0] or '.'
     #* recombine and assign
     _partlist = [
-        BUILD_DATA._BUILD_DATE,
         _parts[0],
         _parts[1],
         _parts[2],
+        BUILD_DATA._BUILD_DATE,
+        BUILD_DATA._BUILD_ID,
     ]
     if BUILD_DATA._BUILD_STAGE:
         _partlist[-1] += _s + "0"
@@ -50,6 +51,7 @@ class VERSIONS:
     #* tbu with versions embedded in the actual modules
     BUILD_DATE           :str|None = f"{_split[0][6:]}.{_split[0][4:6]}.{_split[0][0:4]} (ddMMyyyy)"
     PACKAGE_VERSION      :str|None = __version__[9:] if not __version__.startswith("1!") else __version__[2:]
+    BUILD_ID             :str      = BUILD_DATA._BUILD_ID
     SYNTAX_VERSION       :str|None = "0.0.1+beta"
     TOKENIZER_VERSION    :str|None = "0.0.1"
     LEXER_IDENT_VERSION  :str|None = "0.0.1+beta"

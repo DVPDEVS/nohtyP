@@ -30,7 +30,7 @@ Project stage (project_stage) is the first character of "alpha" or "beta", or no
 Version numbers follow this scheme:  
 
 ```txt
-{build_date}.{base_version}[{project_stage}0][.dev0]
+{base_version}.{build_date}.{build_id}[{project_stage}0][.dev0]
 ```
 
 No version information is to succeed stage marker or devloper release marker.  
@@ -45,9 +45,9 @@ Should the version number creation fail for any reason it will instead be marked
 Examples:
 
 ```txt
-20260708.0.0.1b0.dev0 -> package version 0.0.1, packaged 8th of July 2026, developer package, beta stage of development
-30720532.0.2.3        -> package version 0.2.3, packaged 32nd of May 3072, release package, mature stage of development
-1!1.4.2               -> build failure - you should not see this, assumedly unstable
+0.0.1.20250808.6077893480943150b0.dev0 -> package version 0.0.1, packaged 8th of July 2025, developer package, beta stage of development
+0.2.3.30720532.0246813579333333        -> package version 0.2.3, packaged 32nd of May 3072, release package, mature stage of development
+1!1.4.2                                -> build failure - you should not see this, assumedly unstable
 ```
 
 This build date acts as a build number.  

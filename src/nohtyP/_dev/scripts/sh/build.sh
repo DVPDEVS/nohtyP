@@ -8,6 +8,8 @@ STARTDIR=$(pwd)
 NOHTYP_STAGE="beta"
 # formatted date
 _N_formatted_date=$(date '+%Y%m%d')
+# build nonce
+_N_BUILDID=$(shuf -i 1000000000000000-9999999999999999 -n 1)
 
 modify_buildinfo() {
     case "$1" in
@@ -15,6 +17,7 @@ modify_buildinfo() {
             cat <<EOF > ./nohtyP/_buildinfo.py
 class BUILD_DATA:
     _BUILD_DATE = "$_N_formatted_date"
+    _BUILD_ID = "$_N_BUILDID"
     _BUILD_DEVMODE = True
     _BUILD_STAGE = "$NOHTYP_STAGE"
 EOF
@@ -23,6 +26,7 @@ EOF
             cat <<EOF > ./nohtyP/_buildinfo.py
 class BUILD_DATA:
     _BUILD_DATE = "$_N_formatted_date"
+    _BUILD_ID = "$_N_BUILDID"
     _BUILD_DEVMODE = False
     _BUILD_STAGE = "$NOHTYP_STAGE"
 EOF
@@ -33,6 +37,7 @@ EOF
 
 class BUILD_DATA:
     _BUILD_DATE = "$_N_formatted_date"
+    _BUILD_ID = "$_N_BUILDID"
     _BUILD_DEVMODE = False
     _BUILD_STAGE = "$NOHTYP_STAGE"
 
@@ -45,6 +50,7 @@ EOF
 
 class BUILD_DATA:
     _BUILD_DATE = ""
+    _BUILD_ID = ""
     _BUILD_DEVMODE = False
     _BUILD_STAGE = ""
 

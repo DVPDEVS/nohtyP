@@ -8,6 +8,13 @@ chcp 65001 >nul
 :: Build stage decl
 set "NOHTYP_STAGE=beta"
 
+:: for build id nonce
+for /F %%F in (
+    'powershell -NoProfile -Command "Get-SecureRandom -Minimum 1000000000000000 -Maximum 10000000000000000"'
+) do (
+    set "NOHTYP_BUILDID=%%F"
+)
+
 call :start
 :: Ignore errors, exit immediately after anyways. best-effort imitation of set -euo pipefail. relies on goto returns and || rem no to ignore fails extra hard
 set "RC=%ERRORLEVEL%"
@@ -98,6 +105,7 @@ goto :eof
     echo.
     echo class BUILD_DATA:
     echo ^    _BUILD_DATE = "!_N_formatted_date!"
+    echo ^    _BUILD_ID = "!NOHTYP_BUILDID"
     echo ^    _BUILD_DEVMODE = False
     echo ^    _BUILD_STAGE = "%NOHTYP_STAGE%"
     echo.
@@ -108,6 +116,7 @@ goto :eof
 (
     echo class BUILD_DATA:
     echo ^    _BUILD_DATE = "!_N_formatted_date!"
+    echo ^    _BUILD_ID = "!NOHTYP_BUILDID"
     echo ^    _BUILD_DEVMODE = False
     echo ^    _BUILD_STAGE = "%NOHTYP_STAGE%"
 ) > .\nohtyP\_buildinfo.py
@@ -117,6 +126,7 @@ goto :eof
 (
     echo class BUILD_DATA:
     echo ^    _BUILD_DATE = "!_N_formatted_date!"
+    echo ^    _BUILD_ID = "!NOHTYP_BUILDID"
     echo ^    _BUILD_DEVMODE = True
     echo ^    _BUILD_STAGE = "%NOHTYP_STAGE%"
 ) > .\nohtyP\_buildinfo.py
@@ -229,6 +239,7 @@ goto :eof
     echo.
     echo class BUILD_DATA:
     echo ^    _BUILD_DATE = ""
+    echo ^    _BUILD_ID = ""
     echo ^    _BUILD_DEVMODE = False
     echo ^    _BUILD_STAGE = ""
     echo.
